@@ -418,8 +418,15 @@ export const LANGUAGE_NAMES = {
 
 export function getLanguageFromCountry(countryName) {
   if (!countryName) return 'en';
-  const name = countryName.toLowerCase();
   
+  // まず国コードとしてマッチするか試す (例: "TW", "US")
+  const code = countryName.toUpperCase();
+  if (COUNTRY_TO_LANGUAGE[code]) {
+    return COUNTRY_TO_LANGUAGE[code];
+  }
+
+  // 自由入力テキストの場合のフォールバック
+  const name = countryName.toLowerCase();
   if (name.includes('タイ') || name.includes('thai')) return 'th';
   if (name.includes('台湾') || name.includes('taiwan') || name.includes('中国') || name.includes('china') || name.includes('香港') || name.includes('hong')) return 'zh';
   if (name.includes('韓国') || name.includes('korea')) return 'ko';
@@ -444,3 +451,29 @@ export function getFlagFromLanguage(lang) {
   };
   return map[lang] || '🏳️';
 }
+
+export const POPULAR_COUNTRIES = [
+  { code: 'TW', name: '台湾', flag: '🇹🇼' },
+  { code: 'KR', name: '韓国', flag: '🇰🇷' },
+  { code: 'US', name: 'アメリカ合衆国', flag: '🇺🇸' },
+  { code: 'TH', name: 'タイ', flag: '🇹🇭' },
+  { code: 'CN', name: '中国', flag: '🇨🇳' },
+  { code: 'HK', name: '香港', flag: '🇭🇰' },
+  { code: 'SG', name: 'シンガポール', flag: '🇸🇬' },
+  { code: 'AU', name: 'オーストラリア', flag: '🇦🇺' },
+  { code: 'GB', name: 'イギリス', flag: '🇬🇧' },
+  { code: 'FR', name: 'フランス', flag: '🇫🇷' },
+  { code: 'IT', name: 'イタリア', flag: '🇮🇹' },
+  { code: 'ES', name: 'スペイン', flag: '🇪🇸' },
+  { code: 'DE', name: 'ドイツ', flag: '🇩🇪' },
+  { code: 'CA', name: 'カナダ', flag: '🇨🇦' },
+  { code: 'PH', name: 'フィリピン', flag: '🇵🇭' },
+  { code: 'VN', name: 'ベトナム', flag: '🇻🇳' },
+  { code: 'MY', name: 'マレーシア', flag: '🇲🇾' },
+  { code: 'ID', name: 'インドネシア', flag: '🇮🇩' },
+  { code: 'PT', name: 'ポルトガル', flag: '🇵🇹' },
+  { code: 'BR', name: 'ブラジル', flag: '🇧🇷' },
+  { code: 'MX', name: 'メキシコ', flag: '🇲🇽' },
+  { code: 'JP', name: '日本 (国内)', flag: '🇯🇵' },
+  { code: 'OTHER', name: 'その他 (自由入力)', flag: '🏳️' }
+];

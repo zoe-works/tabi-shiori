@@ -2,8 +2,36 @@ import { getState, setState } from '../utils/store.js';
 import { navigate, getCurrentPath } from '../utils/router.js';
 import { t } from '../utils/i18n.js';
 import { createTrip, updateTrip, getTrips } from '../utils/db.js';
+import { POPULAR_COUNTRIES } from '../data/phrases.js';
 
 const EMOJIS = ['🐱','🐶','🐻','🐰','🦊','🐼','🐨','🦁','🐯','🐵','🐸','🦄','🌸','🌻','⭐','🌈','❤️','💎'];
+
+function generateDestRow(d = {}, placeholders = {}) {
+  const countryValue = d.country || '';
+  let isOther = countryValue !== '' && !POPULAR_COUNTRIES.some(c => c.code === countryValue || c.name === countryValue);
+  let selectedCode = isOther ? 'OTHER' : countryValue;
+  
+  if (!isOther && countryValue) {
+    const matched = POPULAR_COUNTRIES.find(c => c.name === countryValue || c.code === countryValue);
+    if (matched) selectedCode = matched.code;
+  }
+  
+  const optionsHtml = POPULAR_COUNTRIES.map(c => 
+    `<option value="${c.code}" ${c.code === selectedCode ? 'selected' : ''}>${c.flag} ${c.name}</option>`
+  ).join('');
+
+  return `
+    <div class="form-row destination-item mb-sm" style="flex-wrap: wrap; gap: 8px;">
+      <select class="form-input flex-1 dest-country-select" style="min-width: 140px; margin-bottom: 0;">
+        <option value="" disabled ${!selectedCode ? 'selected' : ''}>${placeholders.country || '国を選択'}</option>
+        ${optionsHtml}
+      </select>
+      <input type="text" class="form-input flex-1 dest-country-other" placeholder="国名を入力" value="${isOther ? countryValue : ''}" style="min-width: 100px; margin-bottom: 0; ${isOther ? '' : 'display:none;'}" />
+      <input type="text" class="form-input flex-1 dest-city" placeholder="${placeholders.city || '都市'}" value="${d.city || ''}" style="min-width: 100px; margin-bottom: 0;" />
+      <button type="button" class="btn-icon btn-remove" style="margin-bottom: 0;">✖</button>
+    </div>
+  `;
+}
 
 export default {
   render() {
@@ -45,13 +73,7 @@ export default {
           <div class="card mb-md" id="destinations-container">
             <label class="form-label">${t('destinations')}</label>
             <div id="destinations-list">
-              ${trip.destinations.map((d, i) => `
-                <div class="form-row destination-item mb-sm">
-                  <input type="text" class="form-input flex-1 dest-country" placeholder="${t('countryPlaceholder')}" value="${d.country || ''}" />
-                  <input type="text" class="form-input flex-1 dest-city" placeholder="${t('cityPlaceholder')}" value="${d.city || ''}" />
-                  <button class="btn-icon btn-remove" data-index="${i}">✖</button>
-                </div>
-              `).join('')}
+              ${trip.destinations.map(d => generateDestRow(d, { country: t('countryPlaceholder'), city: t('cityPlaceholder') })).join('')}
             </div>
             <button class="btn btn-secondary btn-small w-full mt-sm" id="btn-add-dest">${t('addDestination')}</button>
           </div>
@@ -96,20 +118,29 @@ export default {
     // Destinations
     const destList = document.getElementById('destinations-list');
     document.getElementById('btn-add-dest')?.addEventListener('click', () => {
-      const row = document.createElement('div');
-      row.className = 'form-row destination-item mb-sm';
-      row.innerHTML = `
-        <input type="text" class="form-input flex-1 dest-country" placeholder="${t('countryPlaceholder')}" />
-        <input type="text" class="form-input flex-1 dest-city" placeholder="${t('cityPlaceholder')}" />
-        <button class="btn-icon btn-remove">✖</button>
-      `;
-      destList.appendChild(row);
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = generateDestRow({}, { country: t('countryPlaceholder'), city: t('cityPlaceholder') });
+      destList.appendChild(wrapper.firstElementChild);
     });
 
     destList?.addEventListener('click', (e) => {
       if (e.target.classList.contains('btn-remove')) {
         const rows = destList.querySelectorAll('.destination-item');
         if (rows.length > 1) e.target.closest('.destination-item').remove();
+      }
+    });
+
+    destList?.addEventListener('change', (e) => {
+      if (e.target.classList.contains('dest-country-select')) {
+        const item = e.target.closest('.destination-item');
+        const otherInput = item.querySelector('.dest-country-other');
+        if (e.target.value === 'OTHER') {
+          otherInput.style.display = 'block';
+          otherInput.focus();
+        } else {
+          otherInput.style.display = 'none';
+          otherInput.value = '';
+        }
       }
     });
 
@@ -176,10 +207,15 @@ export default {
         return;
       }
 
-      const destinations = Array.from(destList.querySelectorAll('.destination-item')).map(row => ({
-        country: row.querySelector('.dest-country').value,
-        city: row.querySelector('.dest-city').value
-      }));
+      const destinations = Array.from(destList.querySelectorAll('.destination-item')).map(row => {
+        const select = row.querySelector('.dest-country-select');
+        const other = row.querySelector('.dest-country-other');
+        const country = select.value === 'OTHER' ? other.value : select.value;
+        return {
+          country: country,
+          city: row.querySelector('.dest-city').value
+        };
+      });
 
       const members = Array.from(membersList.querySelectorAll('.member-item')).map(row => ({
         icon: row.querySelector('.btn-emoji-picker').textContent,
