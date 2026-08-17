@@ -9,17 +9,10 @@ export default {
       return `
         <div class="page">
           <div class="welcome-section">
-<<<<<<< HEAD
             <img src="${import.meta.env.BASE_URL}images/mascot.jpg" alt="たびくま" class="welcome-mascot" />
             <h1 class="welcome-title">旅のしおりを作ろう！</h1>
             <p class="welcome-text">旅行の計画から記録まで、<br>みんなで楽しく作る旅のしおり 🌴</p>
             <button id="btn-create-trip" class="btn btn-primary">✨ 新しい旅行を作成</button>
-=======
-            <img src="${import.meta.env.BASE_URL}images/mascot.jpg" alt="た�Eくま" class="welcome-mascot" />
-            <h1 class="welcome-title">旁E�Eしおりを作ろぁE��E/h1>
-            <p class="welcome-text">旁E���E計画から記録まで、Ebr>みんなで楽しく作る旁E�EしおめE🌴</p>
-            <button id="btn-create-trip" class="btn btn-primary">✨ 新しい旁E��を作�E</button>
->>>>>>> 13b653023e3840875458148d9393e811f3545363
           </div>
         </div>
       `;
@@ -36,18 +29,18 @@ export default {
     if (today < startNorm) {
       const diff = Math.ceil((startNorm - today) / (1000 * 60 * 60 * 24));
       countdownHtml = `
-        <span class="countdown-label">旁E��まであと</span>
+        <span class="countdown-label">旅行まであと</span>
         <span class="countdown-number">${diff}</span>
-        <span class="countdown-unit">日�E�E/span>
+        <span class="countdown-unit">日！</span>
       `;
     } else if (today >= startNorm && today <= endNorm) {
       const diff = Math.ceil((today - startNorm) / (1000 * 60 * 60 * 24)) + 1;
-      countdownHtml = `<span class="countdown-during">🎉 旁E��E${diff}日目�E�E/span>`;
+      countdownHtml = `<span class="countdown-during">🎉 旅行 ${diff}日目！</span>`;
     } else {
-      countdownHtml = `<span class="countdown-during">✨ おつかれさまでした�E�E/span>`;
+      countdownHtml = `<span class="countdown-during">✨ おつかれさまでした！</span>`;
     }
 
-    const formatDate = (d) => `${d.getFullYear()}年${d.getMonth() + 1}朁E{d.getDate()}日`;
+    const formatDate = (d) => `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
 
     const destinations = currentTrip.destinations || [];
     const members = currentTrip.members || [];
@@ -55,15 +48,9 @@ export default {
     return `
       <div class="page">
         <div class="home-hero">
-<<<<<<< HEAD
           <img src="${import.meta.env.BASE_URL}images/mascot.jpg" alt="たびくま" class="home-mascot" />
           <h1 class="home-trip-title">${currentTrip.title || '無題の旅行'}</h1>
           <p class="home-trip-dates">${formatDate(start)} 〜 ${formatDate(end)}</p>
-=======
-          <img src="${import.meta.env.BASE_URL}images/mascot.jpg" alt="た�Eくま" class="home-mascot" />
-          <h1 class="home-trip-title">${currentTrip.title || '無題�E旁E��E}</h1>
-          <p class="home-trip-dates">${formatDate(start)} 、E${formatDate(end)}</p>
->>>>>>> 13b653023e3840875458148d9393e811f3545363
           
           ${destinations.length > 0 ? `
             <div class="home-destinations">
@@ -78,11 +65,11 @@ export default {
 
         ${members.length > 0 ? `
           <div class="card card-sm mb-lg">
-            <p class="text-sm fw-bold mb-sm">👥 メンバ�E</p>
+            <p class="text-sm fw-bold mb-sm">👥 メンバー</p>
             <div class="members-row">
               ${members.map(m => `
                 <div class="member-avatar">
-                  <div class="member-icon">${m.icon || '�E'}</div>
+                  <div class="member-icon">${m.icon || '😊'}</div>
                   <span class="member-name">${m.name}</span>
                 </div>
               `).join('')}
@@ -92,12 +79,12 @@ export default {
 
         <div class="feature-grid">
           <div class="feature-card" data-route="/flashcard">
-            <span class="feature-icon">🗣�E�E/span>
-            <span class="feature-label">単語カーチE/span>
+            <span class="feature-icon">🗣️</span>
+            <span class="feature-label">単語カード</span>
           </div>
           <div class="feature-card" data-route="/checklist">
             <span class="feature-icon">🎒</span>
-            <span class="feature-label">持ち物チェチE��</span>
+            <span class="feature-label">持ち物チェック</span>
           </div>
           <div class="feature-card" data-route="/schedule">
             <span class="feature-icon">📅</span>
@@ -105,7 +92,7 @@ export default {
           </div>
           <div class="feature-card" data-route="/research">
             <span class="feature-icon">🔍</span>
-            <span class="feature-label">リサーチE/span>
+            <span class="feature-label">リサーチ</span>
           </div>
           <div class="feature-card" data-route="/budget">
             <span class="feature-icon">💰</span>
@@ -118,7 +105,8 @@ export default {
         </div>
 
         <button id="btn-edit-trip" class="btn btn-secondary btn-small w-full mt-md" style="margin-bottom: 16px;">
-          ✏︁E旁E��情報を編雁E        </button>
+          ✏️ 旅行情報を編集
+        </button>
       </div>
     `;
   },

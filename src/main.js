@@ -40,16 +40,11 @@ function renderAppShell() {
     <!-- Header -->
     <header class="app-header" id="app-header">
       <div class="header-title">
-<<<<<<< HEAD
         <img src="${import.meta.env.BASE_URL}images/mascot.jpg" alt="たびくま" class="header-mascot" />
         <span class="header-title-text">旅のしおり</span>
-=======
-        <img src="${import.meta.env.BASE_URL}images/mascot.jpg" alt="た�Eくま" class="header-mascot" />
-        <span class="header-title-text">旁E�EしおめE/span>
->>>>>>> 13b653023e3840875458148d9393e811f3545363
       </div>
       <div class="header-actions">
-        <button class="header-btn" id="btn-share" title="共朁E>🔗</button>
+        <button class="header-btn" id="btn-share" title="共有">🔗</button>
         <button class="header-btn" id="btn-menu" title="メニュー">☰</button>
       </div>
     </header>
@@ -61,11 +56,11 @@ function renderAppShell() {
     <nav class="bottom-nav" id="bottom-nav">
       <a class="nav-item active" data-route="/" href="javascript:void(0)">
         <span class="nav-icon">🏠</span>
-        <span class="nav-label">ホ�Eム</span>
+        <span class="nav-label">ホーム</span>
       </a>
       <a class="nav-item" data-route="/flashcard" href="javascript:void(0)">
-        <span class="nav-icon">🗣�E�E/span>
-        <span class="nav-label">単誁E/span>
+        <span class="nav-icon">🗣️</span>
+        <span class="nav-label">単語</span>
       </a>
       <a class="nav-item" data-route="/checklist" href="javascript:void(0)">
         <span class="nav-icon">🎒</span>
@@ -73,11 +68,11 @@ function renderAppShell() {
       </a>
       <a class="nav-item" data-route="/schedule" href="javascript:void(0)">
         <span class="nav-icon">📅</span>
-        <span class="nav-label">予宁E/span>
+        <span class="nav-label">予定</span>
       </a>
       <a class="nav-item" data-route="/research" href="javascript:void(0)">
         <span class="nav-icon">🔍</span>
-        <span class="nav-label">調べめE/span>
+        <span class="nav-label">調べる</span>
       </a>
     </nav>
 
@@ -86,26 +81,22 @@ function renderAppShell() {
       <div class="modal-content drawer-content">
         <div class="modal-handle"></div>
         <div class="drawer-header">
-<<<<<<< HEAD
           <img src="${import.meta.env.BASE_URL}images/mascot.jpg" alt="たびくま" class="drawer-mascot" />
-=======
-          <img src="${import.meta.env.BASE_URL}images/mascot.jpg" alt="た�Eくま" class="drawer-mascot" />
->>>>>>> 13b653023e3840875458148d9393e811f3545363
           <h2>メニュー</h2>
         </div>
         <nav class="drawer-nav" id="drawer-nav">
-          <a class="drawer-item" data-route="/">🏠 ホ�Eム</a>
-          <a class="drawer-item" data-route="/flashcard">🗣�E�E単語カーチE/a>
-          <a class="drawer-item" data-route="/checklist">🎒 持ち物チェチE��</a>
+          <a class="drawer-item" data-route="/">🏠 ホーム</a>
+          <a class="drawer-item" data-route="/flashcard">🗣️ 単語カード</a>
+          <a class="drawer-item" data-route="/checklist">🎒 持ち物チェック</a>
           <a class="drawer-item" data-route="/schedule">📅 スケジュール</a>
-          <a class="drawer-item" data-route="/research">🔍 リサーチノーチE/a>
+          <a class="drawer-item" data-route="/research">🔍 リサーチノート</a>
           <hr class="drawer-divider" />
           <a class="drawer-item" data-route="/budget">💰 費用メモ</a>
-          <a class="drawer-item" data-route="/emergency">📞 緊急連絡允E/a>
-          <a class="drawer-item" data-route="/omiyage">🎁 お土産リスチE/a>
+          <a class="drawer-item" data-route="/emergency">📞 緊急連絡先</a>
+          <a class="drawer-item" data-route="/omiyage">🎁 お土産リスト</a>
           <hr class="drawer-divider" />
           <div class="drawer-trips" id="drawer-trips">
-            <p class="drawer-section-title">旁E��を刁E��替ぁE/p>
+            <p class="drawer-section-title">旅行を切り替え</p>
           </div>
         </nav>
       </div>
@@ -115,7 +106,7 @@ function renderAppShell() {
     <div class="modal-overlay" id="share-overlay">
       <div class="modal-content">
         <div class="modal-handle"></div>
-        <div class="modal-title">🔗 しおりを共朁E/div>
+        <div class="modal-title">🔗 しおりを共有</div>
         <div id="share-content"></div>
       </div>
     </div>
@@ -207,16 +198,16 @@ function updateDrawerTrips(trips) {
 
   const state = getState();
   container.innerHTML = `
-    <p class="drawer-section-title">旁E��を刁E��替ぁE/p>
+    <p class="drawer-section-title">旅行を切り替え</p>
     ${trips.map(trip => `
       <a class="drawer-trip-item ${trip.id === state.currentTripId ? 'active' : ''}" data-trip-id="${trip.id}">
-        <span class="drawer-trip-emoji">✈︁E/span>
-        <span class="drawer-trip-name">${trip.title || '無題�E旁E��E}</span>
+        <span class="drawer-trip-emoji">✈️</span>
+        <span class="drawer-trip-name">${trip.title || '無題の旅行'}</span>
       </a>
     `).join('')}
     <a class="drawer-trip-item drawer-trip-new" data-route="/trip/new">
-      <span class="drawer-trip-emoji">➁E/span>
-      <span class="drawer-trip-name">新しい旁E��を作�E</span>
+      <span class="drawer-trip-emoji">➕</span>
+      <span class="drawer-trip-name">新しい旅行を作成</span>
     </a>
   `;
 
@@ -245,7 +236,7 @@ function showShareModal() {
   const content = document.getElementById('share-content');
   
   if (!state.currentTrip) {
-    content.innerHTML = '<p class="empty-state-text">まず旅行を作�Eしてください</p>';
+    content.innerHTML = '<p class="empty-state-text">まず旅行を作成してください</p>';
     return;
   }
 
@@ -259,25 +250,25 @@ function showShareModal() {
           <input type="text" value="${shareUrl}" readonly id="share-url-input" />
         </div>
         <div class="form-group">
-          <label class="form-label">パスワーチE/label>
+          <label class="form-label">パスワード</label>
           <input type="text" value="${state.currentTrip.sharePassword || ''}" readonly id="share-pw-input" />
         </div>
-        <button class="btn btn-primary w-full" id="btn-copy-share">📋 URLをコピ�E</button>
+        <button class="btn btn-primary w-full" id="btn-copy-share">📋 URLをコピー</button>
       </div>
     `;
     document.getElementById('btn-copy-share')?.addEventListener('click', () => {
-      navigator.clipboard.writeText(shareUrl + '\nパスワーチE ' + (state.currentTrip.sharePassword || ''));
-      document.getElementById('btn-copy-share').textContent = '✁Eコピ�Eしました�E�E;
+      navigator.clipboard.writeText(shareUrl + '\nパスワード: ' + (state.currentTrip.sharePassword || ''));
+      document.getElementById('btn-copy-share').textContent = '✅ コピーしました！';
     });
   } else {
     content.innerHTML = `
       <div class="share-setup">
-        <p class="text-sm text-muted mb-md">共有パスワードを設定して、仲間にURLを送りましょぁE��E/p>
+        <p class="text-sm text-muted mb-md">共有パスワードを設定して、仲間にURLを送りましょう！</p>
         <div class="form-group">
-          <label class="form-label">パスワーチE/label>
-          <input type="text" id="share-password-input" placeholder="4斁E��以上�EパスワーチE />
+          <label class="form-label">パスワード</label>
+          <input type="text" id="share-password-input" placeholder="4文字以上のパスワード" />
         </div>
-        <button class="btn btn-primary w-full" id="btn-create-share">🔗 共有リンクを作�E</button>
+        <button class="btn btn-primary w-full" id="btn-create-share">🔗 共有リンクを作成</button>
       </div>
     `;
   }

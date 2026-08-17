@@ -2,7 +2,7 @@ import { getState, setState } from '../utils/store.js';
 import { navigate, getCurrentPath } from '../utils/router.js';
 import { createTrip, updateTrip, getTrips } from '../utils/db.js';
 
-const EMOJIS = ['🐱','🐶','🐻','🐰','🦁E,'🐼','🐨','🦁E,'🐯','🐵','🐸','🦁E,'🌸','🌻','⭁E,'🌈','❤�E�E,'💎'];
+const EMOJIS = ['🐱','🐶','🐻','🐰','🦊','🐼','🐨','🦁','🐯','🐵','🐸','🦄','🌸','🌻','⭐','🌈','❤️','💎'];
 
 export default {
   render() {
@@ -19,19 +19,14 @@ export default {
     return `
       <div class="page">
         <div class="trip-form-header">
-<<<<<<< HEAD
           <img src="${import.meta.env.BASE_URL}images/mascot.jpg" alt="たびくま" class="trip-form-mascot" />
           <h1 class="page-title">${isEdit ? '✏️ 旅行を編集' : '✨ 新しい旅行を作成'}</h1>
-=======
-          <img src="${import.meta.env.BASE_URL}images/mascot.jpg" alt="た�Eくま" class="trip-form-mascot" />
-          <h1 class="page-title">${isEdit ? '✏︁E旁E��を編雁E : '✨ 新しい旁E��を作�E'}</h1>
->>>>>>> 13b653023e3840875458148d9393e811f3545363
         </div>
 
         <form id="trip-form" class="trip-form">
           <div class="form-group">
-            <label class="form-label">旁E��タイトル</label>
-            <input type="text" id="trip-title" placeholder="侁E はじめての台湾旁E��！E value="${trip.title}" required />
+            <label class="form-label">旅行タイトル</label>
+            <input type="text" id="trip-title" placeholder="例: はじめての台湾旅行！" value="${trip.title}" required />
           </div>
 
           <div class="flex gap-md">
@@ -46,35 +41,36 @@ export default {
           </div>
 
           <div class="form-group">
-            <label class="form-label">✈︁E行き允E/label>
+            <label class="form-label">✈️ 行き先</label>
             <div class="destination-list" id="destinations-container">
               ${trip.destinations.map(d => `
                 <div class="destination-row">
-                  <input type="text" class="dest-country" placeholder="国名（侁E タイ�E�E value="${d.country}" required />
-                  <input type="text" class="dest-city" placeholder="都市名�E�侁E バンコク�E�E value="${d.city || ''}" />
-                  <button type="button" class="destination-remove btn-remove-dest">✁E/button>
+                  <input type="text" class="dest-country" placeholder="国名（例: タイ）" value="${d.country}" required />
+                  <input type="text" class="dest-city" placeholder="都市名（例: バンコク）" value="${d.city || ''}" />
+                  <button type="button" class="destination-remove btn-remove-dest">✕</button>
                 </div>
               `).join('')}
             </div>
-            <button type="button" id="btn-add-dest" class="destination-add">�E�E行き先を追加</button>
+            <button type="button" id="btn-add-dest" class="destination-add">＋ 行き先を追加</button>
           </div>
 
           <div class="form-group">
-            <label class="form-label">👥 メンバ�E</label>
+            <label class="form-label">👥 メンバー</label>
             <div class="member-list" id="members-container">
               ${trip.members.map(m => `
                 <div class="member-row">
                   <button type="button" class="member-icon-selector btn-emoji-select">${m.icon || '🐱'}</button>
-                  <input type="text" class="member-name" placeholder="ニックネ�Eム" value="${m.name}" required />
-                  <button type="button" class="destination-remove btn-remove-member">✁E/button>
+                  <input type="text" class="member-name" placeholder="ニックネーム" value="${m.name}" required />
+                  <button type="button" class="destination-remove btn-remove-member">✕</button>
                 </div>
               `).join('')}
             </div>
-            <button type="button" id="btn-add-member" class="destination-add">�E�Eメンバ�Eを追加</button>
+            <button type="button" id="btn-add-member" class="destination-add">＋ メンバーを追加</button>
           </div>
 
           <button type="submit" class="btn btn-primary w-full mt-lg" id="btn-save">
-            💾 保存すめE          </button>
+            💾 保存する
+          </button>
         </form>
 
         <!-- Emoji Picker Modal -->
@@ -102,9 +98,9 @@ export default {
       row.className = 'destination-row';
       row.style.animation = 'slideUp 0.3s var(--ease-out)';
       row.innerHTML = `
-        <input type="text" class="dest-country" placeholder="国名（侁E タイ�E�E required />
-        <input type="text" class="dest-city" placeholder="都市名�E�侁E バンコク�E�E />
-        <button type="button" class="destination-remove btn-remove-dest">✁E/button>
+        <input type="text" class="dest-country" placeholder="国名（例: タイ）" required />
+        <input type="text" class="dest-city" placeholder="都市名（例: バンコク）" />
+        <button type="button" class="destination-remove btn-remove-dest">✕</button>
       `;
       destContainer.appendChild(row);
     });
@@ -124,8 +120,8 @@ export default {
       row.style.animation = 'slideUp 0.3s var(--ease-out)';
       row.innerHTML = `
         <button type="button" class="member-icon-selector btn-emoji-select">🐱</button>
-        <input type="text" class="member-name" placeholder="ニックネ�Eム" required />
-        <button type="button" class="destination-remove btn-remove-member">✁E/button>
+        <input type="text" class="member-name" placeholder="ニックネーム" required />
+        <button type="button" class="destination-remove btn-remove-member">✕</button>
       `;
       membersContainer.appendChild(row);
     });
@@ -194,7 +190,7 @@ export default {
 
         const target = isEdit && currentTrip
           ? trips.find(t => t.id === currentTrip.id) || trips[0]
-          : trips[0]; // getTrips は createdAt desc なので最新が�E頭
+          : trips[0]; // getTrips は createdAt desc なので最新が先頭
 
         setState({ currentTrip: target, currentTripId: target?.id });
         if (target) localStorage.setItem('currentTripId', target.id);
@@ -202,7 +198,7 @@ export default {
         navigate('/');
       } catch (err) {
         console.error('Error saving trip:', err);
-        saveBtn.textContent = '❁Eエラー。もぁE��度お試しください';
+        saveBtn.textContent = '❌ エラー。もう一度お試しください';
         saveBtn.disabled = false;
       }
     });
