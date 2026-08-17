@@ -135,11 +135,28 @@ async function renderChecklist() {
         </div>
       `;
       
-      itemEl.querySelector('.checkbox-custom').addEventListener('click', async (e) => {
-        const newState = !item.checked;
+      itemEl.querySelector('.checkbox-custom').addEventListener('click', (e) => {
+        // Optimistic update
+        item.checked = !item.checked;
+        const checkbox = e.currentTarget;
+        checkbox.innerHTML = item.checked ? '✓' : '';
+        if (item.checked) {
+          itemEl.classList.add('checked');
+        } else {
+          itemEl.classList.remove('checked');
+        }
+        updateProgressBar();
+
+        // Background update
         const store = getState();
-        await updateChecklistItem(store.currentTrip.id, item.id, { checked: newState });
-        await loadChecklist(); // reload or just update UI locally
+        updateChecklistItem(store.currentTrip.id, item.id, { checked: item.checked }).catch(err => {
+          console.error("Failed to update checklist item:", err);
+          // Revert on failure
+          item.checked = !item.checked;
+          checkbox.innerHTML = item.checked ? '✓' : '';
+          itemEl.classList.toggle('checked');
+          updateProgressBar();
+        });
       });
       
       itemEl.querySelector('.assignee-badge').addEventListener('click', (e) => {
@@ -182,12 +199,16 @@ async function renderChecklist() {
     container.appendChild(catSection);
   }
   
-  // Update progress
+  updateProgressBar();
+}
+
+function updateProgressBar() {
   const total = checklistItems.length;
+  const checkedCount = checklistItems.filter(item => item.checked).length;
   const progressText = document.getElementById('cl-progress-text');
   const progressFill = document.getElementById('cl-progress-fill');
   
-  if(total > 0) {
+  if(total > 0 && progressText && progressFill) {
     const percent = Math.round((checkedCount / total) * 100);
     progressFill.style.width = `${percent}%`;
     if(checkedCount === total) {
@@ -195,7 +216,7 @@ async function renderChecklist() {
       progressFill.style.backgroundColor = 'var(--color-mint)';
     } else {
       progressText.textContent = `${checkedCount}/${total} 準備中...`;
-      progressFill.style.backgroundColor = 'var(--color-pink-accent)';
+      progressFill.style.backgroundColor = 'var(--color-pink-deep)'; // Use existing token
     }
   }
 }
