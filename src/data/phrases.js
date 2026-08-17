@@ -474,6 +474,7 @@ export const POPULAR_COUNTRIES = [
   { code: 'PT', name: { ja: 'ポルトガル', en: 'Portugal', th: 'โปรตุเกส' }, flag: '🇵🇹' },
   { code: 'BR', name: { ja: 'ブラジル', en: 'Brazil', th: 'บราซิล' }, flag: '🇧🇷' },
   { code: 'MX', name: { ja: 'メキシコ', en: 'Mexico', th: 'เม็กซิโก' }, flag: '🇲🇽' },
+  { code: 'CH', name: { ja: 'スイス', en: 'Switzerland', th: 'สวิตเซอร์แลนด์' }, flag: '🇨🇭' },
   { code: 'JP', name: { ja: '日本', en: 'Japan', th: 'ญี่ปุ่น' }, flag: '🇯🇵' },
   { code: 'OTHER', name: { ja: 'その他 (自由入力)', en: 'Other', th: 'อื่นๆ' }, flag: '🏳️' }
 ];
