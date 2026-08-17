@@ -13,7 +13,7 @@ const categories = {
   sightseeing: { icon: '🏛️', label: t('catSightseeing') || '観光' },
   meal: { icon: '🍽️', label: t('catMeal') || '食事' },
   transport: { icon: '🚌', label: t('catTransport') || '移動' },
-  hotel: { icon: '🏨', label: t('catHotel') || 'ホテル' },
+  hotel: { icon: '🏨', label: t('catHotelSch') || 'ホテル' },
   shopping: { icon: '🛒', label: t('catShopping') || '買い物' },
   activity: { icon: '🎭', label: t('catActivity') || '体験' },
   other: { icon: '✨', label: t('catOther') || 'その他' }
@@ -49,9 +49,9 @@ export default {
             <span class="close-modal">&times;</span>
             <h3>${t('addScheduleModalTitle')}</h3>
             <form id="scheduleForm">
-              <div class="form-group mb-sm">
-                <label class="form-label" style="display:block; margin-bottom:4px; font-size:0.9rem; color:var(--text-muted);">${t('timeLabel') || '時間'}</label>
-                <input type="time" id="itemTime" class="form-input" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd;" required>
+              <div class="form-group mb-sm" style="position:relative;">
+                <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); pointer-events:none;">${t('timeLabel') || '時間'}</span>
+                <input type="time" id="itemTime" class="form-input" style="width:100%; padding:12px 12px 12px 60px; border-radius:8px; border:1px solid #ddd;" required>
               </div>
               <input type="text" id="itemTitle" class="form-input" placeholder="${t('itemTitlePlaceholder')}" required style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd; margin-bottom:12px;">
               <select id="itemCategory" class="form-input" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd; margin-bottom:12px;">

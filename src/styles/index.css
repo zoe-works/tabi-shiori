@@ -299,7 +299,7 @@ ul, ol {
   transform: translateX(-50%);
   width: 100%;
   max-width: var(--max-width);
-  height: var(--nav-height);
+  min-height: var(--nav-height); height: auto; padding-top: 8px;
   background: hsla(0, 0%, 100%, 0.92);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -307,7 +307,7 @@ ul, ol {
   align-items: center;
   justify-content: space-around;
   padding: 0 var(--space-xs);
-  padding-bottom: env(safe-area-inset-bottom, 0);
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0));
   z-index: 100;
   border-top: 1px solid hsla(30, 20%, 88%, 0.6);
 }
