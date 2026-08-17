@@ -1,6 +1,6 @@
 import { getState } from '../utils/store.js';
 import { navigate } from '../utils/router.js';
-import { getChecklist, addChecklistItem, updateChecklistItem, deleteChecklistItem } from '../utils/db.js';
+import { getChecklist, addChecklistItem, updateChecklistItem, deleteChecklistItem, getUserSettings } from '../utils/db.js';
 import { t } from '../utils/i18n.js';
 import { translateUserText } from '../utils/translate.js';
 
@@ -66,8 +66,16 @@ async function loadChecklist() {
   checklistItems = await getChecklist(trip.id);
   
   if (checklistItems.length === 0) {
+    let masterToUse = DEFAULT_ITEMS;
+    if (store.user) {
+      const settings = await getUserSettings(store.user.uid);
+      if (settings && settings.checklistMaster) {
+        masterToUse = settings.checklistMaster;
+      }
+    }
+
     // Generate default items
-    for (const cat of DEFAULT_ITEMS) {
+    for (const cat of masterToUse) {
       for (const itemName of cat.items) {
         const newItem = {
           name: itemName,

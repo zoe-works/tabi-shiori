@@ -130,6 +130,20 @@ export const addEmergencyContact = (tripId, data) => addSubcollectionItem(tripId
 export const updateEmergencyContact = (tripId, contactId, data) => updateSubcollectionItem(tripId, 'emergency', contactId, data);
 export const deleteEmergencyContact = (tripId, contactId) => deleteSubcollectionItem(tripId, 'emergency', contactId);
 
+// User Settings
+export async function getUserSettings(userId) {
+  if (!userId) return null;
+  const docRef = doc(db, 'users', userId, 'settings', 'master');
+  const snap = await getDoc(docRef);
+  return snap.exists() ? snap.data() : null;
+}
+
+export async function updateUserSettings(userId, data) {
+  if (!userId) return;
+  const docRef = doc(db, 'users', userId, 'settings', 'master');
+  await setDoc(docRef, data, { merge: true });
+}
+
 // omiyage
 export const getOmiyageList = (tripId) => getSubcollection(tripId, 'omiyage');
 export const addOmiyageItem = (tripId, data) => addSubcollectionItem(tripId, 'omiyage', data);

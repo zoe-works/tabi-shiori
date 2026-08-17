@@ -20,6 +20,7 @@ import budgetPage from './pages/budget.js';
 import emergencyPage from './pages/emergency.js';
 import omiyagePage from './pages/omiyage.js';
 import tripFormPage from './pages/tripForm.js';
+import settingsPage from './pages/settings.js';
 import { registerSW } from 'virtual:pwa-register';
 
 // Register routes
@@ -33,6 +34,7 @@ registerRoute('/emergency', emergencyPage);
 registerRoute('/omiyage', omiyagePage);
 registerRoute('/trip/new', tripFormPage);
 registerRoute('/trip/edit', tripFormPage);
+registerRoute('/settings', settingsPage);
 
 // App shell
 function renderAppShell() {
@@ -97,6 +99,7 @@ function renderAppShell() {
           <a class="drawer-item" data-route="/budget">${t('budgetTitle')}</a>
           <a class="drawer-item" data-route="/emergency">${t('emergencyTitle')}</a>
           <a class="drawer-item" data-route="/omiyage">${t('omiyageTitle')}</a>
+          <a class="drawer-item" data-route="/settings">⚙️ 設定</a>
           <hr class="drawer-divider" />
           <div class="drawer-trips" id="drawer-trips">
             <p class="drawer-section-title">${t('switchTrip')}</p>
