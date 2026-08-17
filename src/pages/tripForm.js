@@ -191,7 +191,7 @@ export default {
       try {
         // 安全装置: 10秒経っても画面遷移しない場合は強制的にトップへ戻る（オフライン時の待ちハング対策）
         const fallbackTimer = setTimeout(() => {
-          if (document.getElementById('btn-save')?.disabled) {
+          if (document.getElementById('btn-save-trip')?.disabled) {
             navigate('/');
           }
         }, 10000);
@@ -216,8 +216,8 @@ export default {
         navigate('/');
       } catch (err) {
         console.error('Error saving trip:', err);
-        saveBtn.textContent = '❌ エラー。もう一度お試しください';
-        saveBtn.disabled = false;
+        btn.textContent = '❌ エラー。もう一度お試しください';
+        btn.disabled = false;
       }
     });
   }

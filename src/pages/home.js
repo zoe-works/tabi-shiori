@@ -42,12 +42,18 @@ export default {
       countdownText = t('countdownAfter');
     }
 
+    const formatDate = (dateString) => {
+      if (!dateString) return '';
+      const d = new Date(dateString);
+      return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+    };
+
     return `
       <div class="page fade-in">
         <div class="home-cover" style="background-image: url('${currentTrip.coverImage || import.meta.env.BASE_URL + 'images/mascot.jpg'}')">
           <div class="home-cover-overlay"></div>
           <h1 class="home-trip-title">${currentTrip.title || t('untitledTrip')}</h1>
-          <p class="home-trip-dates">${this.formatDate(currentTrip.startDate)} 〜 ${this.formatDate(currentTrip.endDate)}</p>
+          <p class="home-trip-dates">${formatDate(currentTrip.startDate)} 〜 ${formatDate(currentTrip.endDate)}</p>
         </div>
 
         <div class="home-content">

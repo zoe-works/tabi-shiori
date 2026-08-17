@@ -55,23 +55,23 @@ function renderAppShell() {
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav" id="bottom-nav">
-      <a class="nav-item active" data-route="/" href="javascript:void(0)">
+      <a class="nav-item active" data-route="/" href="#/">
         <span class="nav-icon">🏠</span>
         <span class="nav-label">${t('home')}</span>
       </a>
-      <a class="nav-item" data-route="/flashcard" href="javascript:void(0)">
+      <a class="nav-item" data-route="/flashcard" href="#/flashcard">
         <span class="nav-icon">🗣️</span>
         <span class="nav-label">${t('flashcard')}</span>
       </a>
-      <a class="nav-item" data-route="/checklist" href="javascript:void(0)">
+      <a class="nav-item" data-route="/checklist" href="#/checklist">
         <span class="nav-icon">🎒</span>
         <span class="nav-label">${t('checklist')}</span>
       </a>
-      <a class="nav-item" data-route="/schedule" href="javascript:void(0)">
+      <a class="nav-item" data-route="/schedule" href="#/schedule">
         <span class="nav-icon">📅</span>
         <span class="nav-label">${t('schedule')}</span>
       </a>
-      <a class="nav-item" data-route="/research" href="javascript:void(0)">
+      <a class="nav-item" data-route="/research" href="#/research">
         <span class="nav-icon">🔍</span>
         <span class="nav-label">${t('research')}</span>
       </a>
