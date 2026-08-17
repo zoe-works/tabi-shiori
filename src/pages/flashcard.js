@@ -162,7 +162,7 @@ export default {
     };
 
     if (trip) {
-      getFlashcards(store.user.uid, trip.id).then(custom => {
+      getFlashcards(trip.id).then(custom => {
         state.customCards = custom;
         updateDeck();
       });
@@ -256,7 +256,7 @@ export default {
           category: state.activeCategory,
           lang: state.activeLang
         };
-        await addFlashcard(store.user.uid, trip.id, newCard);
+        await addFlashcard(trip.id, newCard);
         state.customCards.push(newCard);
         updateDeck();
         modal.classList.remove('active');

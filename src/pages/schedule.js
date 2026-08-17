@@ -171,7 +171,7 @@ export default {
         order: schedules.length
       };
       
-      await addScheduleItem(state.user.uid, trip.id, newItem);
+      await addScheduleItem(trip.id, newItem);
       scheduleModal.classList.remove('active');
       e.target.reset();
       this.loadSchedules(trip.id);
@@ -231,7 +231,8 @@ export default {
   },
 
   async loadSchedules(tripId) {
-    schedules = await getSchedules(tripId, currentDay);
+    const allSchedules = await getSchedules(tripId);
+    schedules = allSchedules.filter(s => s.day === currentDay);
     schedules.sort((a, b) => a.time.localeCompare(b.time));
     await this.renderTimeline();
   },

@@ -1,5 +1,11 @@
 import { db } from '../firebase.js';
 import { collection, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, query, where, orderBy, serverTimestamp, setDoc } from 'firebase/firestore';
+import { getState } from './store.js';
+
+export function getUserId() {
+  const state = getState();
+  return state.user?.uid;
+}
 
 export function generateShareId() {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -39,13 +45,13 @@ export async function createTrip(userId, tripData) {
 
     for (let i = 1; i <= days; i++) {
       if (i === 1) {
-        await addScheduleItem(userId, tripId, { day: 1, time: '08:00', title: '出発', category: 'transport', order: 0 });
-        await addScheduleItem(userId, tripId, { day: 1, time: '15:00', title: 'ホテル到着・チェックイン', category: 'hotel', order: 1 });
+        await addScheduleItem(tripId, { day: 1, time: '08:00', title: '出発', category: 'transport', order: 0 });
+        await addScheduleItem(tripId, { day: 1, time: '15:00', title: 'ホテル到着・チェックイン', category: 'hotel', order: 1 });
       } else if (i === days) {
-        await addScheduleItem(userId, tripId, { day: i, time: '10:00', title: 'ホテル出発・帰路へ', category: 'transport', order: 0 });
-        await addScheduleItem(userId, tripId, { day: i, time: '18:00', title: '自宅到着', category: 'other', order: 1 });
+        await addScheduleItem(tripId, { day: i, time: '10:00', title: 'ホテル出発・帰路へ', category: 'transport', order: 0 });
+        await addScheduleItem(tripId, { day: i, time: '18:00', title: '自宅到着', category: 'other', order: 1 });
       } else {
-        await addScheduleItem(userId, tripId, { day: i, time: '09:00', title: '観光スタート', category: 'sightseeing', order: 0 });
+        await addScheduleItem(tripId, { day: i, time: '09:00', title: '観光スタート', category: 'sightseeing', order: 0 });
       }
     }
   }
@@ -63,12 +69,14 @@ export async function deleteTrip(userId, tripId) {
 }
 
 // Subcollections CRUD Helper
-async function getSubcollection(userId, tripId, subName) {
+async function getSubcollection(tripId, subName) {
+  const userId = getUserId();
   const snapshot = await getDocs(collection(db, 'users', userId, 'trips', tripId, subName));
   return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 }
 
-async function addSubcollectionItem(userId, tripId, subName, data) {
+async function addSubcollectionItem(tripId, subName, data) {
+  const userId = getUserId();
   const docRef = await addDoc(collection(db, 'users', userId, 'trips', tripId, subName), {
     ...data,
     createdAt: serverTimestamp()
@@ -76,55 +84,57 @@ async function addSubcollectionItem(userId, tripId, subName, data) {
   return docRef.id;
 }
 
-async function updateSubcollectionItem(userId, tripId, subName, itemId, data) {
+async function updateSubcollectionItem(tripId, subName, itemId, data) {
+  const userId = getUserId();
   await updateDoc(doc(db, 'users', userId, 'trips', tripId, subName, itemId), data);
 }
 
-async function deleteSubcollectionItem(userId, tripId, subName, itemId) {
+async function deleteSubcollectionItem(tripId, subName, itemId) {
+  const userId = getUserId();
   await deleteDoc(doc(db, 'users', userId, 'trips', tripId, subName, itemId));
 }
 
 // flashcards
-export const getFlashcards = (userId, tripId) => getSubcollection(userId, tripId, 'flashcards');
-export const addFlashcard = (userId, tripId, data) => addSubcollectionItem(userId, tripId, 'flashcards', data);
-export const updateFlashcard = (userId, tripId, cardId, data) => updateSubcollectionItem(userId, tripId, 'flashcards', cardId, data);
-export const deleteFlashcard = (userId, tripId, cardId) => deleteSubcollectionItem(userId, tripId, 'flashcards', cardId);
+export const getFlashcards = (tripId) => getSubcollection(tripId, 'flashcards');
+export const addFlashcard = (tripId, data) => addSubcollectionItem(tripId, 'flashcards', data);
+export const updateFlashcard = (tripId, cardId, data) => updateSubcollectionItem(tripId, 'flashcards', cardId, data);
+export const deleteFlashcard = (tripId, cardId) => deleteSubcollectionItem(tripId, 'flashcards', cardId);
 
 // checklist
-export const getChecklist = (userId, tripId) => getSubcollection(userId, tripId, 'checklist');
-export const addChecklistItem = (userId, tripId, data) => addSubcollectionItem(userId, tripId, 'checklist', data);
-export const updateChecklistItem = (userId, tripId, itemId, data) => updateSubcollectionItem(userId, tripId, 'checklist', itemId, data);
-export const deleteChecklistItem = (userId, tripId, itemId) => deleteSubcollectionItem(userId, tripId, 'checklist', itemId);
+export const getChecklist = (tripId) => getSubcollection(tripId, 'checklist');
+export const addChecklistItem = (tripId, data) => addSubcollectionItem(tripId, 'checklist', data);
+export const updateChecklistItem = (tripId, itemId, data) => updateSubcollectionItem(tripId, 'checklist', itemId, data);
+export const deleteChecklistItem = (tripId, itemId) => deleteSubcollectionItem(tripId, 'checklist', itemId);
 
 // schedules
-export const getSchedules = (userId, tripId) => getSubcollection(userId, tripId, 'schedules');
-export const addScheduleItem = (userId, tripId, data) => addSubcollectionItem(userId, tripId, 'schedules', data);
-export const updateScheduleItem = (userId, tripId, itemId, data) => updateSubcollectionItem(userId, tripId, 'schedules', itemId, data);
-export const deleteScheduleItem = (userId, tripId, itemId) => deleteSubcollectionItem(userId, tripId, 'schedules', itemId);
+export const getSchedules = (tripId) => getSubcollection(tripId, 'schedules');
+export const addScheduleItem = (tripId, data) => addSubcollectionItem(tripId, 'schedules', data);
+export const updateScheduleItem = (tripId, itemId, data) => updateSubcollectionItem(tripId, 'schedules', itemId, data);
+export const deleteScheduleItem = (tripId, itemId) => deleteSubcollectionItem(tripId, 'schedules', itemId);
 
 // research
-export const getResearchNotes = (userId, tripId) => getSubcollection(userId, tripId, 'research');
-export const addResearchNote = (userId, tripId, data) => addSubcollectionItem(userId, tripId, 'research', data);
-export const updateResearchNote = (userId, tripId, noteId, data) => updateSubcollectionItem(userId, tripId, 'research', noteId, data);
-export const deleteResearchNote = (userId, tripId, noteId) => deleteSubcollectionItem(userId, tripId, 'research', noteId);
+export const getResearchNotes = (tripId) => getSubcollection(tripId, 'research');
+export const addResearchNote = (tripId, data) => addSubcollectionItem(tripId, 'research', data);
+export const updateResearchNote = (tripId, noteId, data) => updateSubcollectionItem(tripId, 'research', noteId, data);
+export const deleteResearchNote = (tripId, noteId) => deleteSubcollectionItem(tripId, 'research', noteId);
 
 // budget
-export const getBudgetItems = (userId, tripId) => getSubcollection(userId, tripId, 'budget');
-export const addBudgetItem = (userId, tripId, data) => addSubcollectionItem(userId, tripId, 'budget', data);
-export const updateBudgetItem = (userId, tripId, itemId, data) => updateSubcollectionItem(userId, tripId, 'budget', itemId, data);
-export const deleteBudgetItem = (userId, tripId, itemId) => deleteSubcollectionItem(userId, tripId, 'budget', itemId);
+export const getBudgetItems = (tripId) => getSubcollection(tripId, 'budget');
+export const addBudgetItem = (tripId, data) => addSubcollectionItem(tripId, 'budget', data);
+export const updateBudgetItem = (tripId, itemId, data) => updateSubcollectionItem(tripId, 'budget', itemId, data);
+export const deleteBudgetItem = (tripId, itemId) => deleteSubcollectionItem(tripId, 'budget', itemId);
 
 // emergency
-export const getEmergencyContacts = (userId, tripId) => getSubcollection(userId, tripId, 'emergency');
-export const addEmergencyContact = (userId, tripId, data) => addSubcollectionItem(userId, tripId, 'emergency', data);
-export const updateEmergencyContact = (userId, tripId, contactId, data) => updateSubcollectionItem(userId, tripId, 'emergency', contactId, data);
-export const deleteEmergencyContact = (userId, tripId, contactId) => deleteSubcollectionItem(userId, tripId, 'emergency', contactId);
+export const getEmergencyContacts = (tripId) => getSubcollection(tripId, 'emergency');
+export const addEmergencyContact = (tripId, data) => addSubcollectionItem(tripId, 'emergency', data);
+export const updateEmergencyContact = (tripId, contactId, data) => updateSubcollectionItem(tripId, 'emergency', contactId, data);
+export const deleteEmergencyContact = (tripId, contactId) => deleteSubcollectionItem(tripId, 'emergency', contactId);
 
 // omiyage
-export const getOmiyageList = (userId, tripId) => getSubcollection(userId, tripId, 'omiyage');
-export const addOmiyageItem = (userId, tripId, data) => addSubcollectionItem(userId, tripId, 'omiyage', data);
-export const updateOmiyageItem = (userId, tripId, itemId, data) => updateSubcollectionItem(userId, tripId, 'omiyage', itemId, data);
-export const deleteOmiyageItem = (userId, tripId, itemId) => deleteSubcollectionItem(userId, tripId, 'omiyage', itemId);
+export const getOmiyageList = (tripId) => getSubcollection(tripId, 'omiyage');
+export const addOmiyageItem = (tripId, data) => addSubcollectionItem(tripId, 'omiyage', data);
+export const updateOmiyageItem = (tripId, itemId, data) => updateSubcollectionItem(tripId, 'omiyage', itemId, data);
+export const deleteOmiyageItem = (tripId, itemId) => deleteSubcollectionItem(tripId, 'omiyage', itemId);
 
 // Share Access
 export async function getTripByShareId(shareId) {

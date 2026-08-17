@@ -4,61 +4,50 @@ import { getResearchNotes, addResearchNote, updateResearchNote, deleteResearchNo
 import { t } from '../utils/i18n.js';
 import { translateUserText } from '../utils/translate.js';
 
+let activeCountry = '';
 let notes = [];
-let currentFilter = 'all';
+
+const DEFAULT_QUESTIONS = [
+  "現地の人の性格は？",
+  "食文化は？",
+  "コンビニなどの便利なお店は？",
+  "移動手段はどう違う？",
+  "家やトイレはどんな感じ？",
+  "実際に行きたい場所3つ",
+  "食べたいもの3つ"
+];
 
 export default {
   render() {
     return `
       <div class="page research-page">
         <header class="page-header">
-          <h2>${t('researchTitle')}</h2>
+          <button class="back-btn" id="rs-back-btn">←</button>
+          <h2 class="page-title">${t('researchTitle')}</h2>
         </header>
 
-        <div class="filter-tabs">
-          <span class="chip" data-filter="souvenir">お土産</span>
-          <span class="chip" data-filter="experience">体験</span>
+        <div class="country-tabs" id="rs-country-tabs">
+          <!-- Dynamically populated country tabs -->
         </div>
 
-        <div class="research-grid" id="researchGrid">
-          <!-- スポットカード一覧がここに生成されます -->
+        <div class="research-list" id="rs-list">
+          <div class="loading">よみこみ中... 🧸</div>
         </div>
 
-        <button class="fab" id="addResearchBtn">+</button>
+        <button class="fab" id="rs-add-btn">➕</button>
 
-        <!-- スポット追加モーダル -->
-        <div class="modal" id="researchModal">
+        <!-- 質問追加・編集モーダル -->
+        <div class="modal-overlay" id="rs-modal">
           <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h3>スポットを追加</h3>
-            <form id="researchForm">
-              <input type="text" id="noteName" placeholder="場所名*" required>
-              <input type="text" id="noteAddress" placeholder="住所">
-              <input type="text" id="noteHours" placeholder="営業時間">
-              <input type="text" id="notePrice" placeholder="料金">
-              <textarea id="noteMemo" placeholder="メモ"></textarea>
-              <input type="url" id="noteUrl" placeholder="参考URL">
-              
-              <div class="priority-selector">
-                <label>お気に入り度:</label>
-                <select id="notePriority">
-                  <option value="3">❤️❤️❤️ 絶対行きたい</option>
-                  <option value="2">🧡🧡 時間があれば</option>
-                  <option value="1">🤍 候補</option>
-                </select>
+            <div class="modal-title" id="rs-modal-title">項目の追加</div>
+            <form id="rs-form">
+              <input type="hidden" id="rs-note-id">
+              <div class="form-group mt-md">
+                <label class="form-label">調べる項目（質問）</label>
+                <input type="text" id="rs-question" class="form-input" placeholder="例: おすすめのカフェは？" required>
               </div>
-              
-              <div class="tags-input">
-                <label>タグ:</label>
-                <select id="noteTags" multiple>
-                  <option value="sightseeing">観光</option>
-                  <option value="food">グルメ</option>
-                  <option value="souvenir">お土産</option>
-                  <option value="experience">体験</option>
-                </select>
-              </div>
-
-              <button type="submit" class="btn primary">追加する</button>
+              <button type="submit" class="btn btn-primary w-full mt-lg">保存する</button>
+              <button type="button" class="btn btn-secondary w-full mt-sm" id="rs-modal-close">キャンセル</button>
             </form>
           </div>
         </div>
@@ -67,120 +56,171 @@ export default {
   },
   
   async init() {
-    const state = getState();
-    const trip = state.currentTrip;
+    const store = getState();
+    const trip = store.currentTrip;
     
     if (!trip) {
-      alert('旅行が選択されていません。');
-      navigate('/');
+      document.getElementById('rs-list').innerHTML = '<p class="empty-state">旅行が選択されていません。</p>';
       return;
     }
 
-    // フィルターのイベントリスナー
-    document.querySelectorAll('.chip').forEach(chip => {
-      chip.addEventListener('click', async (e) => {
-        document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-        e.target.classList.add('active');
-        currentFilter = e.target.dataset.filter;
-        await this.renderNotes();
-      });
-    });
-
-    // モーダル処理
-    const modal = document.getElementById('researchModal');
+    const destinations = trip.destinations || [];
+    const countries = [...new Set(destinations.map(d => d.country).filter(Boolean))];
     
-    document.getElementById('addResearchBtn').addEventListener('click', () => {
-      modal.classList.add('show');
+    if (countries.length === 0) {
+      document.getElementById('rs-list').innerHTML = '<p class="empty-state">行き先が設定されていません。<br>旅行の編集から行き先を追加してください。</p>';
+      return;
+    }
+
+    activeCountry = countries[0];
+
+    const tabsContainer = document.getElementById('rs-country-tabs');
+    tabsContainer.innerHTML = countries.map(c => {
+      return `<button class="tab ${c === activeCountry ? 'active' : ''}" data-country="${c}">${c}</button>`;
+    }).join('');
+
+    tabsContainer.addEventListener('click', (e) => {
+      if (e.target.classList.contains('tab')) {
+        document.querySelectorAll('#rs-country-tabs .tab').forEach(t => t.classList.remove('active'));
+        e.target.classList.add('active');
+        activeCountry = e.target.dataset.country;
+        this.loadNotes(trip.id);
+      }
     });
 
-    modal.querySelector('.close-modal').addEventListener('click', () => {
-      modal.classList.remove('show');
+    // Add / Edit Modal
+    const modal = document.getElementById('rs-modal');
+    document.getElementById('rs-add-btn').addEventListener('click', () => {
+      document.getElementById('rs-modal-title').textContent = '項目の追加';
+      document.getElementById('rs-note-id').value = '';
+      document.getElementById('rs-question').value = '';
+      modal.classList.add('active');
     });
 
-    document.getElementById('researchForm').addEventListener('submit', async (e) => {
+    document.getElementById('rs-modal-close').addEventListener('click', () => {
+      modal.classList.remove('active');
+    });
+    
+    modal.addEventListener('click', (e) => {
+      if(e.target === modal) modal.classList.remove('active');
+    });
+
+    document.getElementById('rs-form').addEventListener('submit', async (e) => {
       e.preventDefault();
-      
-      const tagsSelect = document.getElementById('noteTags');
-      const selectedTags = Array.from(tagsSelect.selectedOptions).map(opt => opt.value);
+      const question = document.getElementById('rs-question').value.trim();
+      const noteId = document.getElementById('rs-note-id').value;
+      if (!question) return;
 
-      const newNote = {
-        tripId: trip.id,
-        name: document.getElementById('noteName').value,
-        address: document.getElementById('noteAddress').value,
-        hours: document.getElementById('noteHours').value,
-        price: document.getElementById('notePrice').value,
-        memo: document.getElementById('noteMemo').value,
-        url: document.getElementById('noteUrl').value,
-        priority: parseInt(document.getElementById('notePriority').value),
-        tags: selectedTags,
-        imageUrl: '' // To be implemented with storage if needed
-      };
+      if (noteId) {
+        await updateResearchNote(trip.id, noteId, { question });
+      } else {
+        await addResearchNote(trip.id, {
+          country: activeCountry,
+          question: question,
+          answer: '',
+          order: notes.length
+        });
+      }
       
-      await addResearchNote(newNote);
-      modal.classList.remove('show');
-      e.target.reset();
-      this.loadNotes(trip.id);
+      modal.classList.remove('active');
+      await this.loadNotes(trip.id);
     });
 
-    this.loadNotes(trip.id);
+    document.getElementById('rs-back-btn')?.addEventListener('click', () => navigate('/'));
+
+    await this.loadNotes(trip.id);
   },
 
   async loadNotes(tripId) {
-    notes = await getResearchNotes(tripId);
-    await this.renderNotes();
-  },
-
-  async renderNotes() {
-    const grid = document.getElementById('researchGrid');
+    const allNotes = await getResearchNotes(tripId);
     
-    let filtered = notes;
-    if (currentFilter !== 'all') {
-      filtered = notes.filter(n => n.tags && n.tags.includes(currentFilter));
+    notes = allNotes.filter(n => n.country === activeCountry);
+
+    // If first time visiting this country and no notes, generate defaults
+    if (notes.length === 0) {
+      for (let i = 0; i < DEFAULT_QUESTIONS.length; i++) {
+        await addResearchNote(tripId, {
+          country: activeCountry,
+          question: DEFAULT_QUESTIONS[i],
+          answer: '',
+          order: i
+        });
+      }
+      // Re-fetch
+      const updatedNotes = await getResearchNotes(tripId);
+      notes = updatedNotes.filter(n => n.country === activeCountry);
     }
 
-    // 優先度でソート
-    filtered.sort((a, b) => b.priority - a.priority);
+    notes.sort((a, b) => (a.order || 0) - (b.order || 0));
+    await this.renderNotes(tripId);
+  },
 
-    if (filtered.length === 0) {
-      grid.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-icon">🔍</div>
-          <p>行きたい場所を調べて追加しよう！</p>
-        </div>
-      `;
+  async renderNotes(tripId) {
+    const container = document.getElementById('rs-list');
+    
+    if (notes.length === 0) {
+      container.innerHTML = '<p class="empty-state">項目がありません。</p>';
       return;
     }
 
-    const notesPromises = filtered.map(async note => {
-      const priorityHearts = '❤️'.repeat(note.priority) + '🤍'.repeat(3 - note.priority);
-      const translatedName = await translateUserText(note.name) || note.name;
-      const translatedMemo = note.memo ? await translateUserText(note.memo) || note.memo : '';
+    const htmlPromises = notes.map(async (note) => {
+      const translatedQuestion = await translateUserText(note.question) || note.question;
+      const translatedAnswer = note.answer ? (await translateUserText(note.answer) || note.answer) : '';
+      
       return `
-        <div class="spot-card">
-          <div class="spot-header">
-            <h3>${translatedName}</h3>
-            <div class="spot-priority">${priorityHearts}</div>
-          </div>
-          <div class="spot-details">
-            ${note.address ? `<p>📍 ${note.address}</p>` : ''}
-            ${note.hours ? `<p>🕒 ${note.hours}</p>` : ''}
-            ${note.price ? `<p>💰 ${note.price}</p>` : ''}
-          </div>
-          ${translatedMemo ? `<div class="spot-memo">${translatedMemo}</div>` : ''}
-          ${note.tags && note.tags.length > 0 ? `
-            <div class="spot-tags">
-              ${note.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+        <div class="rs-card" data-id="${note.id}">
+          <div class="rs-card-header">
+            <h3 class="rs-question">${translatedQuestion}</h3>
+            <div class="rs-actions">
+              <button class="btn-icon rs-edit-q" data-id="${note.id}">✏️</button>
+              <button class="btn-icon rs-delete-q" data-id="${note.id}">✖</button>
             </div>
-          ` : ''}
-          ${note.url ? `<a href="${note.url}" target="_blank" class="spot-link">参考URLを開く 🔗</a>` : ''}
-          <div class="spot-actions">
-            <button class="btn small" data-id="${note.id}">スケジュールに追加</button>
+          </div>
+          <div class="rs-card-body">
+            <textarea class="rs-answer-input" data-id="${note.id}" placeholder="調べてわかったこと...">${note.answer || ''}</textarea>
+            ${translatedAnswer !== (note.answer || '') && translatedAnswer ? `<div class="rs-answer-translated">💡 翻訳: ${translatedAnswer}</div>` : ''}
           </div>
         </div>
       `;
     });
 
-    const notesHtml = await Promise.all(notesPromises);
-    grid.innerHTML = notesHtml.join('');
+    const htmlArray = await Promise.all(htmlPromises);
+    container.innerHTML = htmlArray.join('');
+
+    // Bind events for delete, edit question, and auto-save answer
+    container.querySelectorAll('.rs-edit-q').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = e.target.closest('.rs-edit-q').dataset.id;
+        const note = notes.find(n => n.id === id);
+        if (note) {
+          document.getElementById('rs-modal-title').textContent = '項目の編集';
+          document.getElementById('rs-note-id').value = note.id;
+          document.getElementById('rs-question').value = note.question;
+          document.getElementById('rs-modal').classList.add('active');
+        }
+      });
+    });
+
+    container.querySelectorAll('.rs-delete-q').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const id = e.target.closest('.rs-delete-q').dataset.id;
+        if (confirm('この項目を削除しますか？')) {
+          await deleteResearchNote(tripId, id);
+          await this.loadNotes(tripId);
+        }
+      });
+    });
+
+    let typingTimer;
+    container.querySelectorAll('.rs-answer-input').forEach(textarea => {
+      textarea.addEventListener('input', (e) => {
+        clearTimeout(typingTimer);
+        const id = e.target.dataset.id;
+        const answer = e.target.value;
+        typingTimer = setTimeout(async () => {
+          await updateResearchNote(tripId, id, { answer });
+        }, 1000);
+      });
+    });
   }
 };
