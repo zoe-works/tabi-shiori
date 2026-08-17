@@ -41,15 +41,20 @@ export default {
                                 <input type="text" id="budget-title" placeholder="${t('usagePlaceholder') || '例: ランチ代'}">
                             </div>
                             <div class="form-group">
-                                <label>${t('categoryLabel') || 'カテゴリ'}</label>
-                                <select id="budget-category">
-                                    ${Object.entries(CATEGORIES).map(([key, cat]) => `<option value="${key}">${cat.icon} ${cat.label}</option>`).join('')}
+                                <label>${t('currencyLabel') || '通貨'}</label>
+                                <select id="budget-currency">
+                                    <option value="¥">JPY (¥)</option>
+                                    <option value="$">USD ($)</option>
+                                    <option value="€">EUR (€)</option>
+                                    <option value="฿">THB (฿)</option>
+                                    <option value="₩">KRW (₩)</option>
+                                    <option value="NT$">TWD (NT$)</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>${t('paidByLabel') || '支払った人'}</label>
-                                <select id="budget-paid-by" required>
-                                    <option value="">${t('selectMemberLabel') || 'メンバーを選択'}</option>
+                                <label>${t('categoryLabel') || 'カテゴリ'}</label>
+                                <select id="budget-category">
+                                    ${Object.entries(CATEGORIES).map(([key, cat]) => `<option value="${key}">${cat.icon} ${cat.label}</option>`).join('')}
                                 </select>
                             </div>
                             <div class="modal-actions">
@@ -81,9 +86,6 @@ export default {
         }
 
         const members = state.currentTrip?.members || ['自分', '友人A', '友人B']; 
-        const paidBySelect = document.getElementById('budget-paid-by');
-        paidBySelect.innerHTML = members.map(m => `<option value="${m}">${m}</option>`).join('');
-
         let items = [];
 
         const renderContent = async () => {
@@ -98,37 +100,11 @@ export default {
 
             const totalAmount = items.reduce((sum, item) => sum + Number(item.amount), 0);
             
-            const paidByTotals = {};
-            members.forEach(m => paidByTotals[m] = 0);
-            items.forEach(item => {
-                if (paidByTotals[item.paidBy] !== undefined) {
-                    paidByTotals[item.paidBy] += Number(item.amount);
-                }
-            });
-            const average = totalAmount / members.length;
-            
             let html = `
                 <div class="budget-summary card mb-md">
                     <div class="text-center mb-sm">
                         <div class="text-sm text-muted">${t('totalExpense') || '合計支出'}</div>
                         <div class="text-xl font-bold">¥${totalAmount.toLocaleString()}</div>
-                    </div>
-                    <div class="warikan-summary mt-md pt-md" style="border-top: 1px solid var(--border-light)">
-                        <div class="text-sm font-bold mb-sm">${t('warikanStatus') || '割り勘 / 立て替え状況'}</div>
-                        ${Object.entries(paidByTotals).map(([m, paid]) => {
-                            const diff = paid - average;
-                            const statusColor = diff >= 0 ? 'var(--color-mint)' : 'var(--color-pink-deep)';
-                            const statusText = diff >= 0 ? `+¥${Math.round(diff).toLocaleString()}` : `-¥${Math.round(Math.abs(diff)).toLocaleString()}`;
-                            return `
-                                <div class="flex-between mb-xs text-sm">
-                                    <span>${m}</span>
-                                    <div class="text-right">
-                                        <div style="color: ${statusColor}; font-weight: bold;">${statusText}</div>
-                                        <div class="text-xs text-muted">(${t('youPaid') || 'あなたが払った'}: ¥${paid.toLocaleString()})</div>
-                                    </div>
-                                </div>
-                            `;
-                        }).join('')}
                     </div>
                 </div>
                 <div class="budget-list">
@@ -136,15 +112,14 @@ export default {
 
             for (const item of items) {
                 const translatedTitle = await translateUserText(item.title) || '無題';
-                const translatedPaidBy = await translateUserText(item.paidBy) || item.paidBy;
+                const cur = item.currency || '¥';
                 html += `
                     <div class="budget-item card" data-id="${item.id}">
                         <div class="budget-icon">${CATEGORIES[item.category]?.icon || '📦'}</div>
                         <div class="budget-details">
                             <div class="budget-title">${translatedTitle}</div>
-                            <div class="budget-meta">${translatedPaidBy} が支払い</div>
                         </div>
-                        <div class="budget-amount">¥${Number(item.amount).toLocaleString()}</div>
+                        <div class="budget-amount">${cur}${Number(item.amount).toLocaleString()}</div>
                         <div class="item-actions">
                             <button class="btn-icon small btn-delete-budget" data-id="${item.id}">🗑️</button>
                         </div>
@@ -193,6 +168,13 @@ export default {
             form.reset();
         });
 
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+                form.reset();
+            }
+        });
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const newItem = {
@@ -200,9 +182,8 @@ export default {
                 amount: Number(document.getElementById('budget-amount').value),
                 title: document.getElementById('budget-title').value,
                 category: document.getElementById('budget-category').value,
-                paidBy: document.getElementById('budget-paid-by').value,
-                date: new Date().toISOString(),
-                currency: 'JPY'
+                currency: document.getElementById('budget-currency').value,
+                date: new Date().toISOString()
             };
 
             await addBudgetItem(newItem);

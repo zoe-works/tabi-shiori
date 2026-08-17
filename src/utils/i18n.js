@@ -145,6 +145,7 @@ export const translations = {
     // 追加
     preparing: '準備中...',
     noTripSelected: '旅行が選択されていません。',
+    currencyLabel: '通貨',
     catFood: '食費',
     catTransport: '交通費',
     catShopping: '買い物',
@@ -291,6 +292,7 @@ export const translations = {
     playAudio: '🔊 Play',
     preparing: 'Preparing...',
     noTripSelected: 'No trip selected.',
+    currencyLabel: 'Currency',
     catFood: 'Food',
     catTransport: 'Transport',
     catShopping: 'Shopping',
@@ -448,6 +450,7 @@ export const translations = {
     checklistMasterTitle: 'ตั้งค่ารายการของเริ่มต้น',
     preparing: 'กำลังเตรียม...',
     noTripSelected: 'ไม่ได้เลือกทริป',
+    currencyLabel: 'สกุลเงิน',
     catFood: 'ค่าอาหาร',
     catTransport: 'ค่าเดินทาง',
     catShopping: 'ช้อปปิ้ง',
