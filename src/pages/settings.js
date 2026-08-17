@@ -1,6 +1,7 @@
 import { getState } from '../utils/store.js';
 import { getUserSettings, updateUserSettings } from '../utils/db.js';
 import { t } from '../utils/i18n.js';
+import { navigate } from '../utils/router.js';
 
 const DEFAULT_MASTER = [
   { category: 'documents', label: '📄 書類', items: ['パスポート', '航空券(予約確認書)', 'ホテル予約確認書', '海外旅行保険証', 'クレジットカード'] },

@@ -6,10 +6,10 @@ export const translations = {
     appTitle: '旅のしおり',
     menu: 'メニュー',
     home: 'ホーム',
-    flashcard: '🗣️ 単語帳',
-    checklist: '🎒 持ち物',
-    schedule: '📅 スケジュール',
-    research: '🔍 リサーチノート',
+    flashcard: '単語帳',
+    checklist: '持ち物',
+    schedule: 'スケジュール',
+    research: 'リサーチノート',
     budget: '費用メモ',
     emergency: '緊急連絡先',
     omiyage: 'お土産リスト',
@@ -81,7 +81,7 @@ export const translations = {
     selectTripFirst: '旅行が選択されていません。',
 
     // 持ち物チェック
-    checklistTitle: '🎒 持ち物チェック',
+    checklistTitle: '持ち物チェック',
     tabPersonal: '👤 個人',
     tabShared: '👥 共有',
     addItemPlaceholder: '新しい持ち物を追加...',
@@ -96,17 +96,26 @@ export const translations = {
     activity: '体験',
 
     // 費用メモ
-    budgetTitle: '費用メモ 💰',
+    budgetTitle: '費用メモ',
 
     // 緊急連絡先
-    emergencyTitle: '緊急連絡先 📞',
+    emergencyTitle: '緊急連絡先',
 
     // お土産リスト
-    omiyageTitle: 'お土産リスト 🎁',
+    omiyageTitle: 'お土産リスト',
     
     // 単語カード
-    flashcardTitle: '🗣️ 単語帳',
+    flashcardTitle: '単語帳',
     playAudio: '🔊 読み上げ',
+
+    settings: '設定',
+    checklistMasterTitle: '持ち物チェック 初期マスタ設定',
+    checklistMasterDesc: '新しい旅行を作成した際に、ここで設定した持ち物が自動的に登録されます。',
+    loginRequiredForSettings: '設定を変更するにはログインが必要です。',
+    newlineSeparated: '改行区切りでアイテムを入力してください。',
+    saveBtn: '保存する',
+    savedExclamation: '保存しました！',
+    saveFailed: '保存に失敗しました: ',
 
     // 追加
     preparing: '準備中...',
@@ -116,10 +125,10 @@ export const translations = {
     appTitle: 'Trip Itinerary',
     menu: 'Menu',
     home: 'Home',
-    flashcard: '🗣️ Flashcards',
-    checklist: '🎒 Checklist',
-    schedule: '📅 Schedule',
-    research: '🔍 Research',
+    flashcard: 'Flashcards',
+    checklist: 'Checklist',
+    schedule: 'Schedule',
+    research: 'Research',
     budget: 'Budget',
     emergency: 'Emergency',
     omiyage: 'Souvenirs',
@@ -187,7 +196,7 @@ export const translations = {
     btnAddJournal: 'Add Journal',
     selectTripFirst: 'No trip selected.',
 
-    checklistTitle: '🎒 Checklist',
+    checklistTitle: 'Checklist',
     tabPersonal: '👤 Personal',
     tabShared: '👥 Shared',
     addItemPlaceholder: 'Add new item...',
@@ -200,10 +209,10 @@ export const translations = {
     shopping: 'Shopping',
     activity: 'Activity',
 
-    budgetTitle: 'Budget 💰',
-    emergencyTitle: 'Emergency 📞',
-    omiyageTitle: 'Souvenirs 🎁',
-    flashcardTitle: '🗣️ Flashcards',
+    budgetTitle: 'Budget',
+    emergencyTitle: 'Emergency',
+    omiyageTitle: 'Souvenirs',
+    flashcardTitle: 'Flashcards',
     playAudio: '🔊 Play',
     preparing: 'Preparing...',
     noTripSelected: 'No trip selected.'
@@ -212,10 +221,10 @@ export const translations = {
     appTitle: 'แผนการเดินทาง',
     menu: 'เมนู',
     home: 'หน้าแรก',
-    flashcard: '🗣️ บัตรคำศัพท์',
-    checklist: '🎒 รายการของ',
-    schedule: '📅 กำหนดการ',
-    research: '🔍 ข้อมูลท่องเที่ยว',
+    flashcard: 'บัตรคำศัพท์',
+    checklist: 'รายการของ',
+    schedule: 'กำหนดการ',
+    research: 'ข้อมูลท่องเที่ยว',
     budget: 'งบประมาณ',
     emergency: 'ฉุกเฉิน',
     omiyage: 'ของฝาก',
@@ -283,7 +292,7 @@ export const translations = {
     btnAddJournal: 'เพิ่มบันทึก',
     selectTripFirst: 'โปรดเลือกทริปก่อน',
 
-    checklistTitle: '🎒 รายการของ',
+    checklistTitle: 'รายการของ',
     tabPersonal: '👤 ส่วนตัว',
     tabShared: '👥 แชร์',
     addItemPlaceholder: 'เพิ่มของใหม่...',
@@ -296,11 +305,20 @@ export const translations = {
     shopping: 'ช้อปปิ้ง',
     activity: 'กิจกรรม',
 
-    budgetTitle: 'งบประมาณ 💰',
-    emergencyTitle: 'ติดต่อฉุกเฉิน 📞',
-    omiyageTitle: 'ของฝาก 🎁',
-    flashcardTitle: '🗣️ บัตรคำศัพท์',
+    budgetTitle: 'งบประมาณ',
+    emergencyTitle: 'ติดต่อฉุกเฉิน',
+    omiyageTitle: 'ของฝาก',
+    flashcardTitle: 'บัตรคำศัพท์',
     playAudio: '🔊 เล่นเสียง',
+    settings: 'การตั้งค่า',
+    checklistMasterTitle: 'ตั้งค่ารายการของเริ่มต้น',
+    checklistMasterDesc: 'เมื่อสร้างทริปใหม่ สิ่งของเหล่านี้จะถูกเพิ่มเข้าไปในรายการของของคุณโดยอัตโนมัติ',
+    loginRequiredForSettings: 'คุณต้องเข้าสู่ระบบเพื่อเปลี่ยนการตั้งค่า',
+    newlineSeparated: 'ป้อนรายการโดยแยกด้วยการขึ้นบรรทัดใหม่',
+    saveBtn: 'บันทึก',
+    savedExclamation: 'บันทึกแล้ว!',
+    saveFailed: 'บันทึกไม่สำเร็จ: ',
+
     preparing: 'กำลังเตรียม...',
     noTripSelected: 'ไม่ได้เลือกทริป'
   }

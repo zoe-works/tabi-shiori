@@ -91,15 +91,15 @@ function renderAppShell() {
           <a class="drawer-item" id="btn-drawer-portal">🐻 TOPページ（旅行一覧）</a>
           <hr class="drawer-divider" />
           <a class="drawer-item" data-route="/">🏠 ${t('home')} (ダッシュボード)</a>
-          <a class="drawer-item" data-route="/flashcard">${t('flashcardTitle')}</a>
-          <a class="drawer-item" data-route="/checklist">${t('checklistTitle')}</a>
+          <a class="drawer-item" data-route="/flashcard">🗣️ ${t('flashcardTitle')}</a>
+          <a class="drawer-item" data-route="/checklist">🎒 ${t('checklistTitle')}</a>
           <a class="drawer-item" data-route="/schedule">📅 ${t('scheduleTitle')}</a>
           <a class="drawer-item" data-route="/research">🔍 ${t('researchTitle')}</a>
           <hr class="drawer-divider" />
-          <a class="drawer-item" data-route="/budget">${t('budgetTitle')}</a>
-          <a class="drawer-item" data-route="/emergency">${t('emergencyTitle')}</a>
-          <a class="drawer-item" data-route="/omiyage">${t('omiyageTitle')}</a>
-          <a class="drawer-item" data-route="/settings">⚙️ 設定</a>
+          <a class="drawer-item" data-route="/budget">💰 ${t('budgetTitle')}</a>
+          <a class="drawer-item" data-route="/emergency">📞 ${t('emergencyTitle')}</a>
+          <a class="drawer-item" data-route="/omiyage">🎁 ${t('omiyageTitle')}</a>
+          <a class="drawer-item" data-route="/settings">⚙️ ${t('settings') || '設定'}</a>
           <hr class="drawer-divider" />
           <div class="drawer-trips" id="drawer-trips">
             <p class="drawer-section-title">${t('switchTrip')}</p>

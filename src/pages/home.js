@@ -1,7 +1,7 @@
 import { getState } from '../utils/store.js';
 import { navigate } from '../utils/router.js';
 import { loginWithGoogle, linkGoogleAccount } from '../firebase.js';
-import { t } from '../utils/i18n.js';
+import { t, getLang } from '../utils/i18n.js';
 import { translateUserText } from '../utils/translate.js';
 
 export default {
@@ -70,6 +70,12 @@ export default {
     const formatDate = (dateString) => {
       if (!dateString) return '';
       const d = new Date(dateString);
+      const lang = getLang();
+      if (lang === 'en') {
+        return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+      } else if (lang === 'th') {
+        return d.toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' });
+      }
       return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
     };
 

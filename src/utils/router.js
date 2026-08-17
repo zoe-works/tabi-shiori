@@ -2,6 +2,9 @@
 const routes = {};
 let currentPath = '';
 
+// Add i18n import
+import { t } from './i18n.js';
+
 export function registerRoute(path, pageModule) {
   routes[path] = pageModule;
 }
@@ -58,24 +61,31 @@ function updateNav(path) {
   });
 
   // Update header title
-  const titles = {
-    '/': '旅のしおり',
-    '/flashcard': '単語カード',
-    '/checklist': '持ち物チェック',
-    '/schedule': 'スケジュール',
-    '/research': 'リサーチノート',
-    '/budget': '費用メモ',
-    '/emergency': '緊急連絡先',
-    '/omiyage': 'お土産リスト',
-    '/settings': '設定',
-    '/trip/new': '新しい旅行',
-    '/trip/edit': '旅行を編集',
-    '/share': '共有しおり'
+  const titleKeys = {
+    '/': 'appTitle',
+    '/flashcard': 'flashcardTitle',
+    '/checklist': 'checklistTitle',
+    '/schedule': 'scheduleTitle',
+    '/research': 'researchTitle',
+    '/budget': 'budgetTitle',
+    '/emergency': 'emergencyTitle',
+    '/omiyage': 'omiyageTitle',
+    '/settings': 'menu', // No explicit settings key exists, but this is fine or use a direct fallback
+    '/trip/new': 'tripFormNewTitle',
+    '/trip/edit': 'tripFormEditTitle',
+    '/share': 'share'
   };
 
   const headerTitle = document.querySelector('.header-title-text');
   if (headerTitle) {
-    headerTitle.textContent = titles[path] || '旅のしおり';
+    const key = titleKeys[path];
+    if (key) {
+      let localizedTitle = t(key);
+      if (path === '/settings') localizedTitle = '設定'; // Fallback just in case
+      headerTitle.textContent = localizedTitle;
+    } else {
+      headerTitle.textContent = t('appTitle');
+    }
   }
 }
 
