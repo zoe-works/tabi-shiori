@@ -39,29 +39,6 @@
   transform: scale(1.05);
 }
 
-.user-lang-selector {
-  display: flex;
-  gap: var(--space-xs);
-  justify-content: center;
-  margin-bottom: var(--space-md);
-}
-
-.user-lang-btn {
-  padding: 6px 14px;
-  border-radius: var(--radius-full);
-  font-size: 0.75rem;
-  font-weight: var(--fw-medium);
-  background: var(--color-surface);
-  color: var(--color-text-light);
-  box-shadow: var(--shadow-card);
-  transition: all var(--transition-fast);
-  cursor: pointer;
-}
-
-.user-lang-btn.active {
-  background: var(--color-blue);
-  color: var(--color-text);
-}
 
 .flashcard-scene {
   width: 100%;

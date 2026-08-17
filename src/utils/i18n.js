@@ -311,3 +311,8 @@ export function t(key) {
   const lang = state.language || 'ja';
   return translations[lang]?.[key] || key;
 }
+
+export function getLang() {
+  const state = getState();
+  return state.language || 'ja';
+}

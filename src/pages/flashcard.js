@@ -2,10 +2,10 @@ import { getState } from '../utils/store.js';
 import { navigate } from '../utils/router.js';
 import { getFlashcards, addFlashcard } from '../utils/db.js';
 import { PHRASES, CATEGORIES, COUNTRY_TO_LANGUAGE, COUNTRY_FLAGS } from '../data/phrases.js';
+import { t, getLang } from '../utils/i18n.js';
 
 let state = {
   activeLang: 'en',
-  activeUserLang: 'jp',
   activeCategory: 'greeting',
   currentCardIndex: 0,
   flashcards: [],
@@ -15,21 +15,14 @@ let state = {
 export default {
   render() {
     return `
-      <div class="page">
+      <div class="page flashcard-page">
         <header class="page-header">
-          <button class="btn-icon" id="btn-back">◀</button>
-          <h1 class="page-title">🗣️ トラベル単語帳</h1>
-          <div style="width: 44px"></div>
+          <button class="btn-back" id="btn-back">←</button>
+          <h2 class="page-title">🗣️ ${t('flashcardTitle') || 'トラベル単語帳'}</h2>
         </header>
 
         <div class="flashcard-language-selector" id="fc-target-langs">
           <!-- Dynamically populated flag buttons -->
-        </div>
-
-        <div class="user-lang-selector">
-          <button class="user-lang-btn active" data-lang="jp">日本語</button>
-          <button class="user-lang-btn" data-lang="th">タイ語</button>
-          <button class="user-lang-btn" data-lang="en">English</button>
         </div>
 
         <div class="tabs" id="fc-categories" style="margin-bottom: var(--space-lg); overflow-x: auto; white-space: nowrap;">
@@ -41,12 +34,12 @@ export default {
             <div class="flashcard" id="fc-card">
               <div class="flashcard-face flashcard-front">
                 <h3 id="fc-front-text" class="flashcard-phrase"></h3>
-                <p id="fc-front-reading" class="flashcard-reading"></p>
-                <div class="swipe-hint">タップで裏返す</div>
+                <div class="swipe-hint">タップで裏返す 👆</div>
               </div>
               <div class="flashcard-face flashcard-back">
                 <h3 id="fc-back-text" class="flashcard-translation"></h3>
-                <div class="swipe-hint">タップで戻る</div>
+                <p id="fc-back-reading" class="flashcard-reading"></p>
+                <div class="swipe-hint">タップで戻る 🔙</div>
               </div>
             </div>
           </div>
@@ -61,27 +54,25 @@ export default {
           </div>
         </div>
 
-        <button class="fab" id="fc-add-btn">
-          <span class="fab-icon">➕</span>
-        </button>
+        <button class="fab" id="fc-add-btn">➕</button>
 
         <div id="fc-modal" class="modal-overlay">
           <div class="modal-content">
-            <div class="modal-handle"></div>
             <div class="modal-title">新しいフレーズを追加</div>
             <div class="form-group mt-md">
-              <label class="form-label">フレーズ（現地語）</label>
-              <input type="text" id="fc-new-phrase" placeholder="例: 안녕하세요">
+              <label class="form-label">調べたい言葉（あなたの言語）</label>
+              <input type="text" id="fc-new-front" placeholder="例: こんにちは" class="form-input">
             </div>
             <div class="form-group">
-              <label class="form-label">読み方（カタカナ）</label>
-              <input type="text" id="fc-new-reading" placeholder="例: アンニョンハセヨ">
+              <label class="form-label">現地での言い方</label>
+              <input type="text" id="fc-new-back" placeholder="例: Hello" class="form-input">
             </div>
             <div class="form-group">
-              <label class="form-label">翻訳（母国語）</label>
-              <input type="text" id="fc-new-translation" placeholder="例: こんにちは">
+              <label class="form-label">読み方メモ</label>
+              <input type="text" id="fc-new-reading" placeholder="例: ハロー" class="form-input">
             </div>
             <button id="fc-modal-save" class="btn btn-primary w-full mt-lg">保存する</button>
+            <button type="button" class="btn btn-secondary w-full mt-sm" id="fc-modal-close">キャンセル</button>
           </div>
         </div>
       </div>
@@ -91,25 +82,29 @@ export default {
   init() {
     const store = getState();
     const trip = store.currentTrip;
+    const userLang = getLang(); // 'ja', 'en', 'th'
     
-    // Determine languages based on trip destinations
-    let langs = ['en'];
+    // PHRASES key logic: 'ja' is mapped to 'jp' in the phrases.js data model
+    const userLangKey = userLang === 'ja' ? 'jp' : userLang;
+
+    // Determine target languages based on trip destinations
+    let targetLangs = ['en'];
     if (trip && trip.destinations) {
-      const tripLangs = trip.destinations.map(d => COUNTRY_TO_LANGUAGE[d.country] || COUNTRY_TO_LANGUAGE['US']).filter(Boolean);
-      if (tripLangs.length > 0) langs = [...new Set(tripLangs)];
+      const tripLangs = trip.destinations.map(d => COUNTRY_TO_LANGUAGE[d.country] || '').filter(Boolean);
+      if (tripLangs.length > 0) targetLangs = [...new Set(tripLangs)];
     }
-    state.activeLang = langs[0] || 'en';
+    state.activeLang = targetLangs[0] || 'en';
     
     // Target Langs
     const targetLangsContainer = document.getElementById('fc-target-langs');
-    if (langs.length > 1) {
-      targetLangsContainer.innerHTML = langs.map(lang => 
+    if (targetLangs.length > 1) {
+      targetLangsContainer.innerHTML = targetLangs.map(lang => 
         `<button class="flag-btn ${lang === state.activeLang ? 'active' : ''}" data-lang="${lang}">
           ${COUNTRY_FLAGS[lang.toUpperCase()] || '🏳️'}
         </button>`
       ).join('');
-    } else {
-      targetLangsContainer.style.display = 'none';
+    } else if (targetLangs.length === 1) {
+       targetLangsContainer.innerHTML = `<div class="flag-btn active" style="pointer-events: none;">${COUNTRY_FLAGS[targetLangs[0].toUpperCase()] || '🏳️'}</div>`;
     }
 
     // Categories
@@ -138,25 +133,34 @@ export default {
     const updateCardUI = () => {
       const card = state.flashcards[state.currentCardIndex];
       const fcCard = document.getElementById('fc-card');
+      
       if (!card) {
         document.getElementById('fc-front-text').textContent = 'カードがありません';
-        document.getElementById('fc-front-reading').textContent = '';
-        document.getElementById('fc-back-text').textContent = '右下の＋から追加！';
+        document.getElementById('fc-back-text').textContent = '右下の➕から追加！';
+        document.getElementById('fc-back-reading').textContent = '';
         document.getElementById('fc-counter').textContent = '0 / 0';
         fcCard.classList.remove('flipped');
         return;
       }
       
-      document.getElementById('fc-front-text').textContent = card.phrase || '';
-      document.getElementById('fc-front-reading').textContent = card.reading || '';
-      // custom translations format vs predefined
-      document.getElementById('fc-back-text').textContent = card[state.activeUserLang] || (card.translations && card.translations[state.activeUserLang]) || card.jp || '';
+      // Determine what to show on the front (user's native language)
+      // card[userLangKey] gives the predefined translation (e.g., card['jp'] = 'こんにちは')
+      // Custom cards have userFront and targetBack.
+      const frontText = card.userFront || card[userLangKey] || card.en || card.phrase;
+      
+      // Determine what to show on the back (target destination language)
+      const backText = card.targetBack || card.phrase || '';
+      const backReading = card.reading || '';
+      
+      document.getElementById('fc-front-text').textContent = frontText;
+      document.getElementById('fc-back-text').textContent = backText;
+      document.getElementById('fc-back-reading').textContent = backReading;
       
       document.getElementById('fc-counter').textContent = `${state.currentCardIndex + 1} / ${state.flashcards.length}`;
       fcCard.classList.remove('flipped');
       
       const favs = JSON.parse(localStorage.getItem('tabi_shiori_fav_cards') || '[]');
-      const isFav = favs.includes(card.id || card.phrase);
+      const isFav = favs.includes(card.id || frontText);
       document.getElementById('fc-fav-btn').textContent = isFav ? '🌟' : '⭐';
       document.getElementById('fc-fav-btn').classList.toggle('active', isFav);
     };
@@ -193,28 +197,21 @@ export default {
       }
     });
     
-    document.querySelectorAll('.user-lang-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        document.querySelectorAll('.user-lang-btn').forEach(b => b.classList.remove('active'));
-        e.target.classList.add('active');
-        state.activeUserLang = e.target.dataset.lang;
-        updateCardUI();
-      });
-    });
-    
     document.querySelectorAll('.flag-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        document.querySelectorAll('.flag-btn').forEach(b => b.classList.remove('active'));
         const target = e.target.closest('.flag-btn');
-        target.classList.add('active');
-        state.activeLang = target.dataset.lang;
-        updateDeck();
+        if (!target.classList.contains('active')) {
+          document.querySelectorAll('.flag-btn').forEach(b => b.classList.remove('active'));
+          target.classList.add('active');
+          state.activeLang = target.dataset.lang;
+          updateDeck();
+        }
       });
     });
     
     document.getElementById('fc-categories')?.addEventListener('click', (e) => {
       const tab = e.target.closest('.tab');
-      if (tab) {
+      if (tab && !tab.classList.contains('active')) {
         document.querySelectorAll('#fc-categories .tab').forEach(b => b.classList.remove('active'));
         tab.classList.add('active');
         state.activeCategory = tab.dataset.cat;
@@ -226,7 +223,8 @@ export default {
       e.stopPropagation();
       const card = state.flashcards[state.currentCardIndex];
       if(!card) return;
-      const key = card.id || card.phrase;
+      const frontText = card.userFront || card[userLangKey] || card.phrase;
+      const key = card.id || frontText;
       let favs = JSON.parse(localStorage.getItem('tabi_shiori_fav_cards') || '[]');
       if(favs.includes(key)) {
         favs = favs.filter(k => k !== key);
@@ -238,21 +236,31 @@ export default {
     });
 
     const modal = document.getElementById('fc-modal');
-    document.getElementById('fc-add-btn')?.addEventListener('click', () => modal.classList.add('active'));
+    document.getElementById('fc-add-btn')?.addEventListener('click', () => {
+      document.getElementById('fc-new-front').value = '';
+      document.getElementById('fc-new-back').value = '';
+      document.getElementById('fc-new-reading').value = '';
+      modal.classList.add('active');
+    });
+
+    document.getElementById('fc-modal-close')?.addEventListener('click', () => {
+      modal.classList.remove('active');
+    });
+
     modal?.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('active'); });
     
     document.getElementById('fc-modal-save')?.addEventListener('click', async () => {
-      const phrase = document.getElementById('fc-new-phrase').value;
-      const reading = document.getElementById('fc-new-reading').value;
-      const translation = document.getElementById('fc-new-translation').value;
+      const front = document.getElementById('fc-new-front').value.trim();
+      const back = document.getElementById('fc-new-back').value.trim();
+      const reading = document.getElementById('fc-new-reading').value.trim();
       
-      if(!phrase || !translation) return;
+      if(!front || !back) return;
       
       if(trip && store.user) {
         const newCard = {
-          phrase,
-          reading,
-          translations: { [state.activeUserLang]: translation },
+          userFront: front,
+          targetBack: back,
+          reading: reading,
           category: state.activeCategory,
           lang: state.activeLang
         };
@@ -260,9 +268,6 @@ export default {
         state.customCards.push(newCard);
         updateDeck();
         modal.classList.remove('active');
-        document.getElementById('fc-new-phrase').value = '';
-        document.getElementById('fc-new-reading').value = '';
-        document.getElementById('fc-new-translation').value = '';
       }
     });
   }
