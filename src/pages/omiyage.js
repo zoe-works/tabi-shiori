@@ -5,7 +5,7 @@ import { getOmiyageList, addOmiyageItem, updateOmiyageItem, deleteOmiyageItem } 
 export default {
     render() {
         return `
-            <div class="page-omiyage">
+            <div class="page page-omiyage">
                 <header class="header">
                     <h2>お土産リスト 🎁</h2>
                 </header>

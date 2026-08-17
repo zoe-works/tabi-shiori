@@ -12,9 +12,9 @@ const CATEGORIES = {
 export default {
     render() {
         return `
-            <div class="page-emergency">
+            <div class="page page-emergency">
                 <header class="header">
-                    <h2>緊急・連絡先 📞</h2>
+                    <h2>緊急連絡先 📞</h2>
                 </header>
                 <main class="content" id="emergency-main">
                     <div class="loading">よみこみ中... 🧸</div>

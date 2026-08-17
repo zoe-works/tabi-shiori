@@ -8,7 +8,7 @@ let currentFilter = 'all';
 export default {
   render() {
     return `
-      <div class="page-container research-page">
+      <div class="page research-page">
         <header class="page-header">
           <h2>リサーチノート</h2>
         </header>

@@ -14,9 +14,9 @@ const CATEGORIES = {
 export default {
     render() {
         return `
-            <div class="page-budget">
+            <div class="page page-budget">
                 <header class="header">
-                    <h2>費用メモ・割り勘 💸</h2>
+                    <h2>費用メモ 💰</h2>
                 </header>
                 <main class="content" id="budget-main">
                     <div class="loading">よみこみ中... 🧸</div>
