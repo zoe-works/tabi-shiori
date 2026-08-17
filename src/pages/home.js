@@ -94,7 +94,7 @@ export default {
       const name = await translateUserText(m.name) || '';
       return `
         <div class="member-avatar" title="${name}">
-          <span class="member-emoji">${m.icon || '😊'}</span>
+          <span class="member-icon">${m.icon || '😊'}</span>
           <span class="member-name">${name}</span>
         </div>
       `;
@@ -120,7 +120,7 @@ export default {
 
           <div class="members-section">
             <h3>${t('members')}</h3>
-            <div class="members-list">
+            <div class="members-row">
               ${memberHtml.join('')}
             </div>
           </div>
