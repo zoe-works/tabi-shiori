@@ -1,13 +1,12 @@
-// SPA Router
+// SPA Hash Router
 const routes = {};
 let currentPath = '';
-let beforeNavigateHook = null;
 
 export function registerRoute(path, pageModule) {
   routes[path] = pageModule;
 }
 
-export function navigate(path, pushState = true) {
+export function navigate(path, updateHash = true) {
   if (currentPath === path) return;
   
   const page = routes[path];
@@ -19,8 +18,8 @@ export function navigate(path, pushState = true) {
 
   currentPath = path;
 
-  if (pushState) {
-    history.pushState({ path }, '', path);
+  if (updateHash) {
+    window.location.hash = path;
   }
 
   const container = document.getElementById('page-content');
@@ -79,9 +78,9 @@ export function getCurrentPath() {
   return currentPath;
 }
 
-// Handle back/forward
-window.addEventListener('popstate', (e) => {
-  const path = e.state?.path || '/';
+// Handle back/forward (hashchange)
+window.addEventListener('hashchange', () => {
+  const path = window.location.hash.replace('#', '') || '/';
   navigate(path, false);
 });
 

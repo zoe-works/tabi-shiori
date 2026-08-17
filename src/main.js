@@ -188,7 +188,7 @@ async function init() {
   if (loading) loading.classList.add('hidden');
 
   // Navigate to initial route
-  const path = window.location.pathname || '/';
+  const path = window.location.hash.replace('#', '') || '/';
   navigate(path, false);
 }
 
