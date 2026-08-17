@@ -2,12 +2,14 @@ import { getState } from '../utils/store.js';
 import { navigate } from '../utils/router.js';
 import { getOmiyageList, addOmiyageItem, updateOmiyageItem, deleteOmiyageItem } from '../utils/db.js';
 
+import { t } from '../utils/i18n.js';
+
 export default {
     render() {
         return `
             <div class="page page-omiyage">
                 <header class="header">
-                    <h2>お土産リスト 🎁</h2>
+                    <h2>${t('omiyageTitle')}</h2>
                 </header>
                 <div class="progress-section card" id="omiyage-progress-container">
                     <!-- Progress injected here -->

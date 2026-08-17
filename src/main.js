@@ -8,8 +8,9 @@ import './styles/research.css';
 import './styles/extras.css';
 import { registerRoute, navigate } from './utils/router.js';
 import { ensureAuth, loginWithGoogle, linkGoogleAccount } from './firebase.js';
-import { setState, getState, subscribe } from './utils/store.js';
+import { setState, getState, subscribe, setLanguage } from './utils/store.js';
 import { getTrips } from './utils/db.js';
+import { t } from './utils/i18n.js';
 import homePage from './pages/home.js';
 import flashcardPage from './pages/flashcard.js';
 import checklistPage from './pages/checklist.js';
@@ -41,11 +42,11 @@ function renderAppShell() {
     <header class="app-header" id="app-header">
       <div class="header-title">
         <img src="${import.meta.env.BASE_URL}images/mascot.jpg" alt="たびくま" class="header-mascot" />
-        <span class="header-title-text">旅のしおり</span>
+        <span class="header-title-text">${t('appTitle')}</span>
       </div>
       <div class="header-actions">
-        <button class="header-btn" id="btn-share" title="共有">🔗</button>
-        <button class="header-btn" id="btn-menu" title="メニュー">☰</button>
+        <button class="header-btn" id="btn-share" title="${t('share')}">🔗</button>
+        <button class="header-btn" id="btn-menu" title="${t('menu')}">☰</button>
       </div>
     </header>
 
@@ -56,23 +57,23 @@ function renderAppShell() {
     <nav class="bottom-nav" id="bottom-nav">
       <a class="nav-item active" data-route="/" href="javascript:void(0)">
         <span class="nav-icon">🏠</span>
-        <span class="nav-label">ホーム</span>
+        <span class="nav-label">${t('home')}</span>
       </a>
       <a class="nav-item" data-route="/flashcard" href="javascript:void(0)">
         <span class="nav-icon">🗣️</span>
-        <span class="nav-label">単語</span>
+        <span class="nav-label">${t('flashcard')}</span>
       </a>
       <a class="nav-item" data-route="/checklist" href="javascript:void(0)">
         <span class="nav-icon">🎒</span>
-        <span class="nav-label">持ち物</span>
+        <span class="nav-label">${t('checklist')}</span>
       </a>
       <a class="nav-item" data-route="/schedule" href="javascript:void(0)">
         <span class="nav-icon">📅</span>
-        <span class="nav-label">予定</span>
+        <span class="nav-label">${t('schedule')}</span>
       </a>
       <a class="nav-item" data-route="/research" href="javascript:void(0)">
         <span class="nav-icon">🔍</span>
-        <span class="nav-label">調べる</span>
+        <span class="nav-label">${t('research')}</span>
       </a>
     </nav>
 
@@ -82,26 +83,31 @@ function renderAppShell() {
         <div class="modal-handle"></div>
         <div class="drawer-header">
           <img src="${import.meta.env.BASE_URL}images/mascot.jpg" alt="たびくま" class="drawer-mascot" />
-          <h2>メニュー</h2>
+          <h2>${t('menu')}</h2>
         </div>
         <nav class="drawer-nav" id="drawer-nav">
-          <a class="drawer-item" data-route="/">🏠 ホーム</a>
-          <a class="drawer-item" data-route="/flashcard">🗣️ 単語カード</a>
-          <a class="drawer-item" data-route="/checklist">🎒 持ち物チェック</a>
-          <a class="drawer-item" data-route="/schedule">📅 スケジュール</a>
-          <a class="drawer-item" data-route="/research">🔍 リサーチノート</a>
+          <a class="drawer-item" data-route="/">🏠 ${t('home')}</a>
+          <a class="drawer-item" data-route="/flashcard">${t('flashcardTitle')}</a>
+          <a class="drawer-item" data-route="/checklist">${t('checklistTitle')}</a>
+          <a class="drawer-item" data-route="/schedule">📅 ${t('scheduleTitle')}</a>
+          <a class="drawer-item" data-route="/research">🔍 ${t('researchTitle')}</a>
           <hr class="drawer-divider" />
-          <a class="drawer-item" data-route="/budget">💰 費用メモ</a>
-          <a class="drawer-item" data-route="/emergency">📞 緊急連絡先</a>
-          <a class="drawer-item" data-route="/omiyage">🎁 お土産リスト</a>
+          <a class="drawer-item" data-route="/budget">${t('budgetTitle')}</a>
+          <a class="drawer-item" data-route="/emergency">${t('emergencyTitle')}</a>
+          <a class="drawer-item" data-route="/omiyage">${t('omiyageTitle')}</a>
           <hr class="drawer-divider" />
           <div class="drawer-trips" id="drawer-trips">
-            <p class="drawer-section-title">旅行を切り替え</p>
+            <p class="drawer-section-title">${t('switchTrip')}</p>
           </div>
           <hr class="drawer-divider" />
+          <div class="drawer-language" style="display:flex; justify-content:space-around; padding: 12px 16px;">
+            <button class="btn-lang" data-lang="ja" style="font-size:24px; background:none; border:none; cursor:pointer;">🇯🇵</button>
+            <button class="btn-lang" data-lang="en" style="font-size:24px; background:none; border:none; cursor:pointer;">🇺🇸</button>
+            <button class="btn-lang" data-lang="th" style="font-size:24px; background:none; border:none; cursor:pointer;">🇹🇭</button>
+          </div>
           <a class="drawer-item" id="btn-drawer-google">
             <span style="margin-right:4px">🌐</span>
-            <span id="drawer-google-text">Googleアカウントと連携</span>
+            <span id="drawer-google-text">${t('googleLink')}</span>
           </a>
         </nav>
       </div>
@@ -185,6 +191,15 @@ async function init() {
     }
   });
 
+  // Language switch
+  document.querySelectorAll('.btn-lang').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const lang = btn.getAttribute('data-lang');
+      setLanguage(lang);
+      window.location.reload();
+    });
+  });
+
   // Auth & load data
   try {
     const user = await ensureAuth();
@@ -225,16 +240,16 @@ function updateDrawerTrips(trips) {
 
   const state = getState();
   container.innerHTML = `
-    <p class="drawer-section-title">旅行を切り替え</p>
+    <p class="drawer-section-title">${t('switchTrip')}</p>
     ${trips.map(trip => `
       <a class="drawer-trip-item ${trip.id === state.currentTripId ? 'active' : ''}" data-trip-id="${trip.id}">
         <span class="drawer-trip-emoji">✈️</span>
-        <span class="drawer-trip-name">${trip.title || '無題の旅行'}</span>
+        <span class="drawer-trip-name">${trip.title || t('untitledTrip')}</span>
       </a>
     `).join('')}
     <a class="drawer-trip-item drawer-trip-new" data-route="/trip/new">
       <span class="drawer-trip-emoji">➕</span>
-      <span class="drawer-trip-name">新しい旅行を作成</span>
+      <span class="drawer-trip-name">${t('createNewTrip')}</span>
     </a>
   `;
 
@@ -263,7 +278,7 @@ function showShareModal() {
   const content = document.getElementById('share-content');
   
   if (!state.currentTrip) {
-    content.innerHTML = '<p class="empty-state-text">まず旅行を作成してください</p>';
+    content.innerHTML = `<p class="empty-state-text">${t('noTripAlert')}</p>`;
     return;
   }
 
@@ -273,29 +288,29 @@ function showShareModal() {
     content.innerHTML = `
       <div class="share-info">
         <div class="form-group">
-          <label class="form-label">共有URL</label>
+          <label class="form-label">${t('shareUrl')}</label>
           <input type="text" value="${shareUrl}" readonly id="share-url-input" />
         </div>
         <div class="form-group">
-          <label class="form-label">パスワード</label>
+          <label class="form-label">${t('sharePassword')}</label>
           <input type="text" value="${state.currentTrip.sharePassword || ''}" readonly id="share-pw-input" />
         </div>
-        <button class="btn btn-primary w-full" id="btn-copy-share">📋 URLをコピー</button>
+        <button class="btn btn-primary w-full" id="btn-copy-share">${t('shareCopyBtn')}</button>
       </div>
     `;
     document.getElementById('btn-copy-share')?.addEventListener('click', () => {
-      navigator.clipboard.writeText(shareUrl + '\nパスワード: ' + (state.currentTrip.sharePassword || ''));
-      document.getElementById('btn-copy-share').textContent = '✅ コピーしました！';
+      navigator.clipboard.writeText(shareUrl + '\n' + t('sharePassword') + ': ' + (state.currentTrip.sharePassword || ''));
+      document.getElementById('btn-copy-share').textContent = t('shareCopySuccess');
     });
   } else {
     content.innerHTML = `
       <div class="share-setup">
-        <p class="text-sm text-muted mb-md">共有パスワードを設定して、仲間にURLを送りましょう！</p>
+        <p class="text-sm text-muted mb-md">${t('shareSetupText')}</p>
         <div class="form-group">
-          <label class="form-label">パスワード</label>
-          <input type="text" id="share-password-input" placeholder="4文字以上のパスワード" />
+          <label class="form-label">${t('sharePassword')}</label>
+          <input type="text" id="share-password-input" placeholder="****" />
         </div>
-        <button class="btn btn-primary w-full" id="btn-create-share">🔗 共有リンクを作成</button>
+        <button class="btn btn-primary w-full" id="btn-create-share">${t('shareCreateBtn')}</button>
       </div>
     `;
   }
@@ -319,10 +334,10 @@ function updateAppShellVisibility() {
 
   if (user) {
     if (user.isAnonymous) {
-      if (googleText) googleText.textContent = 'Googleアカウントと連携';
+      if (googleText) googleText.textContent = t('googleLink');
       if (googleBtn) googleBtn.style.color = 'inherit';
     } else {
-      if (googleText) googleText.textContent = 'Googleでログイン済み';
+      if (googleText) googleText.textContent = t('googleLinked');
       if (googleBtn) googleBtn.style.color = 'var(--text-muted)';
     }
   }

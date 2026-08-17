@@ -1,6 +1,7 @@
 import { getState } from '../utils/store.js';
 import { navigate } from '../utils/router.js';
 import { loginWithGoogle, linkGoogleAccount } from '../firebase.js';
+import { t } from '../utils/i18n.js';
 
 export default {
   render() {
@@ -11,11 +12,11 @@ export default {
         <div class="page">
           <div class="welcome-section">
             <img src="${import.meta.env.BASE_URL}images/mascot.jpg" alt="たびくま" class="welcome-mascot" />
-            <h1 class="welcome-title">旅のしおりを作ろう！</h1>
-            <p class="welcome-text">旅行の計画から記録まで、<br>みんなで楽しく作る旅のしおり 🌴</p>
-            <button id="btn-create-trip" class="btn btn-primary">✨ 新しい旅行を作成</button>
+            <h1 class="welcome-title">${t('welcomeTitle')}</h1>
+            <p class="welcome-text">${t('welcomeDesc')}</p>
+            <button id="btn-create-trip" class="btn btn-primary">${t('btnWelcomeCreate')}</button>
             <button id="btn-welcome-google" class="btn btn-secondary mt-md" style="width:100%; border:1px solid #ccc; background:#fff; color:#333; margin-top:16px;">
-              <span style="margin-right:8px">🌐</span>Googleアカウントでログイン/引き継ぎ
+              <span style="margin-right:8px">🌐</span>${t('btnWelcomeGoogle')}
             </button>
           </div>
           <div class="text-center" style="margin-top: 40px;">
@@ -25,94 +26,82 @@ export default {
       `;
     }
 
-    const start = new Date(currentTrip.startDate);
-    const end = new Date(currentTrip.endDate);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const startNorm = new Date(start); startNorm.setHours(0, 0, 0, 0);
-    const endNorm = new Date(end); endNorm.setHours(0, 0, 0, 0);
-
-    let countdownHtml = '';
-    if (today < startNorm) {
-      const diff = Math.ceil((startNorm - today) / (1000 * 60 * 60 * 24));
-      countdownHtml = `
-        <span class="countdown-label">旅行まであと</span>
-        <span class="countdown-number">${diff}</span>
-        <span class="countdown-unit">日！</span>
-      `;
-    } else if (today >= startNorm && today <= endNorm) {
-      const diff = Math.ceil((today - startNorm) / (1000 * 60 * 60 * 24)) + 1;
-      countdownHtml = `<span class="countdown-during">🎉 旅行 ${diff}日目！</span>`;
+    const start = new Date(currentTrip.startDate);
+    const end = new Date(currentTrip.endDate);
+    
+    let countdownText = '';
+    if (today < start) {
+      const diff = Math.ceil((start - today) / (1000*60*60*24));
+      countdownText = `${t('countdownBefore')} <strong>${diff}</strong> ${t('countdownDays')}`;
+    } else if (today >= start && today <= end) {
+      const diff = Math.ceil((today - start) / (1000*60*60*24)) + 1;
+      countdownText = `${t('countdownDuring')} <strong>${diff}</strong> ${t('countdownDuringDays')}`;
     } else {
-      countdownHtml = `<span class="countdown-during">✨ おつかれさまでした！</span>`;
+      countdownText = t('countdownAfter');
     }
 
-    const formatDate = (d) => `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
-
-    const destinations = currentTrip.destinations || [];
-    const members = currentTrip.members || [];
-
     return `
-      <div class="page">
-        <div class="home-hero">
-          <img src="${import.meta.env.BASE_URL}images/mascot.jpg" alt="たびくま" class="home-mascot" />
-          <h1 class="home-trip-title">${currentTrip.title || '無題の旅行'}</h1>
-          <p class="home-trip-dates">${formatDate(start)} 〜 ${formatDate(end)}</p>
-          
-          ${destinations.length > 0 ? `
-            <div class="home-destinations">
-              ${destinations.map(d => `<span class="chip chip-blue">📍 ${d.country || ''} ${d.city || ''}</span>`).join('')}
-            </div>
-          ` : ''}
+      <div class="page fade-in">
+        <div class="home-cover" style="background-image: url('${currentTrip.coverImage || import.meta.env.BASE_URL + 'images/mascot.jpg'}')">
+          <div class="home-cover-overlay"></div>
+          <h1 class="home-trip-title">${currentTrip.title || t('untitledTrip')}</h1>
+          <p class="home-trip-dates">${this.formatDate(currentTrip.startDate)} 〜 ${this.formatDate(currentTrip.endDate)}</p>
         </div>
 
-        <div class="countdown-card">
-          ${countdownHtml}
-        </div>
+        <div class="home-content">
+          <div class="countdown-card">
+            ${countdownText}
+          </div>
 
-        ${members.length > 0 ? `
-          <div class="card card-sm mb-lg">
-            <p class="text-sm fw-bold mb-sm">👥 メンバー</p>
-            <div class="members-row">
-              ${members.map(m => `
-                <div class="member-avatar">
-                  <div class="member-icon">${m.icon || '😊'}</div>
+          <div class="destinations-chips">
+            ${(currentTrip.destinations || []).map(d => `
+              <span class="chip">📍 ${d.country || ''} ${d.city || ''}</span>
+            `).join('')}
+          </div>
+
+          <div class="members-section">
+            <h3>${t('members')}</h3>
+            <div class="members-list">
+              ${(currentTrip.members || []).map(m => `
+                <div class="member-avatar" title="${m.name}">
+                  <span class="member-emoji">${m.icon || '😊'}</span>
                   <span class="member-name">${m.name}</span>
                 </div>
               `).join('')}
             </div>
           </div>
-        ` : ''}
-
-        <div class="feature-grid">
-          <div class="feature-card" data-route="/flashcard">
-            <span class="feature-icon">🗣️</span>
-            <span class="feature-label">単語カード</span>
+          
+          <div class="features-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px;">
+            <div class="feature-card" data-route="/flashcard">
+              <span class="feature-icon">🗣️</span>
+              <span class="feature-label">${t('flashcardTitle')}</span>
+            </div>
+            <div class="feature-card" data-route="/checklist">
+              <span class="feature-icon">🎒</span>
+              <span class="feature-label">${t('checklistTitle')}</span>
+            </div>
+            <div class="feature-card" data-route="/schedule">
+              <span class="feature-icon">📅</span>
+              <span class="feature-label">${t('scheduleTitle')}</span>
+            </div>
+            <div class="feature-card" data-route="/research">
+              <span class="feature-icon">🔍</span>
+              <span class="feature-label">${t('researchTitle')}</span>
+            </div>
+            <div class="feature-card" data-route="/budget">
+              <span class="feature-icon">💰</span>
+              <span class="feature-label">${t('budgetTitle')}</span>
+            </div>
+            <div class="feature-card" data-route="/omiyage">
+              <span class="feature-icon">🎁</span>
+              <span class="feature-label">${t('omiyageTitle')}</span>
+            </div>
           </div>
-          <div class="feature-card" data-route="/checklist">
-            <span class="feature-icon">🎒</span>
-            <span class="feature-label">持ち物チェック</span>
-          </div>
-          <div class="feature-card" data-route="/schedule">
-            <span class="feature-icon">📅</span>
-            <span class="feature-label">スケジュール</span>
-          </div>
-          <div class="feature-card" data-route="/research">
-            <span class="feature-icon">🔍</span>
-            <span class="feature-label">リサーチ</span>
-          </div>
-          <div class="feature-card" data-route="/budget">
-            <span class="feature-icon">💰</span>
-            <span class="feature-label">費用メモ</span>
-          </div>
-          <div class="feature-card" data-route="/omiyage">
-            <span class="feature-icon">🎁</span>
-            <span class="feature-label">お土産</span>
-          </div>
-        </div>
 
         <button id="btn-edit-trip" class="btn btn-secondary btn-small w-full mt-md" style="margin-bottom: 16px;">
-          ✏️ 旅行情報を編集
+          ${t('btnEditTrip')}
         </button>
 
         <div class="text-center mt-lg" style="margin-bottom: 24px;">

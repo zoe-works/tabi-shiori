@@ -9,12 +9,14 @@ const CATEGORIES = {
     insurance: { icon: '🛡️', label: '保険' }
 };
 
+import { t } from '../utils/i18n.js';
+
 export default {
     render() {
         return `
             <div class="page page-emergency">
                 <header class="header">
-                    <h2>緊急連絡先 📞</h2>
+                    <h2>${t('emergencyTitle')}</h2>
                 </header>
                 <main class="content" id="emergency-main">
                     <div class="loading">よみこみ中... 🧸</div>

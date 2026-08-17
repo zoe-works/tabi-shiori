@@ -1,5 +1,6 @@
 import { getState, setState } from '../utils/store.js';
 import { navigate, getCurrentPath } from '../utils/router.js';
+import { t } from '../utils/i18n.js';
 import { createTrip, updateTrip, getTrips } from '../utils/db.js';
 
 const EMOJIS = ['🐱','🐶','🐻','🐰','🦊','🐼','🐨','🦁','🐯','🐵','🐸','🦄','🌸','🌻','⭐','🌈','❤️','💎'];
@@ -17,61 +18,62 @@ export default {
     };
 
     return `
-      <div class="page">
-        <div class="trip-form-header">
-          <img src="${import.meta.env.BASE_URL}images/mascot.jpg" alt="たびくま" class="trip-form-mascot" />
-          <h1 class="page-title">${isEdit ? '✏️ 旅行を編集' : '✨ 新しい旅行を作成'}</h1>
+      <div class="page fade-in">
+        <header class="page-header">
+          <button class="btn-back" id="btn-form-back">←</button>
+          <h1 class="page-title">${isEdit ? t('tripFormEditTitle') : t('tripFormNewTitle')}</h1>
+        </header>
+
+        <div class="form-content fade-in" style="animation-delay: 0.1s;">
+          <div class="card mb-md">
+            <input type="text" id="trip-title" class="form-input text-lg fw-bold" placeholder="${t('tripTitlePlaceholder')}" value="${trip.title}" />
+          </div>
+
+          <div class="card mb-md">
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label class="form-label">${t('startDate')}</label>
+                <input type="date" id="trip-start" class="form-input" value="${trip.startDate}" />
+              </div>
+              <div class="form-group flex-1">
+                <label class="form-label">${t('endDate')}</label>
+                <input type="date" id="trip-end" class="form-input" value="${trip.endDate}" />
+              </div>
+            </div>
+          </div>
+
+          <div class="card mb-md" id="destinations-container">
+            <label class="form-label">${t('destinations')}</label>
+            <div id="destinations-list">
+              ${trip.destinations.map((d, i) => `
+                <div class="form-row destination-item mb-sm">
+                  <input type="text" class="form-input flex-1 dest-country" placeholder="${t('countryPlaceholder')}" value="${d.country || ''}" />
+                  <input type="text" class="form-input flex-1 dest-city" placeholder="${t('cityPlaceholder')}" value="${d.city || ''}" />
+                  <button class="btn-icon btn-remove" data-index="${i}">✖</button>
+                </div>
+              `).join('')}
+            </div>
+            <button class="btn btn-secondary btn-small w-full mt-sm" id="btn-add-dest">${t('addDestination')}</button>
+          </div>
+
+          <div class="card mb-md" id="members-container">
+            <label class="form-label">${t('membersLabel')}</label>
+            <div id="members-list">
+              ${trip.members.map((m, i) => `
+                <div class="form-row member-item mb-sm" style="align-items: center;">
+                  <button class="btn-emoji-picker" data-index="${i}">${m.icon || '😊'}</button>
+                  <input type="text" class="form-input flex-1 member-name" placeholder="${t('memberNamePlaceholder')}" value="${m.name || ''}" />
+                  <button class="btn-icon btn-remove-member" data-index="${i}">✖</button>
+                </div>
+              `).join('')}
+            </div>
+            <button class="btn btn-secondary btn-small w-full mt-sm" id="btn-add-member">${t('addMember')}</button>
+          </div>
         </div>
 
-        <form id="trip-form" class="trip-form">
-          <div class="form-group">
-            <label class="form-label">旅行タイトル</label>
-            <input type="text" id="trip-title" placeholder="例: はじめての台湾旅行！" value="${trip.title}" required />
-          </div>
-
-          <div class="flex gap-md" style="flex-wrap: wrap;">
-            <div class="form-group" style="flex:1; min-width: 140px;">
-              <label class="form-label">出発日</label>
-              <input type="date" id="start-date" value="${trip.startDate}" required />
-            </div>
-            <div class="form-group" style="flex:1; min-width: 140px;">
-              <label class="form-label">帰国日</label>
-              <input type="date" id="end-date" value="${trip.endDate}" required />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">✈️ 行き先</label>
-            <div class="destination-list" id="destinations-container">
-              ${trip.destinations.map(d => `
-                <div class="destination-row">
-                  <input type="text" class="dest-country" placeholder="国名（例: タイ）" value="${d.country}" required />
-                  <input type="text" class="dest-city" placeholder="都市名（例: バンコク）" value="${d.city || ''}" />
-                  <button type="button" class="destination-remove btn-remove-dest">✕</button>
-                </div>
-              `).join('')}
-            </div>
-            <button type="button" id="btn-add-dest" class="destination-add">＋ 行き先を追加</button>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">👥 メンバー</label>
-            <div class="member-list" id="members-container">
-              ${trip.members.map(m => `
-                <div class="member-row">
-                  <button type="button" class="member-icon-selector btn-emoji-select">${m.icon || '🐱'}</button>
-                  <input type="text" class="member-name" placeholder="ニックネーム" value="${m.name}" required />
-                  <button type="button" class="destination-remove btn-remove-member">✕</button>
-                </div>
-              `).join('')}
-            </div>
-            <button type="button" id="btn-add-member" class="destination-add">＋ メンバーを追加</button>
-          </div>
-
-          <button type="submit" class="btn btn-primary w-full mt-lg" id="btn-save">
-            💾 保存する
-          </button>
-        </form>
+        <div class="bottom-actions">
+          <button class="btn btn-primary w-full text-lg" id="btn-save-trip">${t('btnSave')}</button>
+        </div>
 
         <!-- Emoji Picker Modal -->
         <div class="modal-overlay" id="emoji-modal">
@@ -89,47 +91,46 @@ export default {
 
   init() {
     const isEdit = getCurrentPath() === '/trip/edit';
-    const { currentTrip, user } = getState();
+    const { currentTrip } = getState();
 
     // Destinations
-    const destContainer = document.getElementById('destinations-container');
+    const destList = document.getElementById('destinations-list');
     document.getElementById('btn-add-dest')?.addEventListener('click', () => {
       const row = document.createElement('div');
-      row.className = 'destination-row';
-      row.style.animation = 'slideUp 0.3s var(--ease-out)';
+      row.className = 'form-row destination-item mb-sm';
       row.innerHTML = `
-        <input type="text" class="dest-country" placeholder="国名（例: タイ）" required />
-        <input type="text" class="dest-city" placeholder="都市名（例: バンコク）" />
-        <button type="button" class="destination-remove btn-remove-dest">✕</button>
+        <input type="text" class="form-input flex-1 dest-country" placeholder="${t('countryPlaceholder')}" />
+        <input type="text" class="form-input flex-1 dest-city" placeholder="${t('cityPlaceholder')}" />
+        <button class="btn-icon btn-remove">✖</button>
       `;
-      destContainer.appendChild(row);
+      destList.appendChild(row);
     });
 
-    destContainer?.addEventListener('click', (e) => {
-      if (e.target.classList.contains('btn-remove-dest')) {
-        const rows = destContainer.querySelectorAll('.destination-row');
-        if (rows.length > 1) e.target.closest('.destination-row').remove();
+    destList?.addEventListener('click', (e) => {
+      if (e.target.classList.contains('btn-remove')) {
+        const rows = destList.querySelectorAll('.destination-item');
+        if (rows.length > 1) e.target.closest('.destination-item').remove();
       }
     });
 
     // Members
-    const membersContainer = document.getElementById('members-container');
+    const membersList = document.getElementById('members-list');
     document.getElementById('btn-add-member')?.addEventListener('click', () => {
       const row = document.createElement('div');
-      row.className = 'member-row';
-      row.style.animation = 'slideUp 0.3s var(--ease-out)';
+      row.className = 'form-row member-item mb-sm';
+      row.style.alignItems = 'center';
       row.innerHTML = `
-        <button type="button" class="member-icon-selector btn-emoji-select">🐱</button>
-        <input type="text" class="member-name" placeholder="ニックネーム" required />
-        <button type="button" class="destination-remove btn-remove-member">✕</button>
+        <button class="btn-emoji-picker">😊</button>
+        <input type="text" class="form-input flex-1 member-name" placeholder="${t('memberNamePlaceholder')}" />
+        <button class="btn-icon btn-remove-member">✖</button>
       `;
-      membersContainer.appendChild(row);
+      membersList.appendChild(row);
     });
 
-    membersContainer?.addEventListener('click', (e) => {
+    membersList?.addEventListener('click', (e) => {
       if (e.target.classList.contains('btn-remove-member')) {
-        const rows = membersContainer.querySelectorAll('.member-row');
-        if (rows.length > 1) e.target.closest('.member-row').remove();
+        const rows = membersList.querySelectorAll('.member-item');
+        if (rows.length > 1) e.target.closest('.member-item').remove();
       }
     });
 
@@ -137,8 +138,8 @@ export default {
     const emojiModal = document.getElementById('emoji-modal');
     let currentEmojiBtn = null;
 
-    membersContainer?.addEventListener('click', (e) => {
-      if (e.target.classList.contains('btn-emoji-select')) {
+    membersList?.addEventListener('click', (e) => {
+      if (e.target.classList.contains('btn-emoji-picker')) {
         currentEmojiBtn = e.target;
         emojiModal.classList.add('active');
       }
@@ -155,44 +156,33 @@ export default {
       });
     });
 
-    // Date Auto-Focus
-    const startDateInput = document.getElementById('start-date');
-    const endDateInput = document.getElementById('end-date');
-    if (startDateInput && endDateInput) {
-      startDateInput.addEventListener('change', () => {
-        if (!endDateInput.value) {
-          endDateInput.focus();
-          try { if (typeof endDateInput.showPicker === 'function') endDateInput.showPicker(); } catch(e) {}
-        }
-      });
-    }
+    document.getElementById('btn-form-back')?.addEventListener('click', () => navigate('/'));
 
     // Form Submit
-    document.getElementById('trip-form')?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const saveBtn = document.getElementById('btn-save');
-      saveBtn.textContent = '保存中...';
-      saveBtn.disabled = true;
-
+    document.getElementById('btn-save-trip')?.addEventListener('click', async (e) => {
+      const btn = e.target;
+      btn.disabled = true;
+      btn.textContent = t('btnSaving');
+      
       const title = document.getElementById('trip-title').value;
-      const startDate = document.getElementById('start-date').value;
-      const endDate = document.getElementById('end-date').value;
+      const startDate = document.getElementById('trip-start').value;
+      const endDate = document.getElementById('trip-end').value;
 
-      const currentUser = getState().user;
+      const { user: currentUser } = getState();
       if (!currentUser || !currentUser.uid) {
-        alert('ユーザー情報の読み込みに失敗しました。少し待ってから再度保存してください。');
-        saveBtn.textContent = '❌ エラー';
-        saveBtn.disabled = false;
+        alert(t('authError'));
+        btn.disabled = false;
+        btn.textContent = t('btnSave');
         return;
       }
 
-      const destinations = Array.from(destContainer.querySelectorAll('.destination-row')).map(row => ({
+      const destinations = Array.from(destList.querySelectorAll('.destination-item')).map(row => ({
         country: row.querySelector('.dest-country').value,
         city: row.querySelector('.dest-city').value
       }));
 
-      const members = Array.from(membersContainer.querySelectorAll('.member-row')).map(row => ({
-        icon: row.querySelector('.btn-emoji-select').textContent,
+      const members = Array.from(membersList.querySelectorAll('.member-item')).map(row => ({
+        icon: row.querySelector('.btn-emoji-picker').textContent,
         name: row.querySelector('.member-name').value
       }));
 

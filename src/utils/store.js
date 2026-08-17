@@ -4,6 +4,7 @@ const state = {
   currentTripId: null,
   trips: [],
   isLoading: false,
+  language: localStorage.getItem('language') || 'ja'
 };
 
 const listeners = new Map();
@@ -49,4 +50,9 @@ export function setTrips(trips) {
 
 export function setLoading(isLoading) { 
   setState({ isLoading }); 
+}
+
+export function setLanguage(language) {
+  localStorage.setItem('language', language);
+  setState({ language });
 }

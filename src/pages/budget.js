@@ -11,12 +11,14 @@ const CATEGORIES = {
     other: { icon: '📦', label: 'その他' }
 };
 
+import { t } from '../utils/i18n.js';
+
 export default {
     render() {
         return `
             <div class="page page-budget">
                 <header class="header">
-                    <h2>費用メモ 💰</h2>
+                    <h2>${t('budgetTitle')}</h2>
                 </header>
                 <main class="content" id="budget-main">
                     <div class="loading">よみこみ中... 🧸</div>

@@ -1,6 +1,7 @@
 import { getState } from '../utils/store.js';
 import { navigate } from '../utils/router.js';
 import { getChecklist, addChecklistItem, updateChecklistItem, deleteChecklistItem } from '../utils/db.js';
+import { t } from '../utils/i18n.js';
 
 const DEFAULT_ITEMS = [
   { category: 'documents', items: ['パスポート', '航空券(予約確認書)', 'ホテル予約確認書', '海外旅行保険証', 'クレジットカード'] },
@@ -27,11 +28,11 @@ function render() {
     <div class="page checklist-page">
       <header class="page-header">
         <button class="back-btn" id="cl-back-btn">←</button>
-        <h2>持ち物リスト</h2>
+        <h2>${t('checklistTitle')}</h2>
       </header>
 
       <div class="progress-container">
-        <div class="progress-text" id="cl-progress-text">0/0 準備中...</div>
+        <div class="progress-text" id="cl-progress-text">0/0 ${t('preparing')}</div>
         <div class="progress-bar-bg">
           <div class="progress-bar-fill" id="cl-progress-fill"></div>
         </div>
@@ -49,7 +50,7 @@ async function init() {
   const trip = store.currentTrip;
 
   if (!trip) {
-    document.getElementById('cl-container').innerHTML = '<p class="empty-state">旅行が選択されていません。</p>';
+    document.getElementById('cl-container').innerHTML = `<p class="empty-state">${t('noTripSelected')}</p>`;
     return;
   }
 

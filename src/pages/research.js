@@ -1,6 +1,7 @@
 import { getState } from '../utils/store.js';
 import { navigate } from '../utils/router.js';
-import { getResearchNotes, addResearchNote } from '../utils/db.js';
+import { getResearchNotes, addResearchNote, updateResearchNote, deleteResearchNote } from '../utils/db.js';
+import { t } from '../utils/i18n.js';
 
 let notes = [];
 let currentFilter = 'all';
@@ -10,13 +11,10 @@ export default {
     return `
       <div class="page research-page">
         <header class="page-header">
-          <h2>リサーチノート</h2>
+          <h2>${t('researchTitle')}</h2>
         </header>
 
         <div class="filter-tabs">
-          <span class="chip active" data-filter="all">全て</span>
-          <span class="chip" data-filter="sightseeing">観光</span>
-          <span class="chip" data-filter="food">グルメ</span>
           <span class="chip" data-filter="souvenir">お土産</span>
           <span class="chip" data-filter="experience">体験</span>
         </div>

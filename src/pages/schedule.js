@@ -2,6 +2,7 @@ import { getState } from '../utils/store.js';
 import { navigate } from '../utils/router.js';
 import { getSchedules, addScheduleItem, updateScheduleItem, deleteScheduleItem } from '../utils/db.js';
 import { uploadPhoto, compressImage } from '../utils/storage.js';
+import { t } from '../utils/i18n.js';
 
 let currentDay = 1;
 let currentMode = 'plan'; // 'plan' or 'journal'
@@ -22,12 +23,12 @@ export default {
     return `
       <div class="page schedule-page">
         <header class="page-header">
-          <h2>スケジュール & ジャーナル</h2>
+          <h2>${t('scheduleTitle')}</h2>
         </header>
 
         <div class="mode-toggle">
-          <button class="mode-btn ${currentMode === 'plan' ? 'active' : ''}" data-mode="plan">📝 プラン</button>
-          <button class="mode-btn ${currentMode === 'journal' ? 'active' : ''}" data-mode="journal">📖 ジャーナル</button>
+          <button class="mode-btn ${currentMode === 'plan' ? 'active' : ''}" data-mode="plan">${t('planMode')}</button>
+          <button class="mode-btn ${currentMode === 'journal' ? 'active' : ''}" data-mode="journal">${t('journalMode')}</button>
         </div>
 
         <div class="day-tabs" id="dayTabs">
