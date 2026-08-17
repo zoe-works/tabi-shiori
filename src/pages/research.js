@@ -166,7 +166,11 @@ export default {
     }
 
     const htmlPromises = notes.map(async (note) => {
-      const translatedQuestion = await translateUserText(note.question) || note.question;
+      let qText = note.question;
+      if (qText && qText.match(/^rq[1-9]$/)) {
+        qText = t(qText);
+      }
+      const translatedQuestion = await translateUserText(qText) || qText;
       const translatedAnswer = note.answer ? (await translateUserText(note.answer) || note.answer) : '';
       
       return `

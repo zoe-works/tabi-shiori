@@ -3,6 +3,7 @@ import { navigate } from '../utils/router.js';
 import { loginWithGoogle, linkGoogleAccount } from '../firebase.js';
 import { t, getLang } from '../utils/i18n.js';
 import { translateUserText } from '../utils/translate.js';
+import { getLanguageFromCountry, getFlagFromLanguage } from '../data/phrases.js';
 
 export default {
   async render() {
@@ -86,11 +87,11 @@ export default {
 
     const translatedTitle = await translateUserText(currentTrip.title) || t('untitledTrip');
     
-    // 行き先の翻訳
+    // 行き先のフラグ
     const destPromises = (currentTrip.destinations || []).map(async (d) => {
-      const country = await translateUserText(d.country) || '';
-      const city = await translateUserText(d.city) || '';
-      return `<span class="chip">📍 ${country} ${city}</span>`;
+      const langCode = getLanguageFromCountry(d.country);
+      const flag = getFlagFromLanguage(langCode);
+      return `<span style="font-size: 2rem;">${flag}</span>`;
     });
     const destChips = await Promise.all(destPromises);
 
@@ -119,7 +120,7 @@ export default {
             ${countdownText}
           </div>
 
-          <div class="destinations-chips">
+          <div class="destinations-flags" style="display: flex; justify-content: center; gap: 12px; margin-bottom: 24px;">
             ${destChips.join('')}
           </div>
 

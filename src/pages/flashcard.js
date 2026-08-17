@@ -102,12 +102,12 @@ export default {
     const targetLangsContainer = document.getElementById('fc-target-langs');
     if (targetLangs.length > 1) {
       targetLangsContainer.innerHTML = targetLangs.map(lang => 
-        `<button class="flag-btn ${lang === state.activeLang ? 'active' : ''}" data-lang="${lang}">
+        `<span class="flag-tab" data-lang="${lang}" style="font-size: 2.5rem; cursor: pointer; transition: opacity 0.2s; opacity: ${lang === state.activeLang ? '1' : '0.4'};">
           ${getFlagFromLanguage(lang)}
-        </button>`
+        </span>`
       ).join('');
     } else if (targetLangs.length === 1) {
-       targetLangsContainer.innerHTML = `<div class="flag-btn active" style="pointer-events: none;">${getFlagFromLanguage(targetLangs[0])}</div>`;
+       targetLangsContainer.innerHTML = `<span style="font-size: 2.5rem;">${getFlagFromLanguage(targetLangs[0])}</span>`;
     }
 
     // Categories
@@ -229,12 +229,12 @@ export default {
       }
     });
     
-    document.querySelectorAll('.flag-btn').forEach(btn => {
+    document.querySelectorAll('.flag-tab').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        const target = e.target.closest('.flag-btn');
-        if (!target.classList.contains('active')) {
-          document.querySelectorAll('.flag-btn').forEach(b => b.classList.remove('active'));
-          target.classList.add('active');
+        const target = e.target.closest('.flag-tab');
+        if (state.activeLang !== target.dataset.lang) {
+          document.querySelectorAll('.flag-tab').forEach(b => b.style.opacity = '0.4');
+          target.style.opacity = '1';
           state.activeLang = target.dataset.lang;
           updateDeck();
         }
