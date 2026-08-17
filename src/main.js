@@ -181,6 +181,7 @@ async function init() {
     updateDrawerTrips(trips);
   } catch (err) {
     console.error('Auth failed:', err);
+    alert('Firebaseの認証に失敗しました。Firebase Consoleで「Authentication > Sign-in method > 匿名」が有効になっているか確認してください。\\nエラー詳細: ' + err.message);
   }
 
   // Hide loading screen
