@@ -280,7 +280,7 @@ export default {
       return `
         <div class="timeline-item" data-id="${item.id}" style="position: relative; overflow: hidden; margin-bottom: 24px;">
           <!-- Delete Background -->
-          <div class="swipe-delete-bg" style="position: absolute; top: 0; left: 0; bottom: 0; width: 100%; background: #ff3b30; color: white; display: flex; align-items: center; padding-left: 20px; font-weight: bold; z-index: 1; border-radius: 8px;">
+          <div class="swipe-delete-bg" style="position: absolute; top: 0; left: 0; bottom: 0; width: 100%; background: #ff3b30; color: white; display: flex; align-items: center; padding-left: 20px; font-weight: bold; z-index: 1; border-radius: 8px; opacity: 0; transition: opacity 0.2s;">
             🗑️ 削除
           </div>
           <!-- Foreground Content -->
@@ -314,6 +314,7 @@ export default {
       wrapper.addEventListener('touchstart', (e) => {
         startX = e.touches[0].clientX;
         wrapper.style.transition = 'none';
+        itemEl.querySelector('.swipe-delete-bg').style.opacity = '1';
       }, {passive: true});
       
       wrapper.addEventListener('touchmove', (e) => {
@@ -333,9 +334,11 @@ export default {
             this.loadSchedules(trip.id);
           } else {
             wrapper.style.transform = `translateX(0)`;
+            itemEl.querySelector('.swipe-delete-bg').style.opacity = '0';
           }
         } else {
           wrapper.style.transform = `translateX(0)`;
+          itemEl.querySelector('.swipe-delete-bg').style.opacity = '0';
         }
         currentX = 0;
       });

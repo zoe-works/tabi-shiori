@@ -1,7 +1,7 @@
 const fs = require('fs');
-let content = fs.readFileSync('C:/Users/81806/.gemini/antigravity/scratch/tabi-shiori/src/utils/i18n.js', 'utf8');
 
 const budgetKeysJa = `
+    // Budget & Omiyage keys
     catFood: '食費',
     catTransport: '交通費',
     catShopping: '買い物',
@@ -39,6 +39,7 @@ const budgetKeysJa = `
 `;
 
 const budgetKeysEn = `
+    // Budget & Omiyage keys
     catFood: 'Food',
     catTransport: 'Transport',
     catShopping: 'Shopping',
@@ -76,6 +77,7 @@ const budgetKeysEn = `
 `;
 
 const budgetKeysTh = `
+    // Budget & Omiyage keys
     catFood: 'ค่าอาหาร',
     catTransport: 'ค่าเดินทาง',
     catShopping: 'ช้อปปิ้ง',
@@ -112,19 +114,12 @@ const budgetKeysTh = `
     backToHome: 'กลับหน้าแรก',
 `;
 
-content = content.replace(
-  "noTripSelected: '旅行が選択されていません。'\n  },",
-  "noTripSelected: '旅行が選択されていません。',\n" + budgetKeysJa + "\n  },"
-);
+let content = fs.readFileSync('C:/Users/81806/.gemini/antigravity/scratch/tabi-shiori/src/utils/i18n.js', 'utf8');
 
-content = content.replace(
-  "noTripSelected: 'No trip selected.'\n  },",
-  "noTripSelected: 'No trip selected.',\n" + budgetKeysEn + "\n  },"
-);
-
-content = content.replace(
-  "noTripSelected: 'ไม่ได้เลือกทริป'\n  }",
-  "noTripSelected: 'ไม่ได้เลือกทริป',\n" + budgetKeysTh + "\n  }"
-);
+content = content.replace("noTripSelected: '旅行が選択されていません。'", "noTripSelected: '旅行が選択されていません。',\n" + budgetKeysJa);
+content = content.replace("noTripSelected: 'No trip selected.'", "noTripSelected: 'No trip selected.',\n" + budgetKeysEn);
+content = content.replace("noTripSelected: 'ยังไม่ได้เลือกทริป'", "noTripSelected: 'ยังไม่ได้เลือกทริป',\n" + budgetKeysTh);
+// In case Thai is different
+content = content.replace("noTripSelected: 'กรุณาเลือกทริปก่อน'", "noTripSelected: 'กรุณาเลือกทริปก่อน',\n" + budgetKeysTh);
 
 fs.writeFileSync('C:/Users/81806/.gemini/antigravity/scratch/tabi-shiori/src/utils/i18n.js', content, 'utf8');

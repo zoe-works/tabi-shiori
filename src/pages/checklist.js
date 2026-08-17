@@ -136,9 +136,6 @@ async function renderChecklist() {
           ${item.important ? '<span class="important-mark">❗</span>' : ''}
           ${translatedName}
         </div>
-        <div class="assignee-badge" data-id="${item.id}">
-          ${item.assignee ? item.assignee.substring(0,1) : '👤'}
-        </div>
       `;
       
       itemEl.querySelector('.checkbox-custom').addEventListener('click', (e) => {
@@ -160,15 +157,6 @@ async function renderChecklist() {
           itemEl.classList.toggle('checked');
           updateProgressBar();
         });
-      });
-      
-      itemEl.querySelector('.assignee-badge').addEventListener('click', (e) => {
-         // Dummy implementation for assigning members
-         const newAssignee = prompt(t('assigneePrompt') || "担当者名を入力:", item.assignee || "");
-         if (newAssignee !== null) {
-           const store = getState();
-           updateChecklistItem(store.currentTrip.id, item.id, { assignee: newAssignee || null }).then(() => loadChecklist());
-         }
       });
       
       itemList.appendChild(itemEl);
