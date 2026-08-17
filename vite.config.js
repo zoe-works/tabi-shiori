@@ -8,18 +8,18 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icons/*.png', 'images/*'],
       manifest: {
-        name: '旅のしおり',
-        short_name: '旅のしおり',
-        description: 'みんなで作る旅のしおりアプリ',
+        name: '旁E�EしおめE,
+        short_name: '旁E�EしおめE,
+        description: 'みんなで作る旁E�Eしおりアプリ',
         theme_color: '#F0B4C4',
         background_color: '#FBF8F4',
         display: 'standalone',
         orientation: 'portrait',
         start_url: '/',
         icons: [
-          { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
-          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
+          { src: 'icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' }
         ]
       },
       workbox: {
