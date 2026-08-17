@@ -41,12 +41,14 @@ function renderAppShell() {
     <!-- Header -->
     <header class="app-header" id="app-header">
       <div class="header-title">
-        <img src="${import.meta.env.BASE_URL}images/mascot.jpg" alt="たびくま" class="header-mascot" />
+        <img src="${import.meta.env.BASE_URL}images/tabikuma.jpg" alt="たびくま" class="header-mascot" />
         <span class="header-title-text">${t('appTitle')}</span>
       </div>
       <div class="header-actions">
         <button class="header-btn" id="btn-share" title="${t('share')}">🔗</button>
-        <button class="header-btn" id="btn-menu" title="${t('menu')}">☰</button>
+        <button class="header-btn" id="btn-menu" title="${t('menu')}">
+          <img src="${import.meta.env.BASE_URL}images/tabikuma.jpg" alt="Menu" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; display: block;" />
+        </button>
       </div>
     </header>
 
@@ -82,7 +84,7 @@ function renderAppShell() {
       <div class="modal-content drawer-content">
         <div class="modal-handle"></div>
         <div class="drawer-header">
-          <img src="${import.meta.env.BASE_URL}images/mascot.jpg" alt="たびくま" class="drawer-mascot" />
+          <img src="${import.meta.env.BASE_URL}images/tabikuma.jpg" alt="たびくま" class="drawer-mascot" />
           <h2>${t('menu')}</h2>
         </div>
         <nav class="drawer-nav" id="drawer-nav">
