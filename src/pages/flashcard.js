@@ -1,7 +1,7 @@
 import { getState } from '../utils/store.js';
 import { navigate } from '../utils/router.js';
 import { getFlashcards, addFlashcard } from '../utils/db.js';
-import { PHRASES, CATEGORIES, COUNTRY_TO_LANGUAGE, COUNTRY_FLAGS } from '../data/phrases.js';
+import { PHRASES, CATEGORIES, getLanguageFromCountry, getFlagFromLanguage } from '../data/phrases.js';
 import { t, getLang } from '../utils/i18n.js';
 
 let state = {
@@ -90,7 +90,7 @@ export default {
     // Determine target languages based on trip destinations
     let targetLangs = ['en'];
     if (trip && trip.destinations) {
-      const tripLangs = trip.destinations.map(d => COUNTRY_TO_LANGUAGE[d.country] || '').filter(Boolean);
+      const tripLangs = trip.destinations.map(d => getLanguageFromCountry(d.country)).filter(Boolean);
       if (tripLangs.length > 0) targetLangs = [...new Set(tripLangs)];
     }
     state.activeLang = targetLangs[0] || 'en';
@@ -100,11 +100,11 @@ export default {
     if (targetLangs.length > 1) {
       targetLangsContainer.innerHTML = targetLangs.map(lang => 
         `<button class="flag-btn ${lang === state.activeLang ? 'active' : ''}" data-lang="${lang}">
-          ${COUNTRY_FLAGS[lang.toUpperCase()] || '🏳️'}
+          ${getFlagFromLanguage(lang)}
         </button>`
       ).join('');
     } else if (targetLangs.length === 1) {
-       targetLangsContainer.innerHTML = `<div class="flag-btn active" style="pointer-events: none;">${COUNTRY_FLAGS[targetLangs[0].toUpperCase()] || '🏳️'}</div>`;
+       targetLangsContainer.innerHTML = `<div class="flag-btn active" style="pointer-events: none;">${getFlagFromLanguage(targetLangs[0])}</div>`;
     }
 
     // Categories

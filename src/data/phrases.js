@@ -415,3 +415,32 @@ export const LANGUAGE_NAMES = {
   'pt': { ja: 'ポルトガル語', en: 'Portuguese', th: 'โปรตุเกส' },
   'ja': { ja: '日本語', en: 'Japanese', th: 'ญี่ปุ่น' }
 };
+
+export function getLanguageFromCountry(countryName) {
+  if (!countryName) return 'en';
+  const name = countryName.toLowerCase();
+  
+  if (name.includes('タイ') || name.includes('thai')) return 'th';
+  if (name.includes('台湾') || name.includes('taiwan') || name.includes('中国') || name.includes('china') || name.includes('香港') || name.includes('hong')) return 'zh';
+  if (name.includes('韓国') || name.includes('korea')) return 'ko';
+  if (name.includes('スペイン') || name.includes('メキシコ') || name.includes('spain') || name.includes('mexico')) return 'es';
+  if (name.includes('イタリア') || name.includes('italy')) return 'it';
+  if (name.includes('ポルトガル') || name.includes('ブラジル') || name.includes('portugal') || name.includes('brazil')) return 'pt';
+  if (name.includes('日本') || name.includes('japan')) return 'ja';
+  
+  return 'en';
+}
+
+export function getFlagFromLanguage(lang) {
+  const map = {
+    'en': '🇺🇸',
+    'th': '🇹🇭',
+    'zh': '🇹🇼', // 台湾など
+    'ko': '🇰🇷',
+    'es': '🇪🇸',
+    'it': '🇮🇹',
+    'pt': '🇵🇹',
+    'ja': '🇯🇵'
+  };
+  return map[lang] || '🏳️';
+}
