@@ -8,9 +8,9 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icons/*.png', 'images/*'],
       manifest: {
-        name: '旁E�EしおめE,
-        short_name: '旁E�EしおめE,
-        description: 'みんなで作る旁E�Eしおりアプリ',
+        name: '旅のしおり',
+        short_name: '旅のしおり',
+        description: 'みんなで作る旅のしおりアプリ',
         theme_color: '#F0B4C4',
         background_color: '#FBF8F4',
         display: 'standalone',
