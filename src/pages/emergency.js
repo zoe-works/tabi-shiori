@@ -10,6 +10,7 @@ const CATEGORIES = {
 };
 
 import { t } from '../utils/i18n.js';
+import { translateUserText } from '../utils/translate.js';
 
 export default {
     render() {
@@ -66,7 +67,7 @@ export default {
 
         let contacts = [];
 
-        const renderContent = () => {
+        const renderContent = async () => {
             if (contacts.length === 0) {
                 // Initialize default view if empty
                 mainEl.innerHTML = Object.keys(CATEGORIES).map(catKey => `
@@ -79,8 +80,26 @@ export default {
                     </div>
                 `).join('');
             } else {
-                mainEl.innerHTML = Object.keys(CATEGORIES).map(catKey => {
+                const sectionsPromises = Object.keys(CATEGORIES).map(async catKey => {
                     const catContacts = contacts.filter(c => c.category === catKey);
+                    
+                    const cardsPromises = catContacts.map(async c => {
+                        const translatedTitle = await translateUserText(c.title) || c.title;
+                        const translatedInfo = c.info ? await translateUserText(c.info) || c.info : '';
+                        return `
+                                    <div class="emergency-card">
+                                        <h4>${translatedTitle}</h4>
+                                        ${translatedInfo ? `<p class="em-info">${translatedInfo.replace(/\\n/g, '<br>')}</p>` : ''}
+                                        ${c.phone ? `
+                                            <a href="tel:${c.phone}" class="btn-tel">
+                                                📞 電話をかける (${c.phone})
+                                            </a>
+                                        ` : ''}
+                                    </div>
+                        `;
+                    });
+                    const cardsHtml = (await Promise.all(cardsPromises)).join('');
+
                     return `
                         <div class="emergency-section card">
                             <div class="section-header">
@@ -88,22 +107,13 @@ export default {
                                 <button class="btn-add-small" data-cat="${catKey}">＋ 追加</button>
                             </div>
                             <div class="emergency-list">
-                                ${catContacts.length === 0 ? '<div class="empty-text">情報がありません。</div>' : ''}
-                                ${catContacts.map(c => `
-                                    <div class="emergency-card">
-                                        <h4>${c.title}</h4>
-                                        ${c.info ? `<p class="em-info">${c.info.replace(/\\n/g, '<br>')}</p>` : ''}
-                                        ${c.phone ? `
-                                            <a href="tel:${c.phone}" class="btn-tel">
-                                                📞 電話をかける (${c.phone})
-                                            </a>
-                                        ` : ''}
-                                    </div>
-                                `).join('')}
+                                ${catContacts.length === 0 ? '<div class="empty-text">情報がありません。</div>' : cardsHtml}
                             </div>
                         </div>
                     `;
-                }).join('');
+                });
+                const sectionsHtml = await Promise.all(sectionsPromises);
+                mainEl.innerHTML = sectionsHtml.join('');
             }
 
             // Bind add buttons
@@ -120,7 +130,7 @@ export default {
         const loadContacts = async () => {
             try {
                 contacts = await getEmergencyContacts(tripId);
-                renderContent();
+                await renderContent();
             } catch (e) {
                 console.error(e);
                 mainEl.innerHTML = '<p>エラーが発生しました😢</p>';

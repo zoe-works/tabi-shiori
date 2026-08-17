@@ -29,20 +29,25 @@ export function navigate(path, updateHash = true) {
   container.style.opacity = '0';
   container.style.transform = 'translateY(8px)';
   
-  setTimeout(() => {
-    container.innerHTML = page.render();
-    container.style.opacity = '1';
-    container.style.transform = 'translateY(0)';
-    
-    if (page.init) {
-      page.init();
+  setTimeout(async () => {
+    try {
+      const html = await page.render();
+      container.innerHTML = html;
+      container.style.opacity = '1';
+      container.style.transform = 'translateY(0)';
+      
+      if (page.init) {
+        page.init();
+      }
+
+      // Update nav
+      updateNav(path);
+
+      // Scroll to top
+      window.scrollTo({ top: 0 });
+    } catch (e) {
+      console.error('Page render error:', e);
     }
-
-    // Update nav
-    updateNav(path);
-
-    // Scroll to top
-    window.scrollTo({ top: 0 });
   }, 150);
 }
 

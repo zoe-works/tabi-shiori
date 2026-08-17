@@ -12,6 +12,7 @@ const CATEGORIES = {
 };
 
 import { t } from '../utils/i18n.js';
+import { translateUserText } from '../utils/translate.js';
 
 export default {
     render() {
@@ -82,7 +83,7 @@ export default {
 
         let items = [];
 
-        const renderContent = () => {
+        const renderContent = async () => {
             if (items.length === 0) {
                 mainEl.innerHTML = `
                     <div class="empty-state">
@@ -103,12 +104,31 @@ export default {
                 }
             });
             const average = totalAmount / members.length;
-            const warikanText = members.map(m => {
+            
+            const warikanPromises = members.map(async m => {
                 const diff = paidByTotals[m] - average;
-                if (diff > 0) return `<li>✨ ${m}さんは <strong>¥${Math.round(diff).toLocaleString()}</strong> もらいすぎ！ (いや、もらう側)</li>`;
-                if (diff < 0) return `<li>💸 ${m}さんは <strong>¥${Math.round(Math.abs(diff)).toLocaleString()}</strong> 払う！</li>`;
-                return `<li>⚖️ ${m}さんは ぴったり！</li>`;
-            }).join('');
+                const translatedName = await translateUserText(m) || m;
+                if (diff > 0) return `<li>✨ ${translatedName}さんは <strong>¥${Math.round(diff).toLocaleString()}</strong> もらいすぎ！ (いや、もらう側)</li>`;
+                if (diff < 0) return `<li>💸 ${translatedName}さんは <strong>¥${Math.round(Math.abs(diff)).toLocaleString()}</strong> 払う！</li>`;
+                return `<li>⚖️ ${translatedName}さんは ぴったり！</li>`;
+            });
+            const warikanText = (await Promise.all(warikanPromises)).join('');
+
+            const itemsPromises = items.map(async item => {
+                const translatedTitle = await translateUserText(item.title) || '無題';
+                const translatedPaidBy = await translateUserText(item.paidBy) || item.paidBy;
+                return `
+                    <div class="budget-item card" data-id="${item.id}">
+                        <div class="budget-icon">${CATEGORIES[item.category]?.icon || '📦'}</div>
+                        <div class="budget-details">
+                            <div class="budget-title">${translatedTitle}</div>
+                            <div class="budget-meta">${translatedPaidBy} が支払い</div>
+                        </div>
+                        <div class="budget-amount">¥${Number(item.amount).toLocaleString()}</div>
+                    </div>
+                `;
+            });
+            const itemsHtml = (await Promise.all(itemsPromises)).join('');
 
             mainEl.innerHTML = `
                 <div class="budget-summary card">
@@ -126,16 +146,7 @@ export default {
 
                 <div class="budget-list">
                     <h3>支出リスト 📝</h3>
-                    ${items.map(item => `
-                        <div class="budget-item card" data-id="${item.id}">
-                            <div class="budget-icon">${CATEGORIES[item.category]?.icon || '📦'}</div>
-                            <div class="budget-details">
-                                <div class="budget-title">${item.title || '無題'}</div>
-                                <div class="budget-meta">${item.paidBy} が支払い</div>
-                            </div>
-                            <div class="budget-amount">¥${Number(item.amount).toLocaleString()}</div>
-                        </div>
-                    `).join('')}
+                    ${itemsHtml}
                 </div>
             `;
         };
@@ -143,7 +154,7 @@ export default {
         const loadItems = async () => {
             try {
                 items = await getBudgetItems(tripId);
-                renderContent();
+                await renderContent();
             } catch (e) {
                 console.error(e);
                 mainEl.innerHTML = '<p>エラーが発生しました😢</p>';

@@ -2,6 +2,7 @@ import { getState } from '../utils/store.js';
 import { navigate } from '../utils/router.js';
 import { getResearchNotes, addResearchNote, updateResearchNote, deleteResearchNote } from '../utils/db.js';
 import { t } from '../utils/i18n.js';
+import { translateUserText } from '../utils/translate.js';
 
 let notes = [];
 let currentFilter = 'all';
@@ -77,11 +78,11 @@ export default {
 
     // フィルターのイベントリスナー
     document.querySelectorAll('.chip').forEach(chip => {
-      chip.addEventListener('click', (e) => {
+      chip.addEventListener('click', async (e) => {
         document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
         e.target.classList.add('active');
         currentFilter = e.target.dataset.filter;
-        this.renderNotes();
+        await this.renderNotes();
       });
     });
 
@@ -126,10 +127,10 @@ export default {
 
   async loadNotes(tripId) {
     notes = await getResearchNotes(tripId);
-    this.renderNotes();
+    await this.renderNotes();
   },
 
-  renderNotes() {
+  async renderNotes() {
     const grid = document.getElementById('researchGrid');
     
     let filtered = notes;
@@ -150,12 +151,14 @@ export default {
       return;
     }
 
-    grid.innerHTML = filtered.map(note => {
+    const notesPromises = filtered.map(async note => {
       const priorityHearts = '❤️'.repeat(note.priority) + '🤍'.repeat(3 - note.priority);
+      const translatedName = await translateUserText(note.name) || note.name;
+      const translatedMemo = note.memo ? await translateUserText(note.memo) || note.memo : '';
       return `
         <div class="spot-card">
           <div class="spot-header">
-            <h3>${note.name}</h3>
+            <h3>${translatedName}</h3>
             <div class="spot-priority">${priorityHearts}</div>
           </div>
           <div class="spot-details">
@@ -163,7 +166,7 @@ export default {
             ${note.hours ? `<p>🕒 ${note.hours}</p>` : ''}
             ${note.price ? `<p>💰 ${note.price}</p>` : ''}
           </div>
-          ${note.memo ? `<div class="spot-memo">${note.memo}</div>` : ''}
+          ${translatedMemo ? `<div class="spot-memo">${translatedMemo}</div>` : ''}
           ${note.tags && note.tags.length > 0 ? `
             <div class="spot-tags">
               ${note.tags.map(t => `<span class="tag">${t}</span>`).join('')}
@@ -175,6 +178,9 @@ export default {
           </div>
         </div>
       `;
-    }).join('');
+    });
+
+    const notesHtml = await Promise.all(notesPromises);
+    grid.innerHTML = notesHtml.join('');
   }
 };

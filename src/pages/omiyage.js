@@ -1,8 +1,8 @@
 import { getState } from '../utils/store.js';
 import { navigate } from '../utils/router.js';
 import { getOmiyageList, addOmiyageItem, updateOmiyageItem, deleteOmiyageItem } from '../utils/db.js';
-
 import { t } from '../utils/i18n.js';
+import { translateUserText } from '../utils/translate.js';
 
 export default {
     render() {
@@ -64,7 +64,7 @@ export default {
 
         let items = [];
 
-        const renderContent = () => {
+        const renderContent = async () => {
             if (items.length === 0) {
                 progressEl.innerHTML = `<p>まだお土産リストがありません。</p>`;
                 mainEl.innerHTML = `
@@ -87,15 +87,35 @@ export default {
             `;
 
             // Group by recipient
-            const grouped = items.reduce((acc, item) => {
-                if (!acc[item.recipientName]) acc[item.recipientName] = [];
-                acc[item.recipientName].push(item);
-                return acc;
-            }, {});
+            const grouped = {};
+            for (const item of items) {
+                const translatedRecipient = await translateUserText(item.recipientName) || item.recipientName;
+                if (!grouped[translatedRecipient]) grouped[translatedRecipient] = [];
+                grouped[translatedRecipient].push(item);
+            }
 
-            mainEl.innerHTML = Object.keys(grouped).map(recipient => {
+            const mainHtmlPromises = Object.keys(grouped).map(async recipient => {
                 const recipientItems = grouped[recipient];
                 const totalBudget = recipientItems.reduce((sum, i) => sum + Number(i.budget || 0), 0);
+                
+                const liPromises = recipientItems.map(async item => {
+                    const translatedItemName = await translateUserText(item.itemName) || '未定';
+                    return `
+                                <li class="omiyage-item ${item.purchased ? 'purchased' : ''}" data-id="${item.id}">
+                                    <label class="checkbox-wrapper">
+                                        <input type="checkbox" class="omiyage-check" data-id="${item.id}" ${item.purchased ? 'checked' : ''}>
+                                        <span class="checkmark"></span>
+                                        <div class="omiyage-details">
+                                            <div class="omiyage-name">${translatedItemName}</div>
+                                            ${item.budget ? `<div class="omiyage-budget">¥${Number(item.budget).toLocaleString()}</div>` : ''}
+                                        </div>
+                                    </label>
+                                    <button class="btn-delete" data-id="${item.id}">🗑️</button>
+                                </li>
+                    `;
+                });
+                const liHtml = await Promise.all(liPromises);
+
                 return `
                     <div class="omiyage-recipient card">
                         <div class="recipient-header">
@@ -103,23 +123,13 @@ export default {
                             <span class="recipient-budget">予算: ¥${totalBudget.toLocaleString()}</span>
                         </div>
                         <ul class="omiyage-list">
-                            ${recipientItems.map(item => `
-                                <li class="omiyage-item ${item.purchased ? 'purchased' : ''}" data-id="${item.id}">
-                                    <label class="checkbox-wrapper">
-                                        <input type="checkbox" class="omiyage-check" data-id="${item.id}" ${item.purchased ? 'checked' : ''}>
-                                        <span class="checkmark"></span>
-                                        <div class="omiyage-details">
-                                            <div class="omiyage-name">${item.itemName || '未定'}</div>
-                                            ${item.budget ? `<div class="omiyage-budget">¥${Number(item.budget).toLocaleString()}</div>` : ''}
-                                        </div>
-                                    </label>
-                                    <button class="btn-delete" data-id="${item.id}">🗑️</button>
-                                </li>
-                            `).join('')}
+                            ${liHtml.join('')}
                         </ul>
                     </div>
                 `;
-            }).join('');
+            });
+            const mainHtml = await Promise.all(mainHtmlPromises);
+            mainEl.innerHTML = mainHtml.join('');
 
             // Bind checkbox events
             document.querySelectorAll('.omiyage-check').forEach(cb => {
@@ -150,7 +160,7 @@ export default {
         const loadItems = async () => {
             try {
                 items = await getOmiyageList(tripId);
-                renderContent();
+                await renderContent();
             } catch (e) {
                 console.error(e);
                 mainEl.innerHTML = '<p>エラーが発生しました😢</p>';

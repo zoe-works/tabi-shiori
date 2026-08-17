@@ -2,9 +2,10 @@ import { getState } from '../utils/store.js';
 import { navigate } from '../utils/router.js';
 import { loginWithGoogle, linkGoogleAccount } from '../firebase.js';
 import { t } from '../utils/i18n.js';
+import { translateUserText } from '../utils/translate.js';
 
 export default {
-  render() {
+  async render() {
     const { currentTrip } = getState();
     
     if (!currentTrip) {
@@ -48,11 +49,33 @@ export default {
       return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
     };
 
+    const translatedTitle = await translateUserText(currentTrip.title) || t('untitledTrip');
+    
+    // 行き先の翻訳
+    const destPromises = (currentTrip.destinations || []).map(async (d) => {
+      const country = await translateUserText(d.country) || '';
+      const city = await translateUserText(d.city) || '';
+      return `<span class="chip">📍 ${country} ${city}</span>`;
+    });
+    const destChips = await Promise.all(destPromises);
+
+    // メンバー名の翻訳
+    const memberPromises = (currentTrip.members || []).map(async (m) => {
+      const name = await translateUserText(m.name) || '';
+      return `
+        <div class="member-avatar" title="${name}">
+          <span class="member-emoji">${m.icon || '😊'}</span>
+          <span class="member-name">${name}</span>
+        </div>
+      `;
+    });
+    const memberHtml = await Promise.all(memberPromises);
+
     return `
       <div class="page fade-in">
         <div class="home-cover" style="background-image: url('${currentTrip.coverImage || import.meta.env.BASE_URL + 'images/mascot.jpg'}')">
           <div class="home-cover-overlay"></div>
-          <h1 class="home-trip-title">${currentTrip.title || t('untitledTrip')}</h1>
+          <h1 class="home-trip-title">${translatedTitle}</h1>
           <p class="home-trip-dates">${formatDate(currentTrip.startDate)} 〜 ${formatDate(currentTrip.endDate)}</p>
         </div>
 
@@ -62,20 +85,13 @@ export default {
           </div>
 
           <div class="destinations-chips">
-            ${(currentTrip.destinations || []).map(d => `
-              <span class="chip">📍 ${d.country || ''} ${d.city || ''}</span>
-            `).join('')}
+            ${destChips.join('')}
           </div>
 
           <div class="members-section">
             <h3>${t('members')}</h3>
             <div class="members-list">
-              ${(currentTrip.members || []).map(m => `
-                <div class="member-avatar" title="${m.name}">
-                  <span class="member-emoji">${m.icon || '😊'}</span>
-                  <span class="member-name">${m.name}</span>
-                </div>
-              `).join('')}
+              ${memberHtml.join('')}
             </div>
           </div>
           

@@ -3,6 +3,7 @@ import { navigate } from '../utils/router.js';
 import { getSchedules, addScheduleItem, updateScheduleItem, deleteScheduleItem } from '../utils/db.js';
 import { uploadPhoto, compressImage } from '../utils/storage.js';
 import { t } from '../utils/i18n.js';
+import { translateUserText } from '../utils/translate.js';
 
 let currentDay = 1;
 let currentMode = 'plan'; // 'plan' or 'journal'
@@ -232,10 +233,10 @@ export default {
   async loadSchedules(tripId) {
     schedules = await getSchedules(tripId, currentDay);
     schedules.sort((a, b) => a.time.localeCompare(b.time));
-    this.renderTimeline();
+    await this.renderTimeline();
   },
 
-  renderTimeline() {
+  async renderTimeline() {
     const container = document.getElementById('timelineContainer');
     
     if (schedules.length === 0) {
@@ -243,8 +244,10 @@ export default {
       return;
     }
 
-    container.innerHTML = schedules.map(item => {
+    const itemsHtmlPromises = schedules.map(async item => {
       const cat = categories[item.category] || categories.other;
+      const translatedTitle = await translateUserText(item.title) || item.title;
+      const translatedMemo = item.memo ? (await translateUserText(item.memo) || item.memo) : '';
       let journalHtml = '';
       
       if (currentMode === 'journal') {
@@ -272,14 +275,17 @@ export default {
           <div class="timeline-time">${item.time}</div>
           <div class="timeline-dot" data-category="${item.category}">${cat.icon}</div>
           <div class="timeline-card">
-            <h4>${item.title}</h4>
+            <h4>${translatedTitle}</h4>
             ${item.transport ? `<p class="transport">🚌 ${item.transport}</p>` : ''}
-            ${item.memo ? `<p class="memo">${item.memo}</p>` : ''}
+            ${translatedMemo ? `<p class="memo">${translatedMemo}</p>` : ''}
             ${journalHtml}
           </div>
         </div>
       `;
-    }).join('');
+    });
+
+    const itemsHtml = await Promise.all(itemsHtmlPromises);
+    container.innerHTML = itemsHtml.join('');
 
     if (currentMode === 'journal') {
       container.querySelectorAll('.journal-add-btn, .edit-journal-btn').forEach(btn => {

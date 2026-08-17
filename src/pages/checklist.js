@@ -2,6 +2,7 @@ import { getState } from '../utils/store.js';
 import { navigate } from '../utils/router.js';
 import { getChecklist, addChecklistItem, updateChecklistItem, deleteChecklistItem } from '../utils/db.js';
 import { t } from '../utils/i18n.js';
+import { translateUserText } from '../utils/translate.js';
 
 const DEFAULT_ITEMS = [
   { category: 'documents', items: ['パスポート', '航空券(予約確認書)', 'ホテル予約確認書', '海外旅行保険証', 'クレジットカード'] },
@@ -23,7 +24,7 @@ const IMPORTANT_ITEMS = ['パスポート', '航空券', '航空券(予約確認
 
 let checklistItems = [];
 
-function render() {
+async function render() {
   return `
     <div class="page checklist-page">
       <header class="page-header">
@@ -84,17 +85,17 @@ async function loadChecklist() {
   renderChecklist();
 }
 
-function renderChecklist() {
+async function renderChecklist() {
   const container = document.getElementById('cl-container');
   container.innerHTML = '';
   
   let checkedCount = 0;
   
-  Object.keys(CATEGORIES).forEach(catKey => {
+  for (const catKey of Object.keys(CATEGORIES)) {
     const catConfig = CATEGORIES[catKey];
     const itemsInCat = checklistItems.filter(item => item.category === catKey);
     
-    if(itemsInCat.length === 0) return;
+    if(itemsInCat.length === 0) continue;
     
     const catSection = document.createElement('div');
     catSection.className = 'checklist-section';
@@ -113,11 +114,13 @@ function renderChecklist() {
     const itemList = document.createElement('div');
     itemList.className = 'checklist-items';
     
-    itemsInCat.forEach(item => {
+    for (const item of itemsInCat) {
       if(item.checked) checkedCount++;
       
       const itemEl = document.createElement('div');
       itemEl.className = `checklist-item ${item.checked ? 'checked' : ''}`;
+      
+      const translatedName = await translateUserText(item.name) || item.name;
       
       itemEl.innerHTML = `
         <div class="checkbox-custom" data-id="${item.id}">
@@ -125,7 +128,7 @@ function renderChecklist() {
         </div>
         <div class="item-name">
           ${item.important ? '<span class="important-mark">❗</span>' : ''}
-          ${item.name}
+          ${translatedName}
         </div>
         <div class="assignee-badge" data-id="${item.id}">
           ${item.assignee ? item.assignee.substring(0,1) : '👤'}
@@ -149,7 +152,7 @@ function renderChecklist() {
       });
       
       itemList.appendChild(itemEl);
-    });
+    }
     
     // Add inline input
     const addContainer = document.createElement('div');
@@ -177,7 +180,7 @@ function renderChecklist() {
     itemList.appendChild(addContainer);
     catSection.appendChild(itemList);
     container.appendChild(catSection);
-  });
+  }
   
   // Update progress
   const total = checklistItems.length;
