@@ -1,7 +1,7 @@
 import { getState, setState } from '../utils/store.js';
 import { navigate, getCurrentPath } from '../utils/router.js';
 import { t, getLang } from '../utils/i18n.js';
-import { createTrip, updateTrip, getTrips } from '../utils/db.js';
+import { createTrip, updateTrip, getTrips, deleteTrip } from '../utils/db.js';
 import { POPULAR_COUNTRIES } from '../data/phrases.js';
 
 const EMOJIS = ['🐱','🐶','🐻','🐰','🦊','🐼','🐨','🦁','🐯','🐵','🐸','🦄','🌸','🌻','⭐','🌈','❤️','💎'];
@@ -100,7 +100,8 @@ export default {
         </div>
 
         <div class="bottom-actions">
-          <button class="btn btn-primary w-full text-lg" id="btn-save-trip">${t('btnSave')}</button>
+          <button class="btn btn-primary w-full text-lg mb-sm" id="btn-save-trip">${t('btnSave')}</button>
+          ${isEdit ? `<button class="btn btn-secondary w-full" id="btn-delete-trip" style="color: var(--error);">🗑️ ${t('deleteTrip') || 'この旅行を削除'}</button>` : ''}
         </div>
 
         <!-- Emoji Picker Modal -->
@@ -262,5 +263,27 @@ export default {
         btn.disabled = false;
       }
     });
+
+    if (isEdit) {
+      document.getElementById('btn-delete-trip')?.addEventListener('click', async () => {
+        if (confirm('本当にこの旅行を削除しますか？\n削除すると、すべてのデータ（単語帳、チェックリストなど）が消去され元に戻せません。')) {
+          const { user: currentUser } = getState();
+          try {
+            await deleteTrip(currentUser.uid, currentTrip.id);
+            const trips = await getTrips(currentUser.uid);
+            setState({ trips, currentTrip: trips[0] || null, currentTripId: trips[0]?.id || null });
+            if (trips.length > 0) {
+              localStorage.setItem('currentTripId', trips[0].id);
+            } else {
+              localStorage.removeItem('currentTripId');
+            }
+            navigate('/');
+          } catch (err) {
+            console.error('Error deleting trip:', err);
+            alert('削除に失敗しました。');
+          }
+        }
+      });
+    }
   }
 };
