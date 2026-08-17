@@ -15,7 +15,7 @@ export default {
             <button id="btn-create-trip" class="btn btn-primary">✨ 新しい旅行を作成</button>
           </div>
           <div class="text-center" style="margin-top: 40px;">
-            <span class="text-xs text-muted">Version 1.0.1</span>
+            <span class="text-xs text-muted">Version 1.0.2</span>
           </div>
         </div>
       `;
@@ -112,7 +112,7 @@ export default {
         </button>
 
         <div class="text-center mt-lg" style="margin-bottom: 24px;">
-          <span class="text-xs text-muted">Version 1.0.1</span>
+          <span class="text-xs text-muted">Version 1.0.2</span>
         </div>
       </div>
     `;
