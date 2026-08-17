@@ -171,7 +171,7 @@ export default {
           import('../utils/store.js').then(({ setState }) => {
             setState({ currentTripId: tripId, currentTrip: trip });
             localStorage.setItem('currentTripId', tripId);
-            navigate('/');
+            navigate('/', true, true);
           });
         }
       });

@@ -6,8 +6,8 @@ export function registerRoute(path, pageModule) {
   routes[path] = pageModule;
 }
 
-export function navigate(path, updateHash = true) {
-  if (currentPath === path) return;
+export function navigate(path, updateHash = true, force = false) {
+  if (currentPath === path && !force) return;
   
   const page = routes[path];
   if (!page) {

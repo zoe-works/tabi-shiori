@@ -209,7 +209,7 @@ async function init() {
   document.getElementById('btn-drawer-portal')?.addEventListener('click', () => {
     setState({ currentTripId: null, currentTrip: null });
     document.getElementById('drawer-overlay').classList.remove('active');
-    navigate('/');
+    navigate('/', true, true);
   });
 
   // Language switch
@@ -278,7 +278,7 @@ function updateDrawerTrips(trips) {
         setState({ currentTripId: tripId, currentTrip: trip });
         localStorage.setItem('currentTripId', tripId);
         document.getElementById('drawer-overlay').classList.remove('active');
-        navigate('/');
+        navigate('/', true, true);
       }
     });
   });
