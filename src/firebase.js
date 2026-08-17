@@ -2,7 +2,7 @@
 import { initializeApp } from 'firebase/app';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, linkWithPopup } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCh5zX-2AgcibKw-tCvXpsFuRA9POYFt-Y",
@@ -36,6 +36,18 @@ export function ensureAuth() {
       }
     });
   });
+}
+
+const googleProvider = new GoogleAuthProvider();
+
+export async function loginWithGoogle() {
+  const result = await signInWithPopup(auth, googleProvider);
+  return result.user;
+}
+
+export async function linkGoogleAccount() {
+  const result = await linkWithPopup(auth.currentUser, googleProvider);
+  return result.user;
 }
 
 export default app;

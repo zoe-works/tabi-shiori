@@ -7,7 +7,7 @@ import './styles/schedule.css';
 import './styles/research.css';
 import './styles/extras.css';
 import { registerRoute, navigate } from './utils/router.js';
-import { ensureAuth } from './firebase.js';
+import { ensureAuth, loginWithGoogle, linkGoogleAccount } from './firebase.js';
 import { setState, getState, subscribe } from './utils/store.js';
 import { getTrips } from './utils/db.js';
 import homePage from './pages/home.js';
@@ -98,6 +98,11 @@ function renderAppShell() {
           <div class="drawer-trips" id="drawer-trips">
             <p class="drawer-section-title">旅行を切り替え</p>
           </div>
+          <hr class="drawer-divider" />
+          <a class="drawer-item" id="btn-drawer-google">
+            <span style="margin-right:4px">🌐</span>
+            <span id="drawer-google-text">Googleアカウントと連携</span>
+          </a>
         </nav>
       </div>
     </div>
@@ -153,12 +158,31 @@ async function init() {
   });
 
   // Drawer navigation
-  document.querySelectorAll('.drawer-item').forEach(item => {
+  document.querySelectorAll('.drawer-item[data-route]').forEach(item => {
     item.addEventListener('click', () => {
       const route = item.getAttribute('data-route');
       drawerOverlay.classList.remove('active');
       navigate(route);
     });
+  });
+
+  // Google Login from Drawer
+  document.getElementById('btn-drawer-google')?.addEventListener('click', async () => {
+    const { user } = getState();
+    if (user && !user.isAnonymous) return; // 既にログイン済み
+
+    try {
+      if (user && user.isAnonymous) {
+        await linkGoogleAccount();
+      } else {
+        await loginWithGoogle();
+      }
+      window.location.reload();
+    } catch (e) {
+      if (e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') {
+        alert('ログインに失敗しました: ' + e.message);
+      }
+    }
   });
 
   // Auth & load data
@@ -277,9 +301,11 @@ function showShareModal() {
 
 // UI visibility
 function updateAppShellVisibility() {
-  const { currentTrip } = getState();
+  const { currentTrip, user } = getState();
   const bottomNav = document.getElementById('bottom-nav');
   const headerActions = document.querySelector('.header-actions');
+  const googleBtn = document.getElementById('btn-drawer-google');
+  const googleText = document.getElementById('drawer-google-text');
   
   if (!currentTrip) {
     if (bottomNav) bottomNav.classList.add('hidden');
@@ -287,6 +313,16 @@ function updateAppShellVisibility() {
   } else {
     if (bottomNav) bottomNav.classList.remove('hidden');
     if (headerActions) headerActions.classList.remove('hidden');
+  }
+
+  if (user) {
+    if (user.isAnonymous) {
+      if (googleText) googleText.textContent = 'Googleアカウントと連携';
+      if (googleBtn) googleBtn.style.color = 'inherit';
+    } else {
+      if (googleText) googleText.textContent = 'Googleでログイン済み';
+      if (googleBtn) googleBtn.style.color = 'var(--text-muted)';
+    }
   }
 }
 

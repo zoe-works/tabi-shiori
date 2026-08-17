@@ -1,5 +1,6 @@
 import { getState } from '../utils/store.js';
 import { navigate } from '../utils/router.js';
+import { loginWithGoogle, linkGoogleAccount } from '../firebase.js';
 
 export default {
   render() {
@@ -13,6 +14,9 @@ export default {
             <h1 class="welcome-title">旅のしおりを作ろう！</h1>
             <p class="welcome-text">旅行の計画から記録まで、<br>みんなで楽しく作る旅のしおり 🌴</p>
             <button id="btn-create-trip" class="btn btn-primary">✨ 新しい旅行を作成</button>
+            <button id="btn-welcome-google" class="btn btn-secondary mt-md" style="width:100%; border:1px solid #ccc; background:#fff; color:#333; margin-top:16px;">
+              <span style="margin-right:8px">🌐</span>Googleアカウントでログイン/引き継ぎ
+            </button>
           </div>
           <div class="text-center" style="margin-top: 40px;">
             <span class="text-xs text-muted">Version 1.0.2</span>
@@ -122,6 +126,22 @@ export default {
     document.getElementById('btn-create-trip')?.addEventListener('click', () => navigate('/trip/new'));
     document.getElementById('btn-edit-trip')?.addEventListener('click', () => navigate('/trip/edit'));
     
+    document.getElementById('btn-welcome-google')?.addEventListener('click', async () => {
+      try {
+        const { user } = getState();
+        if (user && user.isAnonymous) {
+          await linkGoogleAccount();
+        } else {
+          await loginWithGoogle();
+        }
+        window.location.reload(); // 再読み込みして状態をリセット
+      } catch (e) {
+        if (e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') {
+          alert('ログインに失敗しました: ' + e.message);
+        }
+      }
+    });
+
     document.querySelectorAll('.feature-card').forEach(card => {
       card.addEventListener('click', () => {
         const route = card.getAttribute('data-route');
