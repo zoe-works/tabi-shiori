@@ -8,6 +8,8 @@ let activeCountry = '';
 let notes = [];
 
 const DEFAULT_QUESTIONS = [
+  "首都・人口・面積・公用語は？",
+  "現地通貨は？",
   "現地の人の性格は？",
   "食文化は？",
   "コンビニなどの便利なお店は？",
