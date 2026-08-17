@@ -27,14 +27,14 @@ function generateDestRow(d = {}, placeholders = {}) {
   }).join('');
 
   return `
-    <div class="form-row destination-item mb-sm" style="flex-wrap: wrap; gap: 8px;">
-      <select class="form-input flex-1 dest-country-select" style="min-width: 140px; margin-bottom: 0;">
+    <div class="form-row destination-item mb-sm" style="gap: 4px;">
+      <select class="form-input flex-1 dest-country-select" style="min-width: 0; padding: 12px 8px; margin-bottom: 0;">
         <option value="" disabled ${!selectedCode ? 'selected' : ''}>${placeholders.country || '国を選択'}</option>
         ${optionsHtml}
       </select>
-      <input type="text" class="form-input flex-1 dest-country-other" placeholder="国名を入力" value="${isOther ? countryValue : ''}" style="min-width: 100px; margin-bottom: 0; ${isOther ? '' : 'display:none;'}" />
-      <input type="text" class="form-input flex-1 dest-city" placeholder="${placeholders.city || '都市'}" value="${d.city || ''}" style="min-width: 100px; margin-bottom: 0;" />
-      <button type="button" class="btn-icon btn-remove" style="margin-bottom: 0;">✖</button>
+      <input type="text" class="form-input flex-1 dest-country-other" placeholder="国名を入力" value="${isOther ? countryValue : ''}" style="min-width: 0; padding: 12px 8px; margin-bottom: 0; ${isOther ? '' : 'display:none;'}" />
+      <input type="text" class="form-input flex-1 dest-city" placeholder="${placeholders.city || '都市'}" value="${d.city || ''}" style="min-width: 0; padding: 12px 8px; margin-bottom: 0;" />
+      <button type="button" class="btn-icon btn-remove" style="flex-shrink: 0; padding: 8px; margin-bottom: 0;">✖</button>
     </div>
   `;
 }
@@ -88,10 +88,10 @@ export default {
             <label class="form-label">${t('membersLabel')}</label>
             <div id="members-list">
               ${trip.members.map((m, i) => `
-                <div class="form-row member-item mb-sm" style="align-items: center;">
-                  <button class="btn-emoji-picker" data-index="${i}">${m.icon || '😊'}</button>
-                  <input type="text" class="form-input flex-1 member-name" placeholder="${t('memberNamePlaceholder')}" value="${m.name || ''}" />
-                  <button class="btn-icon btn-remove-member" data-index="${i}">✖</button>
+                <div class="form-row member-item mb-sm" style="align-items: center; gap: 4px;">
+                  <button class="btn-emoji-picker" data-index="${i}" style="flex-shrink: 0;">${m.icon || '😊'}</button>
+                  <input type="text" class="form-input flex-1 member-name" placeholder="${t('memberNamePlaceholder')}" value="${m.name || ''}" style="min-width: 0;" />
+                  <button class="btn-icon btn-remove-member" data-index="${i}" style="flex-shrink: 0; padding: 8px;">✖</button>
                 </div>
               `).join('')}
             </div>
@@ -157,10 +157,11 @@ export default {
       const row = document.createElement('div');
       row.className = 'form-row member-item mb-sm';
       row.style.alignItems = 'center';
+      row.style.gap = '4px';
       row.innerHTML = `
-        <button class="btn-emoji-picker">😊</button>
-        <input type="text" class="form-input flex-1 member-name" placeholder="${t('memberNamePlaceholder')}" />
-        <button class="btn-icon btn-remove-member">✖</button>
+        <button class="btn-emoji-picker" style="flex-shrink: 0;">😊</button>
+        <input type="text" class="form-input flex-1 member-name" placeholder="${t('memberNamePlaceholder')}" style="min-width: 0;" />
+        <button class="btn-icon btn-remove-member" style="flex-shrink: 0; padding: 8px;">✖</button>
       `;
       membersList.appendChild(row);
     });
