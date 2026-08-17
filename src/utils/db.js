@@ -29,7 +29,28 @@ export async function createTrip(userId, tripData) {
     createdAt: serverTimestamp(),
   };
   const docRef = await addDoc(collection(db, 'users', userId, 'trips'), data);
-  return docRef.id;
+  const tripId = docRef.id;
+
+  // デフォルトのスケジュール枠を自動生成
+  if (data.startDate && data.endDate) {
+    const start = new Date(data.startDate);
+    const end = new Date(data.endDate);
+    const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
+    for (let i = 1; i <= days; i++) {
+      if (i === 1) {
+        await addScheduleItem(userId, tripId, { day: 1, time: '08:00', title: '出発', category: 'transport', order: 0 });
+        await addScheduleItem(userId, tripId, { day: 1, time: '15:00', title: 'ホテル到着・チェックイン', category: 'hotel', order: 1 });
+      } else if (i === days) {
+        await addScheduleItem(userId, tripId, { day: i, time: '10:00', title: 'ホテル出発・帰路へ', category: 'transport', order: 0 });
+        await addScheduleItem(userId, tripId, { day: i, time: '18:00', title: '自宅到着', category: 'other', order: 1 });
+      } else {
+        await addScheduleItem(userId, tripId, { day: i, time: '09:00', title: '観光スタート', category: 'sightseeing', order: 0 });
+      }
+    }
+  }
+
+  return tripId;
 }
 
 export async function updateTrip(userId, tripId, data) {

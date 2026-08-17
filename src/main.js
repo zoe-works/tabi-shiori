@@ -275,10 +275,31 @@ function showShareModal() {
   }
 }
 
-// Subscribe to trip changes to update drawer
+// UI visibility
+function updateAppShellVisibility() {
+  const { currentTrip } = getState();
+  const bottomNav = document.getElementById('bottom-nav');
+  const headerActions = document.querySelector('.header-actions');
+  
+  if (!currentTrip) {
+    if (bottomNav) bottomNav.classList.add('hidden');
+    if (headerActions) headerActions.classList.add('hidden');
+  } else {
+    if (bottomNav) bottomNav.classList.remove('hidden');
+    if (headerActions) headerActions.classList.remove('hidden');
+  }
+}
+
+// Subscribe to state changes
 subscribe('trips', (trips) => {
   updateDrawerTrips(trips);
 });
 
+subscribe('currentTrip', () => {
+  updateAppShellVisibility();
+});
+
 // Start app
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => {
+  init().then(() => updateAppShellVisibility());
+});
