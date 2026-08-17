@@ -18,7 +18,7 @@ export default {
                 <main class="content" id="omiyage-main">
                     <div class="loading">${t('loading') || 'よみこみ中... 🧸'}</div>
                 </main>
-                <button class="fab" id="omiyage-fab">＋</button>
+                <button class="fab fab-center" id="omiyage-fab">＋</button>
                 
                 <div id="omiyage-modal" class="modal-overlay">
                     <div class="modal-content">
@@ -39,7 +39,7 @@ export default {
                             </div>
                             <div class="modal-actions">
                                 <button type="button" class="btn-cancel" id="omi-cancel">${t('cancelBtn') || 'キャンセル'}</button>
-                                <button type="submit" class="btn-primary">${t('addBtn') || '追加する ✨'}</button>
+                                <button type="submit" class="btn-fancy">${t('addBtn') || '追加する ✨'}</button>
                             </div>
                         </form>
                     </div>

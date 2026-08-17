@@ -312,20 +312,25 @@ export default {
       let currentX = 0;
       
       wrapper.addEventListener('touchstart', (e) => {
+        if (currentMode !== 'plan') return;
         startX = e.touches[0].clientX;
         wrapper.style.transition = 'none';
-        itemEl.querySelector('.swipe-delete-bg').style.opacity = '1';
       }, {passive: true});
       
       wrapper.addEventListener('touchmove', (e) => {
+        if (currentMode !== 'plan') return;
         currentX = e.touches[0].clientX - startX;
         // Only allow swiping right
         if (currentX > 0) {
           wrapper.style.transform = `translateX(${currentX}px)`;
+          if (currentX > 20) {
+            itemEl.querySelector('.swipe-delete-bg').style.opacity = '1';
+          }
         }
       }, {passive: true});
       
       wrapper.addEventListener('touchend', async (e) => {
+        if (currentMode !== 'plan') return;
         wrapper.style.transition = 'transform 0.2s ease-out';
         if (currentX > 100) { // Threshold to delete
           wrapper.style.transform = `translateX(100vw)`;

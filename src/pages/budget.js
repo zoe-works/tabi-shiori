@@ -25,7 +25,7 @@ export default {
                 <main class="content" id="budget-main">
                     <div class="loading">${t('loading') || 'よみこみ中... 🧸'}</div>
                 </main>
-                <button class="fab" id="budget-fab">＋</button>
+                <button class="fab fab-center" id="budget-fab">＋</button>
                 
                 <div id="budget-modal" class="modal-overlay">
                     <div class="modal-content">
@@ -59,7 +59,7 @@ export default {
                             </div>
                             <div class="modal-actions">
                                 <button type="button" class="btn-cancel" id="budget-cancel">${t('cancelBtn') || 'キャンセル'}</button>
-                                <button type="submit" class="btn-primary">${t('addBtn') || '追加する ✨'}</button>
+                                <button type="submit" class="btn-fancy">${t('addBtn') || '追加する ✨'}</button>
                             </div>
                         </form>
                     </div>
@@ -85,10 +85,9 @@ export default {
             return;
         }
 
-        const members = state.currentTrip?.members || ['自分', '友人A', '友人B']; 
         let items = [];
 
-        const renderContent = async () => {
+                const renderContent = async () => {
             if (items.length === 0) {
                 mainEl.innerHTML = `
                     <div class="empty-state">
@@ -153,7 +152,7 @@ export default {
 
         await loadItems();
 
-        // Modal logic
+                // Modal logic
         const modal = document.getElementById('budget-modal');
         const fab = document.getElementById('budget-fab');
         const cancelBtn = document.getElementById('budget-cancel');
@@ -161,6 +160,35 @@ export default {
 
         fab.addEventListener('click', () => {
             modal.classList.add('active');
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            modal.classList.remove('active');
+            form.reset();
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+                form.reset();
+            }
+        });
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newItem = {
+                tripId,
+                amount: Number(document.getElementById('budget-amount').value),
+                title: document.getElementById('budget-title').value,
+                category: document.getElementById('budget-category').value,
+                currency: document.getElementById('budget-currency').value,
+                date: new Date().toISOString()
+            };
+
+            await addBudgetItem(newItem);
+            modal.classList.remove('active');
+            form.reset();
+            await loadItems();
         });
 
         cancelBtn.addEventListener('click', () => {

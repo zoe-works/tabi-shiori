@@ -160,7 +160,7 @@ export const translations = {
     paidByLabel: '支払った人',
     selectMemberLabel: 'メンバーを選択',
     cancelBtn: 'キャンセル',
-    noBudgetItems: 'まだ支出がありません。<br>右下の＋ボタンから追加しよう！',
+    noBudgetItems: 'まだ支出がありません。<br>＋ボタンから追加しよう！',
     totalExpense: '合計支出',
     warikanStatus: '割り勘 / 立て替え状況',
     youPaid: 'あなたが払った',

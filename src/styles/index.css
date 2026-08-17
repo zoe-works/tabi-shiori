@@ -318,7 +318,7 @@ ul, ol {
   align-items: center;
   justify-content: center;
   gap: 2px;
-  padding: 6px 4px;
+  padding: 2px 4px;
   border-radius: var(--radius-sm);
   transition: all var(--transition-fast);
   flex: 1;
@@ -814,4 +814,35 @@ ul, ol {
 ::selection {
   background: var(--color-pink-light);
   color: var(--color-text);
+}
+/* --- Added by request --- */
+.fab-center {
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 64px !important;
+  height: 64px !important;
+  font-size: 2.2rem !important;
+  bottom: calc(var(--nav-height) + 24px) !important;
+}
+
+.btn-fancy {
+  width: 100%;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, var(--color-pink-deep), #ff8a8a);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+  transition: all 0.2s ease;
+  margin-top: 16px;
+}
+
+.btn-fancy:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+.btn-fancy:active {
+  transform: translateY(1px);
 }
