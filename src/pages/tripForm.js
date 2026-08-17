@@ -64,14 +64,14 @@ export default {
           </div>
 
           <div class="card mb-md">
-            <div class="form-row">
-              <div class="form-group flex-1">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+              <div class="form-group" style="min-width: 0;">
                 <label class="form-label">${t('startDate')}</label>
-                <input type="date" id="trip-start" class="form-input" value="${trip.startDate}" />
+                <input type="date" id="trip-start" class="form-input" value="${trip.startDate}" style="width: 100%; box-sizing: border-box;" />
               </div>
-              <div class="form-group flex-1">
+              <div class="form-group" style="min-width: 0;">
                 <label class="form-label">${t('endDate')}</label>
-                <input type="date" id="trip-end" class="form-input" value="${trip.endDate}" />
+                <input type="date" id="trip-end" class="form-input" value="${trip.endDate}" style="width: 100%; box-sizing: border-box;" />
               </div>
             </div>
           </div>

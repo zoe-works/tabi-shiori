@@ -6,21 +6,45 @@ import { translateUserText } from '../utils/translate.js';
 
 export default {
   async render() {
-    const { currentTrip } = getState();
+    const { currentTrip, trips, user } = getState();
     
     if (!currentTrip) {
+      let tripsHtml = '';
+      if (trips && trips.length > 0) {
+        tripsHtml = `
+          <div class="portal-trips" style="margin-top: 32px;">
+            <h2 class="text-center mb-md" style="font-size: 1.2rem; color: var(--text-dark);">あなたの旅行</h2>
+            <div class="trips-list" style="display: flex; flex-direction: column; gap: 12px; padding: 0 16px;">
+              ${trips.map(trip => `
+                <div class="card portal-trip-card" data-trip-id="${trip.id}" style="cursor: pointer; display: flex; align-items: center; padding: 16px;">
+                  <span style="font-size: 24px; margin-right: 12px;">✈️</span>
+                  <div style="flex: 1; min-width: 0;">
+                    <h3 style="margin: 0; font-size: 1.1rem; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${trip.title || t('untitledTrip')}</h3>
+                    <p style="margin: 4px 0 0; font-size: 0.85rem; color: var(--text-muted);">${trip.startDate || ''} ${trip.endDate ? '〜 ' + trip.endDate : ''}</p>
+                  </div>
+                  <span style="color: var(--color-pink); font-weight: bold;">❯</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
       return `
-        <div class="page">
+        <div class="page fade-in">
           <div class="welcome-section">
             <img src="${import.meta.env.BASE_URL}images/tabikuma.jpg" alt="たびくま" class="welcome-mascot" />
             <h1 class="welcome-title">${t('welcomeTitle')}</h1>
             <p class="welcome-text">${t('welcomeDesc')}</p>
             <button id="btn-create-trip" class="btn btn-primary">${t('btnWelcomeCreate')}</button>
+            ${(!user || user.isAnonymous) ? `
             <button id="btn-welcome-google" class="btn btn-secondary mt-md" style="width:100%; border:1px solid #ccc; background:#fff; color:#333; margin-top:16px;">
               <span style="margin-right:8px">🌐</span>${t('btnWelcomeGoogle')}
             </button>
+            ` : ''}
           </div>
-          <div class="text-center" style="margin-top: 40px;">
+          ${tripsHtml}
+          <div class="text-center" style="margin-top: 40px; margin-bottom: 40px;">
             <span class="text-xs text-muted">Version 1.1.0</span>
           </div>
         </div>
@@ -137,6 +161,22 @@ export default {
     document.getElementById('btn-create-trip')?.addEventListener('click', () => navigate('/trip/new'));
     document.getElementById('btn-edit-trip')?.addEventListener('click', () => navigate('/trip/edit'));
     
+    // Portal trips
+    document.querySelectorAll('.portal-trip-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const tripId = card.getAttribute('data-trip-id');
+        const { trips } = getState();
+        const trip = trips.find(t => t.id === tripId);
+        if (trip) {
+          import('../utils/store.js').then(({ setState }) => {
+            setState({ currentTripId: tripId, currentTrip: trip });
+            localStorage.setItem('currentTripId', tripId);
+            navigate('/');
+          });
+        }
+      });
+    });
+
     document.getElementById('btn-welcome-google')?.addEventListener('click', async () => {
       try {
         const { user } = getState();

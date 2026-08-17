@@ -7,7 +7,7 @@ import './styles/schedule.css';
 import './styles/research.css';
 import './styles/extras.css';
 import { registerRoute, navigate } from './utils/router.js';
-import { ensureAuth, loginWithGoogle, linkGoogleAccount } from './firebase.js';
+import { ensureAuth, loginWithGoogle, linkGoogleAccount, logout } from './firebase.js';
 import { setState, getState, subscribe, setLanguage } from './utils/store.js';
 import { getTrips } from './utils/db.js';
 import { t } from './utils/i18n.js';
@@ -46,9 +46,7 @@ function renderAppShell() {
       </div>
       <div class="header-actions">
         <button class="header-btn" id="btn-share" title="${t('share')}">🔗</button>
-        <button class="header-btn" id="btn-menu" title="${t('menu')}">
-          <img src="${import.meta.env.BASE_URL}images/tabikuma.jpg" alt="Menu" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; display: block;" />
-        </button>
+        <button class="header-btn" id="btn-menu" title="${t('menu')}">☰</button>
       </div>
     </header>
 
@@ -88,7 +86,9 @@ function renderAppShell() {
           <h2>${t('menu')}</h2>
         </div>
         <nav class="drawer-nav" id="drawer-nav">
-          <a class="drawer-item" data-route="/">🏠 ${t('home')}</a>
+          <a class="drawer-item" id="btn-drawer-portal">🐻 TOPページ（旅行一覧）</a>
+          <hr class="drawer-divider" />
+          <a class="drawer-item" data-route="/">🏠 ${t('home')} (ダッシュボード)</a>
           <a class="drawer-item" data-route="/flashcard">${t('flashcardTitle')}</a>
           <a class="drawer-item" data-route="/checklist">${t('checklistTitle')}</a>
           <a class="drawer-item" data-route="/schedule">📅 ${t('scheduleTitle')}</a>
@@ -101,6 +101,8 @@ function renderAppShell() {
           <div class="drawer-trips" id="drawer-trips">
             <p class="drawer-section-title">${t('switchTrip')}</p>
           </div>
+          <hr class="drawer-divider" id="drawer-logout-divider" style="display:none;" />
+          <a class="drawer-item" id="btn-drawer-logout" style="display:none; color: var(--color-danger);">🚪 ${t('logout') || 'ログアウト'}</a>
           <hr class="drawer-divider" />
           <div class="drawer-language" style="display:flex; justify-content:space-around; padding: 12px 16px;">
             <button class="btn-lang" data-lang="ja" style="font-size:24px; background:none; border:none; cursor:pointer;">🇯🇵</button>
@@ -193,6 +195,23 @@ async function init() {
     }
   });
 
+  // Logout
+  document.getElementById('btn-drawer-logout')?.addEventListener('click', async () => {
+    try {
+      await logout();
+      window.location.reload();
+    } catch (e) {
+      alert('ログアウトに失敗しました: ' + e.message);
+    }
+  });
+
+  // Portal
+  document.getElementById('btn-drawer-portal')?.addEventListener('click', () => {
+    setState({ currentTripId: null, currentTrip: null });
+    document.getElementById('drawer-overlay').classList.remove('active');
+    navigate('/');
+  });
+
   // Language switch
   document.querySelectorAll('.btn-lang').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -213,14 +232,9 @@ async function init() {
     }
     setState({ trips });
 
-    // Set current trip from localStorage or first trip
-    const savedTripId = localStorage.getItem('currentTripId');
-    if (savedTripId && trips.find(t => t.id === savedTripId)) {
-      setState({ currentTripId: savedTripId, currentTrip: trips.find(t => t.id === savedTripId) });
-    } else if (trips.length > 0) {
-      setState({ currentTripId: trips[0].id, currentTrip: trips[0] });
-      localStorage.setItem('currentTripId', trips[0].id);
-    }
+    // Removed auto-select to always show TOP page
+    // Users can select a trip from the drawer or the TOP page trips list
+    setState({ currentTripId: null, currentTrip: null });
 
     updateDrawerTrips(trips);
   } catch (err) {
@@ -325,6 +339,8 @@ function updateAppShellVisibility() {
   const headerActions = document.querySelector('.header-actions');
   const googleBtn = document.getElementById('btn-drawer-google');
   const googleText = document.getElementById('drawer-google-text');
+  const logoutBtn = document.getElementById('btn-drawer-logout');
+  const logoutDivider = document.getElementById('drawer-logout-divider');
   
   if (!currentTrip) {
     if (bottomNav) bottomNav.classList.add('hidden');
@@ -338,9 +354,13 @@ function updateAppShellVisibility() {
     if (user.isAnonymous) {
       if (googleText) googleText.textContent = t('googleLink');
       if (googleBtn) googleBtn.style.color = 'inherit';
+      if (logoutBtn) logoutBtn.style.display = 'none';
+      if (logoutDivider) logoutDivider.style.display = 'none';
     } else {
       if (googleText) googleText.textContent = t('googleLinked');
       if (googleBtn) googleBtn.style.color = 'var(--text-muted)';
+      if (logoutBtn) logoutBtn.style.display = 'flex';
+      if (logoutDivider) logoutDivider.style.display = 'block';
     }
   }
 }

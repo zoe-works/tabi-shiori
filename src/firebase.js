@@ -2,7 +2,7 @@
 import { initializeApp } from 'firebase/app';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, linkWithPopup } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, linkWithPopup, signOut } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCh5zX-2AgcibKw-tCvXpsFuRA9POYFt-Y",
@@ -44,6 +44,10 @@ export async function loginWithGoogle() {
 export async function linkGoogleAccount() {
   const result = await linkWithPopup(auth.currentUser, googleProvider);
   return result.user;
+}
+
+export async function logout() {
+  await signOut(auth);
 }
 
 export default app;
