@@ -116,6 +116,12 @@ export const translations = {
 
     // 緊急連絡先
     emergencyTitle: '緊急連絡先',
+    catPolice: '警察・消防・救急',
+    catHotel: 'ホテルの連絡先',
+    catEmbassy: '大使館の連絡先',
+    catInsurance: '海外旅行保険',
+    addSmallBtn: '追加',
+    noInfo: '情報がありません。',
 
     // お土産リスト
     omiyageTitle: 'お土産リスト',
@@ -138,9 +144,6 @@ export const translations = {
     checklistMasterDesc: '新しい旅行を作成した際に、ここで設定した持ち物が自動的に登録されます。',
     loginRequiredForSettings: '設定を変更するにはログインが必要です。',
     newlineSeparated: '改行区切りでアイテムを入力してください。',
-    saveBtn: '保存する',
-    savedExclamation: '保存しました！',
-    saveFailed: '保存に失敗しました: ',
 
     // 追加
     preparing: '準備中...',
@@ -287,6 +290,12 @@ export const translations = {
 
     budgetTitle: 'Budget',
     emergencyTitle: 'Emergency',
+    catPolice: 'Police/Ambulance/Fire',
+    catHotel: 'Hotel Contact',
+    catEmbassy: 'Embassy Contact',
+    catInsurance: 'Travel Insurance',
+    addSmallBtn: 'Add',
+    noInfo: 'No information yet.',
     omiyageTitle: 'Souvenirs',
     flashcardTitle: 'Flashcards',
     playAudio: '🔊 Play',
@@ -434,6 +443,12 @@ export const translations = {
 
     budgetTitle: 'งบประมาณ',
     emergencyTitle: 'ติดต่อฉุกเฉิน',
+    catPolice: 'ตำรวจ/ดับเพลิง/รถพยาบาล',
+    catHotel: 'ติดต่อโรงแรม',
+    catEmbassy: 'ติดต่อสถานทูต',
+    catInsurance: 'ประกันการเดินทาง',
+    addSmallBtn: 'เพิ่ม',
+    noInfo: 'ยังไม่มีข้อมูล',
     omiyageTitle: 'ของฝาก',
     flashcardTitle: 'บัตรคำศัพท์',
     playAudio: '🔊 เล่นเสียง',

@@ -3,10 +3,10 @@ import { navigate } from '../utils/router.js';
 import { getEmergencyContacts, addEmergencyContact, updateEmergencyContact, deleteEmergencyContact } from '../utils/db.js';
 
 const CATEGORIES = {
-    emergency: { icon: '🚨', label: t('catEmergency') || '緊急連絡先' },
-    hotel: { icon: '🏨', label: t('catHotel') || 'ホテル情報' },
-    flight: { icon: '✈️', label: t('catFlight') || 'フライト情報' },
-    insurance: { icon: '🛡️', label: t('catInsurance') || '保険' }
+    police: { icon: '🚨', label: t('catPolice') || '警察・消防・救急' },
+    hotel: { icon: '🏨', label: t('catHotel') || 'ホテルの連絡先' },
+    embassy: { icon: '🏛️', label: t('catEmbassy') || '大使館の連絡先' },
+    insurance: { icon: '🛡️', label: t('catInsurance') || '海外旅行保険' }
 };
 
 import { t } from '../utils/i18n.js';
