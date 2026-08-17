@@ -2,6 +2,7 @@ import { getState } from '../utils/store.js';
 import { navigate } from '../utils/router.js';
 import { getResearchNotes, addResearchNote, updateResearchNote, deleteResearchNote } from '../utils/db.js';
 import { t } from '../utils/i18n.js';
+import { getLanguageFromCountry, getFlagFromLanguage, POPULAR_COUNTRIES } from '../data/phrases.js';
 import { translateUserText } from '../utils/translate.js';
 
 let activeCountry = '';
@@ -77,15 +78,32 @@ export default {
     activeCountry = countries[0];
 
     const tabsContainer = document.getElementById('rs-country-tabs');
+    tabsContainer.style.display = 'flex';
+    tabsContainer.style.justifyContent = 'center';
+    tabsContainer.style.gap = '16px';
+    tabsContainer.style.marginBottom = '16px';
     tabsContainer.innerHTML = countries.map(c => {
-      return `<button class="tab ${c === activeCountry ? 'active' : ''}" data-country="${c}">${c}</button>`;
+      const matched = POPULAR_COUNTRIES.find(pop => pop.code === c);
+      let flag = '🏳️';
+      if (matched) {
+        flag = matched.flag;
+      } else {
+        const langCode = getLanguageFromCountry(c);
+        flag = getFlagFromLanguage(langCode);
+      }
+      return `<span class="tab flag-tab" data-country="${c}" style="font-size: 2.5rem; cursor: pointer; transition: opacity 0.2s; opacity: ${c === activeCountry ? '1' : '0.4'};">${flag}</span>`;
     }).join('');
 
     tabsContainer.addEventListener('click', (e) => {
-      if (e.target.classList.contains('tab')) {
-        document.querySelectorAll('#rs-country-tabs .tab').forEach(t => t.classList.remove('active'));
-        e.target.classList.add('active');
-        activeCountry = e.target.dataset.country;
+      const tab = e.target.closest('.tab');
+      if (tab) {
+        document.querySelectorAll('#rs-country-tabs .tab').forEach(t => {
+          t.style.opacity = '0.4';
+          t.classList.remove('active');
+        });
+        tab.style.opacity = '1';
+        tab.classList.add('active');
+        activeCountry = tab.dataset.country;
         this.loadNotes(trip.id);
       }
     });

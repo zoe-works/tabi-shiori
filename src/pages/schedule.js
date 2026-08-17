@@ -278,14 +278,21 @@ export default {
       }
 
       return `
-        <div class="timeline-item">
-          <div class="timeline-time">${item.time}</div>
-          <div class="timeline-dot" data-category="${item.category}">${cat.icon}</div>
-          <div class="timeline-card">
-            <h4>${translatedTitle}</h4>
-            ${item.transport ? `<p class="transport">🚌 ${item.transport}</p>` : ''}
-            ${translatedMemo ? `<p class="memo">${translatedMemo}</p>` : ''}
-            ${journalHtml}
+        <div class="timeline-item" data-id="${item.id}" style="position: relative; overflow: hidden; margin-bottom: 24px;">
+          <!-- Delete Background -->
+          <div class="swipe-delete-bg" style="position: absolute; top: 0; left: 0; bottom: 0; width: 100%; background: #ff3b30; color: white; display: flex; align-items: center; padding-left: 20px; font-weight: bold; z-index: 1; border-radius: 8px;">
+            🗑️ 削除
+          </div>
+          <!-- Foreground Content -->
+          <div class="timeline-content-wrapper" style="position: relative; z-index: 2; background: var(--color-background); display: flex; width: 100%; transition: transform 0.2s ease-out; gap: 16px;">
+            <div class="timeline-time">${item.time}</div>
+            <div class="timeline-dot" data-category="${item.category}">${cat.icon}</div>
+            <div class="timeline-card" style="flex: 1; margin: 0;">
+              <h4>${translatedTitle}</h4>
+              ${item.transport ? `<p class="transport">🚌 ${item.transport}</p>` : ''}
+              ${translatedMemo ? `<p class="memo">${translatedMemo}</p>` : ''}
+              ${journalHtml}
+            </div>
           </div>
         </div>
       `;
@@ -293,6 +300,46 @@ export default {
 
     const itemsHtml = await Promise.all(itemsHtmlPromises);
     container.innerHTML = itemsHtml.join('');
+
+    // Swipe to delete logic
+    const store = getState();
+    const trip = store.currentTrip;
+    
+    container.querySelectorAll('.timeline-item').forEach(itemEl => {
+      const wrapper = itemEl.querySelector('.timeline-content-wrapper');
+      const itemId = itemEl.dataset.id;
+      let startX = 0;
+      let currentX = 0;
+      
+      wrapper.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        wrapper.style.transition = 'none';
+      }, {passive: true});
+      
+      wrapper.addEventListener('touchmove', (e) => {
+        currentX = e.touches[0].clientX - startX;
+        // Only allow swiping right
+        if (currentX > 0) {
+          wrapper.style.transform = `translateX(${currentX}px)`;
+        }
+      }, {passive: true});
+      
+      wrapper.addEventListener('touchend', async (e) => {
+        wrapper.style.transition = 'transform 0.2s ease-out';
+        if (currentX > 100) { // Threshold to delete
+          wrapper.style.transform = `translateX(100vw)`;
+          if (confirm(t('confirmDelete') || '本当に削除しますか？')) {
+            await deleteScheduleItem(trip.id, itemId);
+            this.loadSchedules(trip.id);
+          } else {
+            wrapper.style.transform = `translateX(0)`;
+          }
+        } else {
+          wrapper.style.transform = `translateX(0)`;
+        }
+        currentX = 0;
+      });
+    });
 
     if (currentMode === 'journal') {
       container.querySelectorAll('.journal-add-btn, .edit-journal-btn').forEach(btn => {
