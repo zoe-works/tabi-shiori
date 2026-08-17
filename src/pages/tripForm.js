@@ -27,13 +27,13 @@ function generateDestRow(d = {}, placeholders = {}) {
   }).join('');
 
   return `
-    <div class="form-row destination-item mb-sm" style="gap: 4px;">
-      <select class="form-input flex-1 dest-country-select" style="min-width: 0; padding: 12px 8px; margin-bottom: 0;">
+    <div class="form-row destination-item mb-sm" style="display: flex; align-items: center; gap: 4px; flex-wrap: nowrap;">
+      <select class="form-input flex-1 dest-country-select" style="min-width: 0; padding: 12px 4px; margin-bottom: 0;">
         <option value="" disabled ${!selectedCode ? 'selected' : ''}>${placeholders.country || '国を選択'}</option>
         ${optionsHtml}
       </select>
-      <input type="text" class="form-input flex-1 dest-country-other" placeholder="国名を入力" value="${isOther ? countryValue : ''}" style="min-width: 0; padding: 12px 8px; margin-bottom: 0; ${isOther ? '' : 'display:none;'}" />
-      <input type="text" class="form-input flex-1 dest-city" placeholder="${placeholders.city || '都市'}" value="${d.city || ''}" style="min-width: 0; padding: 12px 8px; margin-bottom: 0;" />
+      <input type="text" class="form-input flex-1 dest-country-other" placeholder="${t('countryPlaceholder') || '国名を入力'}" value="${isOther ? countryValue : ''}" style="min-width: 0; padding: 12px 4px; margin-bottom: 0; ${isOther ? '' : 'display:none;'}" />
+      <input type="text" class="form-input flex-1 dest-city" placeholder="${placeholders.city || '都市'}" value="${d.city || ''}" style="min-width: 0; padding: 12px 4px; margin-bottom: 0;" />
       <button type="button" class="btn-icon btn-remove" style="flex-shrink: 0; padding: 8px; margin-bottom: 0;">✖</button>
     </div>
   `;
@@ -54,7 +54,7 @@ export default {
     return `
       <div class="page fade-in">
         <header class="page-header">
-          <button class="btn-back" id="btn-form-back">←</button>
+          <button class="btn-icon btn-back" id="btn-form-back">←</button>
           <h1 class="page-title">${isEdit ? t('tripFormEditTitle') : t('tripFormNewTitle')}</h1>
         </header>
 
@@ -88,10 +88,10 @@ export default {
             <label class="form-label">${t('membersLabel')}</label>
             <div id="members-list">
               ${trip.members.map((m, i) => `
-                <div class="form-row member-item mb-sm" style="align-items: center; gap: 4px;">
-                  <button class="btn-emoji-picker" data-index="${i}" style="flex-shrink: 0;">${m.icon || '😊'}</button>
-                  <input type="text" class="form-input flex-1 member-name" placeholder="${t('memberNamePlaceholder')}" value="${m.name || ''}" style="min-width: 0;" />
-                  <button class="btn-icon btn-remove-member" data-index="${i}" style="flex-shrink: 0; padding: 8px;">✖</button>
+                <div class="form-row member-item mb-sm" style="display: flex; align-items: center; gap: 4px; flex-wrap: nowrap;">
+                  <button class="btn-emoji-picker" data-index="${i}" style="flex-shrink: 0; padding: 8px 12px;">${m.icon || '😊'}</button>
+                  <input type="text" class="form-input flex-1 member-name" placeholder="${t('memberNamePlaceholder')}" value="${m.name || ''}" style="min-width: 0; margin-bottom: 0; padding: 12px 4px;" />
+                  <button class="btn-icon btn-remove-member" data-index="${i}" style="flex-shrink: 0; padding: 8px; margin-bottom: 0;">✖</button>
                 </div>
               `).join('')}
             </div>
@@ -108,7 +108,7 @@ export default {
         <div class="modal-overlay" id="emoji-modal">
           <div class="modal-content">
             <div class="modal-handle"></div>
-            <div class="modal-title">アイコンを選ぶ</div>
+            <div class="modal-title">${t('chooseIcon') || 'アイコンを選ぶ'}</div>
             <div class="emoji-picker-grid">
               ${EMOJIS.map(e => `<button type="button" class="emoji-option">${e}</button>`).join('')}
             </div>
@@ -156,12 +156,14 @@ export default {
     document.getElementById('btn-add-member')?.addEventListener('click', () => {
       const row = document.createElement('div');
       row.className = 'form-row member-item mb-sm';
+      row.style.display = 'flex';
       row.style.alignItems = 'center';
       row.style.gap = '4px';
+      row.style.flexWrap = 'nowrap';
       row.innerHTML = `
-        <button class="btn-emoji-picker" style="flex-shrink: 0;">😊</button>
-        <input type="text" class="form-input flex-1 member-name" placeholder="${t('memberNamePlaceholder')}" style="min-width: 0;" />
-        <button class="btn-icon btn-remove-member" style="flex-shrink: 0; padding: 8px;">✖</button>
+        <button class="btn-emoji-picker" style="flex-shrink: 0; padding: 8px 12px;">😊</button>
+        <input type="text" class="form-input flex-1 member-name" placeholder="${t('memberNamePlaceholder')}" style="min-width: 0; margin-bottom: 0; padding: 12px 4px;" />
+        <button class="btn-icon btn-remove-member" style="flex-shrink: 0; padding: 8px; margin-bottom: 0;">✖</button>
       `;
       membersList.appendChild(row);
     });
@@ -260,14 +262,14 @@ export default {
         navigate('/');
       } catch (err) {
         console.error('Error saving trip:', err);
-        btn.textContent = '❌ エラー。もう一度お試しください';
+        btn.textContent = t('errorTryAgain') || '❌ エラー。もう一度お試しください';
         btn.disabled = false;
       }
     });
 
     if (isEdit) {
       document.getElementById('btn-delete-trip')?.addEventListener('click', async () => {
-        if (confirm('本当にこの旅行を削除しますか？\n削除すると、すべてのデータ（単語帳、チェックリストなど）が消去され元に戻せません。')) {
+        if (confirm(t('confirmDeleteTrip') || '本当にこの旅行を削除しますか？\n削除すると、すべてのデータ（単語帳、チェックリストなど）が消去され元に戻せません。')) {
           const { user: currentUser } = getState();
           try {
             await deleteTrip(currentUser.uid, currentTrip.id);
@@ -281,7 +283,7 @@ export default {
             navigate('/');
           } catch (err) {
             console.error('Error deleting trip:', err);
-            alert('削除に失敗しました。');
+            alert(t('deleteFailed') || '削除に失敗しました。');
           }
         }
       });

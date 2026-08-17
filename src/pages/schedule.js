@@ -10,13 +10,13 @@ let currentMode = 'plan'; // 'plan' or 'journal'
 let schedules = [];
 
 const categories = {
-  sightseeing: { icon: '🏛️', label: '観光' },
-  meal: { icon: '🍽️', label: '食事' },
-  transport: { icon: '🚌', label: '移動' },
-  hotel: { icon: '🏨', label: 'ホテル' },
-  shopping: { icon: '🛒', label: '買い物' },
-  activity: { icon: '🎭', label: '体験' },
-  other: { icon: '✨', label: 'その他' }
+  sightseeing: { icon: '🏛️', label: t('catSightseeing') || '観光' },
+  meal: { icon: '🍽️', label: t('catMeal') || '食事' },
+  transport: { icon: '🚌', label: t('catTransport') || '移動' },
+  hotel: { icon: '🏨', label: t('catHotel') || 'ホテル' },
+  shopping: { icon: '🛒', label: t('catShopping') || '買い物' },
+  activity: { icon: '🎭', label: t('catActivity') || '体験' },
+  other: { icon: '✨', label: t('catOther') || 'その他' }
 };
 
 export default {
@@ -24,6 +24,7 @@ export default {
     return `
       <div class="page schedule-page">
         <header class="page-header">
+          <button class="btn-icon btn-back" id="btn-back-schedule">←</button>
           <h2>${t('scheduleTitle')}</h2>
         </header>
 
@@ -46,16 +47,16 @@ export default {
         <div class="modal-overlay" id="scheduleModal">
           <div class="modal-content">
             <span class="close-modal">&times;</span>
-            <h3>予定を追加</h3>
+            <h3>${t('addScheduleItem') || '予定を追加'}</h3>
             <form id="scheduleForm">
               <input type="time" id="itemTime" required>
-              <input type="text" id="itemTitle" placeholder="場所・予定名" required>
+              <input type="text" id="itemTitle" placeholder="${t('placeName') || '場所・予定名'}" required>
               <select id="itemCategory">
                 ${Object.entries(categories).map(([key, val]) => `<option value="${key}">${val.icon} ${val.label}</option>`).join('')}
               </select>
-              <input type="text" id="itemTransport" placeholder="移動手段 (例: タクシー)">
-              <textarea id="itemMemo" placeholder="メモ"></textarea>
-              <button type="submit" class="btn primary">追加する</button>
+              <input type="text" id="itemTransport" placeholder="${t('transportMeans') || '移動手段 (例: タクシー)'}">
+              <textarea id="itemMemo" placeholder="${t('memo') || 'メモ'}"></textarea>
+              <button type="submit" class="btn primary">${t('addBtn') || '追加する'}</button>
             </form>
           </div>
         </div>
@@ -64,12 +65,12 @@ export default {
         <div class="modal-overlay" id="journalModal">
           <div class="modal-content">
             <span class="close-modal">&times;</span>
-            <h3>記録を追加</h3>
+            <h3>${t('addJournalItem') || '記録を追加'}</h3>
             <form id="journalForm">
               <input type="hidden" id="journalItemId">
               
               <div class="mood-selector">
-                <label>気分:</label>
+                <label>${t('mood') || '気分:'}</label>
                 <div class="mood-options">
                   ${['😆','😊','😴','🤩','😢','🤔'].map(m => `<span class="mood-option" data-mood="${m}">${m}</span>`).join('')}
                 </div>
@@ -77,21 +78,21 @@ export default {
               </div>
 
               <div class="star-rating">
-                <label>評価:</label>
+                <label>${t('rating') || '評価:'}</label>
                 <div class="stars">
                   ${[1,2,3,4,5].map(s => `<span class="star" data-rating="${s}">★</span>`).join('')}
                 </div>
                 <input type="hidden" id="journalRating" value="0">
               </div>
 
-              <textarea id="journalText" placeholder="感想を書いてね"></textarea>
+              <textarea id="journalText" placeholder="${t('journalThoughts') || '感想を書いてね'}"></textarea>
               
               <div class="photo-upload">
-                <label>写真を追加:</label>
+                <label>${t('addPhoto') || '写真を追加:'}</label>
                 <input type="file" id="journalPhotos" accept="image/*" capture="environment" multiple>
               </div>
 
-              <button type="submit" class="btn primary">保存する</button>
+              <button type="submit" class="btn primary">${t('saveBtn') || '保存する'}</button>
             </form>
           </div>
         </div>
@@ -100,11 +101,13 @@ export default {
   },
   
   async init() {
+    document.getElementById('btn-back-schedule')?.addEventListener('click', () => navigate('/'));
+
     const state = getState();
     const trip = state.currentTrip;
     
     if (!trip) {
-      alert('旅行が選択されていません。');
+      alert(t('noTripSelected') || '旅行が選択されていません。');
       navigate('/');
       return;
     }
@@ -241,7 +244,7 @@ export default {
     const container = document.getElementById('timelineContainer');
     
     if (schedules.length === 0) {
-      container.innerHTML = '<p class="empty-state">予定がありません。追加してみましょう！</p>';
+      container.innerHTML = `<p class="empty-state">${currentMode === 'plan' ? (t('noScheduleHelp') || '予定がありません。追加してみましょう！') : (t('noJournalHelp') || '記録がありません。思い出を追加しよう！')}</p>`;
       return;
     }
 

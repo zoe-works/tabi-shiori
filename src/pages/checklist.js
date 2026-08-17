@@ -13,11 +13,11 @@ const DEFAULT_ITEMS = [
 ];
 
 const CATEGORIES = {
-  documents: { label: '📄 書類', color: 'var(--color-yellow)' },
-  electronics: { label: '🔌 電子機器', color: 'var(--color-blue)' },
-  clothing: { label: '👕 衣類', color: 'var(--color-pink)' },
-  toiletries: { label: '🧴 洗面用品', color: 'var(--color-mint)' },
-  other: { label: '📦 その他', color: '#e0c3fc' }, // approx lavender
+  documents: { label: t('catDocuments') || '📄 書類', color: 'var(--color-yellow)' },
+  electronics: { label: t('catElectronics') || '🔌 電子機器', color: 'var(--color-blue)' },
+  clothing: { label: t('catClothing') || '👕 衣類', color: 'var(--color-pink)' },
+  toiletries: { label: t('catToiletries') || '🧴 洗面用品', color: 'var(--color-mint)' },
+  other: { label: t('catOtherList') || '📦 その他', color: '#e0c3fc' }, // approx lavender
 };
 
 const IMPORTANT_ITEMS = ['パスポート', '航空券', '航空券(予約確認書)'];
@@ -131,9 +131,7 @@ async function renderChecklist() {
       const translatedName = await translateUserText(item.name) || item.name;
       
       itemEl.innerHTML = `
-        <div class="checkbox-custom" data-id="${item.id}">
-          ${item.checked ? '✓' : ''}
-        </div>
+        <div class="checkbox-custom" data-id="${item.id}"></div>
         <div class="item-name">
           ${item.important ? '<span class="important-mark">❗</span>' : ''}
           ${translatedName}
@@ -146,8 +144,6 @@ async function renderChecklist() {
       itemEl.querySelector('.checkbox-custom').addEventListener('click', (e) => {
         // Optimistic update
         item.checked = !item.checked;
-        const checkbox = e.currentTarget;
-        checkbox.innerHTML = item.checked ? '✓' : '';
         if (item.checked) {
           itemEl.classList.add('checked');
         } else {
@@ -161,7 +157,6 @@ async function renderChecklist() {
           console.error("Failed to update checklist item:", err);
           // Revert on failure
           item.checked = !item.checked;
-          checkbox.innerHTML = item.checked ? '✓' : '';
           itemEl.classList.toggle('checked');
           updateProgressBar();
         });
@@ -169,7 +164,7 @@ async function renderChecklist() {
       
       itemEl.querySelector('.assignee-badge').addEventListener('click', (e) => {
          // Dummy implementation for assigning members
-         const newAssignee = prompt("担当者名を入力:", item.assignee || "");
+         const newAssignee = prompt(t('assigneePrompt') || "担当者名を入力:", item.assignee || "");
          if (newAssignee !== null) {
            const store = getState();
            updateChecklistItem(store.currentTrip.id, item.id, { assignee: newAssignee || null }).then(() => loadChecklist());
@@ -183,8 +178,8 @@ async function renderChecklist() {
     const addContainer = document.createElement('div');
     addContainer.className = 'add-item-container';
     addContainer.innerHTML = `
-      <input type="text" class="add-item-input" placeholder="+ アイテムを追加">
-      <button class="add-item-btn">追加</button>
+      <input type="text" class="add-item-input" placeholder="${t('addItemPlaceholder') || '+ アイテムを追加'}">
+      <button class="add-item-btn">${t('addBtn') || '追加'}</button>
     `;
     
     addContainer.querySelector('.add-item-btn').addEventListener('click', async () => {
@@ -220,17 +215,17 @@ function updateProgressBar() {
     const percent = Math.round((checkedCount / total) * 100);
     progressFill.style.width = `${percent}%`;
     if(checkedCount === total) {
-      progressText.textContent = `${checkedCount}/${total} 完璧！🎉`;
+      progressText.textContent = `${checkedCount}/${total} ${t('perfect') || '完璧！🎉'}`;
       progressFill.style.backgroundColor = 'var(--color-mint)';
     } else {
-      progressText.textContent = `${checkedCount}/${total} 準備中...`;
+      progressText.textContent = `${checkedCount}/${total} ${t('preparing') || '準備中...'}`;
       progressFill.style.backgroundColor = 'var(--color-pink-deep)'; // Use existing token
     }
   }
 }
 
 function setupEventListeners() {
-  document.getElementById('cl-back-btn')?.addEventListener('click', () => navigate('home'));
+  document.getElementById('cl-back-btn')?.addEventListener('click', () => navigate('/'));
 }
 
 export default { render, init };

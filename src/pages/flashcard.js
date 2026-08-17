@@ -34,7 +34,7 @@ export default {
             <div class="flashcard" id="fc-card">
               <div class="flashcard-face flashcard-front">
                 <h3 id="fc-front-text" class="flashcard-phrase"></h3>
-                <div class="swipe-hint">タップで裏返す 👆</div>
+                <div class="swipe-hint">${t('tapToFlip') || 'タップで裏返す 👆'}</div>
               </div>
               <div class="flashcard-face flashcard-back">
                 <div style="display:flex; justify-content:center; align-items:center; gap: 12px; margin-bottom: 8px;">
@@ -42,7 +42,7 @@ export default {
                   <button id="fc-play-btn" class="btn-icon" style="font-size: 1.5rem; background: var(--bg-soft); border-radius: 50%; width: 40px; height: 40px;">🔊</button>
                 </div>
                 <p id="fc-back-reading" class="flashcard-reading"></p>
-                <div class="swipe-hint">タップで戻る 🔙</div>
+                <div class="swipe-hint">${t('tapToReturn') || 'タップで戻る 🔙'}</div>
               </div>
             </div>
           </div>
@@ -61,21 +61,21 @@ export default {
 
         <div id="fc-modal" class="modal-overlay">
           <div class="modal-content">
-            <div class="modal-title">新しいフレーズを追加</div>
+            <div class="modal-title">${t('addNewPhrase') || '新しいフレーズを追加'}</div>
             <div class="form-group mt-md">
-              <label class="form-label">調べたい言葉（あなたの言語）</label>
-              <input type="text" id="fc-new-front" placeholder="例: こんにちは" class="form-input">
+              <label class="form-label">${t('wordToSearch') || '調べたい言葉（あなたの言語）'}</label>
+              <input type="text" id="fc-new-front" placeholder="${t('wordPlaceholder') || '例: こんにちは'}" class="form-input">
             </div>
             <div class="form-group">
-              <label class="form-label">現地での言い方</label>
-              <input type="text" id="fc-new-back" placeholder="例: Hello" class="form-input">
+              <label class="form-label">${t('localSaying') || '現地での言い方'}</label>
+              <input type="text" id="fc-new-back" placeholder="${t('localPlaceholder') || '例: Hello'}" class="form-input">
             </div>
             <div class="form-group">
-              <label class="form-label">読み方メモ</label>
-              <input type="text" id="fc-new-reading" placeholder="例: ハロー" class="form-input">
+              <label class="form-label">${t('readingMemo') || '読み方メモ'}</label>
+              <input type="text" id="fc-new-reading" placeholder="${t('readingPlaceholder') || '例: ハロー'}" class="form-input">
             </div>
-            <button id="fc-modal-save" class="btn btn-primary w-full mt-lg">保存する</button>
-            <button type="button" class="btn btn-secondary w-full mt-sm" id="fc-modal-close">キャンセル</button>
+            <button id="fc-modal-save" class="btn btn-primary w-full mt-lg">${t('saveBtn') || '保存する'}</button>
+            <button type="button" class="btn btn-secondary w-full mt-sm" id="fc-modal-close">${t('cancelBtn') || 'キャンセル'}</button>
           </div>
         </div>
       </div>

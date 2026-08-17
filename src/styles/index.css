@@ -583,13 +583,15 @@ ul, ol {
   background: var(--color-surface);
 }
 
-.checkbox-wrapper.checked .checkbox-custom {
+.checkbox-wrapper.checked .checkbox-custom,
+.checklist-item.checked .checkbox-custom {
   background: var(--color-mint);
   border-color: var(--color-mint-deep);
   animation: checkBounce 0.4s var(--ease-bounce);
 }
 
-.checkbox-wrapper.checked .checkbox-custom::after {
+.checkbox-wrapper.checked .checkbox-custom::after,
+.checklist-item.checked .checkbox-custom::after {
   content: '✓';
   color: white;
   font-weight: var(--fw-bold);

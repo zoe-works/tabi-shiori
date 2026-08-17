@@ -33,7 +33,7 @@ export default {
       return `
         <div class="page fade-in">
           <div class="welcome-section">
-            <img src="${import.meta.env.BASE_URL}images/tabikuma.jpg" alt="たびくま" class="welcome-mascot" />
+            <img src="${import.meta.env.BASE_URL}images/mascot.jpg" alt="たびくま" class="welcome-mascot" />
             <h1 class="welcome-title">${t('welcomeTitle')}</h1>
             <p class="welcome-text">${t('welcomeDesc')}</p>
             <button id="btn-create-trip" class="btn btn-primary">${t('btnWelcomeCreate')}</button>
@@ -97,7 +97,7 @@ export default {
 
     return `
       <div class="page fade-in">
-        <div class="home-cover" style="background-image: url('${currentTrip.coverImage || import.meta.env.BASE_URL + 'images/tabikuma.jpg'}')">
+        <div class="home-cover" style="background-image: url('${currentTrip.coverImage || import.meta.env.BASE_URL + 'images/mascot.jpg'}')">
           <div class="home-cover-overlay"></div>
           <h1 class="home-trip-title">${translatedTitle}</h1>
           <p class="home-trip-dates">${formatDate(currentTrip.startDate)} 〜 ${formatDate(currentTrip.endDate)}</p>

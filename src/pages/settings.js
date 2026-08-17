@@ -21,11 +21,12 @@ export default {
       return `
         <div class="page fade-in">
           <header class="page-header">
+            <button class="btn-icon btn-back" id="btn-back-settings">←</button>
             <h1 class="page-title">⚙️ ${t('settings') || '設定'}</h1>
           </header>
           <div class="empty-state">
             <div class="empty-state-icon">🔒</div>
-            <p class="empty-state-text">設定を変更するにはログインが必要です。</p>
+            <p class="empty-state-text">${t('loginRequiredForSettings') || '設定を変更するにはログインが必要です。'}</p>
           </div>
         </div>
       `;
@@ -42,7 +43,7 @@ export default {
     const categoriesHtml = currentMaster.map((cat, i) => `
       <div class="card mb-md">
         <label class="form-label">${cat.label}</label>
-        <p class="text-xs text-muted mb-sm">改行区切りでアイテムを入力してください。</p>
+        <p class="text-xs text-muted mb-sm">${t('newlineSeparated') || '改行区切りでアイテムを入力してください。'}</p>
         <textarea class="form-input master-textarea" data-index="${i}" rows="5" style="resize: vertical;">${cat.items.join('\n')}</textarea>
       </div>
     `).join('');
@@ -50,26 +51,30 @@ export default {
     return `
       <div class="page fade-in">
         <header class="page-header">
+          <button class="btn-icon btn-back" id="btn-back-settings-main">←</button>
           <h1 class="page-title">⚙️ ${t('settings') || '設定'}</h1>
         </header>
 
         <div class="form-content fade-in" style="animation-delay: 0.1s;">
-          <h2 class="mb-md text-lg">🎒 持ち物チェック 初期マスタ設定</h2>
+          <h2 class="mb-md text-lg">${t('checklistMasterTitle') || '🎒 持ち物チェック 初期マスタ設定'}</h2>
           <p class="text-sm text-muted mb-md">
-            新しい旅行を作成した際に、ここで設定した持ち物が自動的に登録されます。
+            ${t('checklistMasterDesc') || '新しい旅行を作成した際に、ここで設定した持ち物が自動的に登録されます。'}
           </p>
           
           <div id="master-categories-container">
             ${categoriesHtml}
           </div>
 
-          <button id="btn-save-settings" class="btn btn-primary w-full mt-md">保存する</button>
+          <button id="btn-save-settings" class="btn btn-primary w-full mt-md">${t('saveBtn') || '保存する'}</button>
         </div>
       </div>
     `;
   },
 
   init() {
+    document.getElementById('btn-back-settings')?.addEventListener('click', () => navigate('/'));
+    document.getElementById('btn-back-settings-main')?.addEventListener('click', () => navigate('/'));
+
     const btnSave = document.getElementById('btn-save-settings');
     if (!btnSave) return;
 
@@ -78,7 +83,7 @@ export default {
       if (!user || user.isAnonymous) return;
 
       btnSave.disabled = true;
-      btnSave.textContent = '保存中...';
+      btnSave.textContent = t('btnSaving') || '保存中...';
 
       const textareas = document.querySelectorAll('.master-textarea');
       textareas.forEach(textarea => {
@@ -90,15 +95,15 @@ export default {
 
       try {
         await updateUserSettings(user.uid, { checklistMaster: currentMaster });
-        btnSave.textContent = '保存しました！';
+        btnSave.textContent = t('savedExclamation') || '保存しました！';
         setTimeout(() => {
           btnSave.disabled = false;
-          btnSave.textContent = '保存する';
+          btnSave.textContent = t('saveBtn') || '保存する';
         }, 2000);
       } catch (e) {
-        alert('保存に失敗しました: ' + e.message);
+        alert((t('saveFailed') || '保存に失敗しました: ') + e.message);
         btnSave.disabled = false;
-        btnSave.textContent = '保存する';
+        btnSave.textContent = t('saveBtn') || '保存する';
       }
     });
   }

@@ -17,9 +17,9 @@ export default defineConfig({
         orientation: 'portrait',
         start_url: '/tabi-shiori/',
         icons: [
-          { src: 'images/tabikuma.jpg', sizes: '192x192', type: 'image/jpeg' },
-          { src: 'images/tabikuma.jpg', sizes: '512x512', type: 'image/jpeg' },
-          { src: 'images/tabikuma.jpg', sizes: '512x512', type: 'image/jpeg', purpose: 'maskable' }
+          { src: 'images/mascot.jpg', sizes: '192x192', type: 'image/jpeg' },
+          { src: 'images/mascot.jpg', sizes: '512x512', type: 'image/jpeg' },
+          { src: 'images/mascot.jpg', sizes: '512x512', type: 'image/jpeg', purpose: 'maskable' }
         ]
       },
       workbox: {

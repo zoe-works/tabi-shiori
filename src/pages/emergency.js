@@ -3,10 +3,10 @@ import { navigate } from '../utils/router.js';
 import { getEmergencyContacts, addEmergencyContact, updateEmergencyContact, deleteEmergencyContact } from '../utils/db.js';
 
 const CATEGORIES = {
-    emergency: { icon: '🚨', label: '緊急連絡先' },
-    hotel: { icon: '🏨', label: 'ホテル情報' },
-    flight: { icon: '✈️', label: 'フライト情報' },
-    insurance: { icon: '🛡️', label: '保険' }
+    emergency: { icon: '🚨', label: t('catEmergency') || '緊急連絡先' },
+    hotel: { icon: '🏨', label: t('catHotel') || 'ホテル情報' },
+    flight: { icon: '✈️', label: t('catFlight') || 'フライト情報' },
+    insurance: { icon: '🛡️', label: t('catInsurance') || '保険' }
 };
 
 import { t } from '../utils/i18n.js';
@@ -17,32 +17,33 @@ export default {
         return `
             <div class="page page-emergency">
                 <header class="header">
+                    <button class="btn-icon btn-back" id="btn-back-emergency">←</button>
                     <h2>${t('emergencyTitle')}</h2>
                 </header>
                 <main class="content" id="emergency-main">
-                    <div class="loading">よみこみ中... 🧸</div>
+                    <div class="loading">${t('loading') || 'よみこみ中... 🧸'}</div>
                 </main>
                 
                 <div id="emergency-modal" class="modal hidden">
                     <div class="modal-content">
-                        <h3 id="modal-title">情報の追加 ✏️</h3>
+                        <h3 id="modal-title">${t('addEmergency') || '情報の追加 ✏️'}</h3>
                         <form id="emergency-form">
                             <input type="hidden" id="em-category">
                             <div class="form-group">
-                                <label>タイトル (必須)</label>
-                                <input type="text" id="em-title" required placeholder="例: ホテル電話番号">
+                                <label>${t('emergencyTitleLabel') || 'タイトル (必須)'}</label>
+                                <input type="text" id="em-title" required placeholder="${t('emergencyTitlePlaceholder') || '例: ホテル電話番号'}">
                             </div>
                             <div class="form-group">
-                                <label>電話番号</label>
+                                <label>${t('emergencyPhone') || '電話番号'}</label>
                                 <input type="tel" id="em-phone" placeholder="090-XXXX-XXXX">
                             </div>
                             <div class="form-group">
-                                <label>メモ (内容)</label>
-                                <textarea id="em-info" rows="3" placeholder="住所や予約番号など"></textarea>
+                                <label>${t('emergencyMemo') || 'メモ (内容)'}</label>
+                                <textarea id="em-info" rows="3" placeholder="${t('emergencyMemoPlaceholder') || '住所や予約番号など'}"></textarea>
                             </div>
                             <div class="modal-actions">
-                                <button type="button" class="btn-cancel" id="em-cancel">キャンセル</button>
-                                <button type="submit" class="btn-primary">保存する ✨</button>
+                                <button type="button" class="btn-cancel" id="em-cancel">${t('cancelBtn') || 'キャンセル'}</button>
+                                <button type="submit" class="btn-primary">${t('saveBtn') || '保存する ✨'}</button>
                             </div>
                         </form>
                     </div>
@@ -52,6 +53,8 @@ export default {
     },
 
     async init() {
+        document.getElementById('btn-back-emergency')?.addEventListener('click', () => navigate('/'));
+
         const state = getState();
         const tripId = state.currentTripId;
         const mainEl = document.getElementById('emergency-main');
@@ -60,7 +63,7 @@ export default {
             mainEl.innerHTML = `
                 <div class="empty-state">
                     <div class="empty-icon">😢</div>
-                    <p>旅行が選択されていません。</p>
+                    <p>${t('noTripSelected') || '旅行が選択されていません。'}</p>
                 </div>`;
             return;
         }
@@ -74,9 +77,9 @@ export default {
                     <div class="emergency-section card">
                         <div class="section-header">
                             <h3>${CATEGORIES[catKey].icon} ${CATEGORIES[catKey].label}</h3>
-                            <button class="btn-add-small" data-cat="${catKey}">＋ 追加</button>
+                            <button class="btn-add-small" data-cat="${catKey}">＋ ${t('addSmallBtn') || '追加'}</button>
                         </div>
-                        <div class="empty-text">情報がありません。</div>
+                        <div class="empty-text">${t('noInfo') || '情報がありません。'}</div>
                     </div>
                 `).join('');
             } else {
@@ -92,22 +95,22 @@ export default {
                                         ${translatedInfo ? `<p class="em-info">${translatedInfo.replace(/\\n/g, '<br>')}</p>` : ''}
                                         ${c.phone ? `
                                             <a href="tel:${c.phone}" class="btn-tel">
-                                                📞 電話をかける (${c.phone})
+                                                📞 ${t('callBtn') || '電話をかける'} (${c.phone})
                                             </a>
                                         ` : ''}
                                     </div>
                         `;
                     });
-                    const cardsHtml = (await Promise.all(cardsPromises)).join('');
+                    const cardsHtml = await Promise.all(cardsPromises);
 
                     return `
                         <div class="emergency-section card">
                             <div class="section-header">
                                 <h3>${CATEGORIES[catKey].icon} ${CATEGORIES[catKey].label}</h3>
-                                <button class="btn-add-small" data-cat="${catKey}">＋ 追加</button>
+                                <button class="btn-add-small" data-cat="${catKey}">＋ ${t('addSmallBtn') || '追加'}</button>
                             </div>
                             <div class="emergency-list">
-                                ${catContacts.length === 0 ? '<div class="empty-text">情報がありません。</div>' : cardsHtml}
+                                ${catContacts.length === 0 ? `<div class="empty-text">${t('noInfo') || '情報がありません。'}</div>` : cardsHtml.join('')}
                             </div>
                         </div>
                     `;

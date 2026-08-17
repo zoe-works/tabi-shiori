@@ -8,15 +8,15 @@ let activeCountry = '';
 let notes = [];
 
 const DEFAULT_QUESTIONS = [
-  "首都・人口・面積・公用語は？",
-  "現地通貨は？",
-  "現地の人の性格は？",
-  "食文化は？",
-  "コンビニなどの便利なお店は？",
-  "移動手段はどう違う？",
-  "家やトイレはどんな感じ？",
-  "実際に行きたい場所3つ",
-  "食べたいもの3つ"
+  t('rq1') || "首都・人口・面積・公用語は？",
+  t('rq2') || "現地通貨は？",
+  t('rq3') || "現地の人の性格は？",
+  t('rq4') || "食文化は？",
+  t('rq5') || "コンビニなどの便利なお店は？",
+  t('rq6') || "移動手段はどう違う？",
+  t('rq7') || "家やトイレはどんな感じ？",
+  t('rq8') || "実際に行きたい場所3つ",
+  t('rq9') || "食べたいもの3つ"
 ];
 
 export default {
@@ -24,7 +24,7 @@ export default {
     return `
       <div class="page research-page">
         <header class="page-header">
-          <button class="back-btn" id="rs-back-btn">←</button>
+          <button class="btn-icon btn-back" id="rs-back-btn">←</button>
           <h2 class="page-title">${t('researchTitle')}</h2>
         </header>
 
@@ -33,7 +33,7 @@ export default {
         </div>
 
         <div class="research-list" id="rs-list">
-          <div class="loading">よみこみ中... 🧸</div>
+          <div class="loading">${t('loading') || 'よみこみ中... 🧸'}</div>
         </div>
 
         <button class="fab" id="rs-add-btn">➕</button>
@@ -41,15 +41,15 @@ export default {
         <!-- 質問追加・編集モーダル -->
         <div class="modal-overlay" id="rs-modal">
           <div class="modal-content">
-            <div class="modal-title" id="rs-modal-title">項目の追加</div>
+            <div class="modal-title" id="rs-modal-title">${t('addNote') || '項目の追加'}</div>
             <form id="rs-form">
               <input type="hidden" id="rs-note-id">
               <div class="form-group mt-md">
-                <label class="form-label">調べる項目（質問）</label>
-                <input type="text" id="rs-question" class="form-input" placeholder="例: おすすめのカフェは？" required>
+                <label class="form-label">${t('researchItem') || '調べる項目（質問）'}</label>
+                <input type="text" id="rs-question" class="form-input" placeholder="${t('researchItemPlaceholder') || '例: おすすめのカフェは？'}" required>
               </div>
-              <button type="submit" class="btn btn-primary w-full mt-lg">保存する</button>
-              <button type="button" class="btn btn-secondary w-full mt-sm" id="rs-modal-close">キャンセル</button>
+              <button type="submit" class="btn btn-primary w-full mt-lg">${t('saveBtn') || '保存する'}</button>
+              <button type="button" class="btn btn-secondary w-full mt-sm" id="rs-modal-close">${t('cancelBtn') || 'キャンセル'}</button>
             </form>
           </div>
         </div>
@@ -62,7 +62,7 @@ export default {
     const trip = store.currentTrip;
     
     if (!trip) {
-      document.getElementById('rs-list').innerHTML = '<p class="empty-state">旅行が選択されていません。</p>';
+      document.getElementById('rs-list').innerHTML = `<p class="empty-state">${t('noTripSelected') || '旅行が選択されていません。'}</p>`;
       return;
     }
 
@@ -70,7 +70,7 @@ export default {
     const countries = [...new Set(destinations.map(d => d.country).filter(Boolean))];
     
     if (countries.length === 0) {
-      document.getElementById('rs-list').innerHTML = '<p class="empty-state">行き先が設定されていません。<br>旅行の編集から行き先を追加してください。</p>';
+      document.getElementById('rs-list').innerHTML = `<p class="empty-state">${t('noDestinationsSet') || '行き先が設定されていません。<br>旅行の編集から行き先を追加してください。'}</p>`;
       return;
     }
 
@@ -93,7 +93,7 @@ export default {
     // Add / Edit Modal
     const modal = document.getElementById('rs-modal');
     document.getElementById('rs-add-btn').addEventListener('click', () => {
-      document.getElementById('rs-modal-title').textContent = '項目の追加';
+      document.getElementById('rs-modal-title').textContent = t('addNote') || '項目の追加';
       document.getElementById('rs-note-id').value = '';
       document.getElementById('rs-question').value = '';
       modal.classList.add('active');
@@ -161,7 +161,7 @@ export default {
     const container = document.getElementById('rs-list');
     
     if (notes.length === 0) {
-      container.innerHTML = '<p class="empty-state">項目がありません。</p>';
+      container.innerHTML = `<p class="empty-state">${t('noResearch') || '項目がありません。'}</p>`;
       return;
     }
 
@@ -179,8 +179,8 @@ export default {
             </div>
           </div>
           <div class="rs-card-body">
-            <textarea class="rs-answer-input" data-id="${note.id}" placeholder="調べてわかったこと...">${note.answer || ''}</textarea>
-            ${translatedAnswer !== (note.answer || '') && translatedAnswer ? `<div class="rs-answer-translated">💡 翻訳: ${translatedAnswer}</div>` : ''}
+            <textarea class="rs-answer-input" data-id="${note.id}" placeholder="${t('researchAnswer') || '調べてわかったこと...'}">${note.answer || ''}</textarea>
+            ${translatedAnswer !== (note.answer || '') && translatedAnswer ? `<div class="rs-answer-translated">💡 ${t('translationLabel') || '翻訳'}: ${translatedAnswer}</div>` : ''}
           </div>
         </div>
       `;
@@ -195,7 +195,7 @@ export default {
         const id = e.target.closest('.rs-edit-q').dataset.id;
         const note = notes.find(n => n.id === id);
         if (note) {
-          document.getElementById('rs-modal-title').textContent = '項目の編集';
+          document.getElementById('rs-modal-title').textContent = t('editNote') || '項目の編集';
           document.getElementById('rs-note-id').value = note.id;
           document.getElementById('rs-question').value = note.question;
           document.getElementById('rs-modal').classList.add('active');
@@ -206,7 +206,7 @@ export default {
     container.querySelectorAll('.rs-delete-q').forEach(btn => {
       btn.addEventListener('click', async (e) => {
         const id = e.target.closest('.rs-delete-q').dataset.id;
-        if (confirm('この項目を削除しますか？')) {
+        if (confirm(t('confirmDelete') || 'この項目を削除しますか？')) {
           await deleteResearchNote(tripId, id);
           await this.loadNotes(tripId);
         }
