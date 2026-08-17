@@ -29,12 +29,12 @@ export default {
             <input type="text" id="trip-title" placeholder="例: はじめての台湾旅行！" value="${trip.title}" required />
           </div>
 
-          <div class="flex gap-md">
-            <div class="form-group" style="flex:1">
+          <div class="flex gap-md" style="flex-wrap: wrap;">
+            <div class="form-group" style="flex:1; min-width: 140px;">
               <label class="form-label">出発日</label>
               <input type="date" id="start-date" value="${trip.startDate}" required />
             </div>
-            <div class="form-group" style="flex:1">
+            <div class="form-group" style="flex:1; min-width: 140px;">
               <label class="form-label">帰国日</label>
               <input type="date" id="end-date" value="${trip.endDate}" required />
             </div>
@@ -155,6 +155,18 @@ export default {
       });
     });
 
+    // Date Auto-Focus
+    const startDateInput = document.getElementById('start-date');
+    const endDateInput = document.getElementById('end-date');
+    if (startDateInput && endDateInput) {
+      startDateInput.addEventListener('change', () => {
+        if (!endDateInput.value) {
+          endDateInput.focus();
+          try { if (typeof endDateInput.showPicker === 'function') endDateInput.showPicker(); } catch(e) {}
+        }
+      });
+    }
+
     // Form Submit
     document.getElementById('trip-form')?.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -165,6 +177,14 @@ export default {
       const title = document.getElementById('trip-title').value;
       const startDate = document.getElementById('start-date').value;
       const endDate = document.getElementById('end-date').value;
+
+      const currentUser = getState().user;
+      if (!currentUser || !currentUser.uid) {
+        alert('ユーザー情報の読み込みに失敗しました。少し待ってから再度保存してください。');
+        saveBtn.textContent = '❌ エラー';
+        saveBtn.disabled = false;
+        return;
+      }
 
       const destinations = Array.from(destContainer.querySelectorAll('.destination-row')).map(row => ({
         country: row.querySelector('.dest-country').value,
@@ -180,12 +200,12 @@ export default {
 
       try {
         if (isEdit && currentTrip) {
-          await updateTrip(user.uid, currentTrip.id, data);
+          await updateTrip(currentUser.uid, currentTrip.id, data);
         } else {
-          await createTrip(user.uid, data);
+          await createTrip(currentUser.uid, data);
         }
 
-        const trips = await getTrips(user.uid);
+        const trips = await getTrips(currentUser.uid);
         setState({ trips });
 
         const target = isEdit && currentTrip

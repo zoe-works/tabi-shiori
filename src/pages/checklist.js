@@ -24,7 +24,7 @@ let checklistItems = [];
 
 function render() {
   return `
-    <div class="page-container checklist-page">
+    <div class="page checklist-page">
       <header class="page-header">
         <button class="back-btn" id="cl-back-btn">←</button>
         <h2>持ち物リスト</h2>

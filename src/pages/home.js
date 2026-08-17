@@ -14,6 +14,9 @@ export default {
             <p class="welcome-text">旅行の計画から記録まで、<br>みんなで楽しく作る旅のしおり 🌴</p>
             <button id="btn-create-trip" class="btn btn-primary">✨ 新しい旅行を作成</button>
           </div>
+          <div class="text-center" style="margin-top: 40px;">
+            <span class="text-xs text-muted">Version 1.0.1</span>
+          </div>
         </div>
       `;
     }
@@ -107,6 +110,10 @@ export default {
         <button id="btn-edit-trip" class="btn btn-secondary btn-small w-full mt-md" style="margin-bottom: 16px;">
           ✏️ 旅行情報を編集
         </button>
+
+        <div class="text-center mt-lg" style="margin-bottom: 24px;">
+          <span class="text-xs text-muted">Version 1.0.1</span>
+        </div>
       </div>
     `;
   },
