@@ -9,7 +9,7 @@ export default {
       return `
         <div class="page">
           <div class="welcome-section">
-            <img src="/images/mascot.jpg" alt="たびくま" class="welcome-mascot" />
+            <img src="${import.meta.env.BASE_URL}images/mascot.jpg" alt="たびくま" class="welcome-mascot" />
             <h1 class="welcome-title">旅のしおりを作ろう！</h1>
             <p class="welcome-text">旅行の計画から記録まで、<br>みんなで楽しく作る旅のしおり 🌴</p>
             <button id="btn-create-trip" class="btn btn-primary">✨ 新しい旅行を作成</button>
@@ -48,7 +48,7 @@ export default {
     return `
       <div class="page">
         <div class="home-hero">
-          <img src="/images/mascot.jpg" alt="たびくま" class="home-mascot" />
+          <img src="${import.meta.env.BASE_URL}images/mascot.jpg" alt="たびくま" class="home-mascot" />
           <h1 class="home-trip-title">${currentTrip.title || '無題の旅行'}</h1>
           <p class="home-trip-dates">${formatDate(start)} 〜 ${formatDate(end)}</p>
           

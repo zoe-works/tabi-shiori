@@ -40,7 +40,7 @@ function renderAppShell() {
     <!-- Header -->
     <header class="app-header" id="app-header">
       <div class="header-title">
-        <img src="/images/mascot.jpg" alt="たびくま" class="header-mascot" />
+        <img src="${import.meta.env.BASE_URL}images/mascot.jpg" alt="たびくま" class="header-mascot" />
         <span class="header-title-text">旅のしおり</span>
       </div>
       <div class="header-actions">
@@ -81,7 +81,7 @@ function renderAppShell() {
       <div class="modal-content drawer-content">
         <div class="modal-handle"></div>
         <div class="drawer-header">
-          <img src="/images/mascot.jpg" alt="たびくま" class="drawer-mascot" />
+          <img src="${import.meta.env.BASE_URL}images/mascot.jpg" alt="たびくま" class="drawer-mascot" />
           <h2>メニュー</h2>
         </div>
         <nav class="drawer-nav" id="drawer-nav">

@@ -19,7 +19,7 @@ export default {
     return `
       <div class="page">
         <div class="trip-form-header">
-          <img src="/images/mascot.jpg" alt="たびくま" class="trip-form-mascot" />
+          <img src="${import.meta.env.BASE_URL}images/mascot.jpg" alt="たびくま" class="trip-form-mascot" />
           <h1 class="page-title">${isEdit ? '✏️ 旅行を編集' : '✨ 新しい旅行を作成'}</h1>
         </div>
 
