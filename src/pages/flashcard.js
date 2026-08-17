@@ -37,7 +37,10 @@ export default {
                 <div class="swipe-hint">タップで裏返す 👆</div>
               </div>
               <div class="flashcard-face flashcard-back">
-                <h3 id="fc-back-text" class="flashcard-translation"></h3>
+                <div style="display:flex; justify-content:center; align-items:center; gap: 12px; margin-bottom: 8px;">
+                  <h3 id="fc-back-text" class="flashcard-translation" style="margin: 0;"></h3>
+                  <button id="fc-play-btn" class="btn-icon" style="font-size: 1.5rem; background: var(--bg-soft); border-radius: 50%; width: 40px; height: 40px;">🔊</button>
+                </div>
                 <p id="fc-back-reading" class="flashcard-reading"></p>
                 <div class="swipe-hint">タップで戻る 🔙</div>
               </div>
@@ -154,7 +157,15 @@ export default {
       
       document.getElementById('fc-front-text').textContent = frontText;
       document.getElementById('fc-back-text').textContent = backText;
-      document.getElementById('fc-back-reading').textContent = backReading;
+      
+      const readingEl = document.getElementById('fc-back-reading');
+      if (userLang === 'ja' && backReading) {
+        readingEl.style.display = 'block';
+        readingEl.textContent = backReading;
+      } else {
+        readingEl.style.display = 'none';
+        readingEl.textContent = '';
+      }
       
       document.getElementById('fc-counter').textContent = `${state.currentCardIndex + 1} / ${state.flashcards.length}`;
       fcCard.classList.remove('flipped');
@@ -177,8 +188,29 @@ export default {
     // Event Listeners
     document.getElementById('btn-back')?.addEventListener('click', () => navigate('/'));
     
-    document.getElementById('fc-card-wrapper')?.addEventListener('click', () => {
+    document.getElementById('fc-card-wrapper')?.addEventListener('click', (e) => {
+      // 再生ボタンが押された場合はカードを裏返さない
+      if (e.target.closest('#fc-play-btn')) return;
       document.getElementById('fc-card').classList.toggle('flipped');
+    });
+    
+    document.getElementById('fc-play-btn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const card = state.flashcards[state.currentCardIndex];
+      const textToSpeak = card?.targetBack || card?.phrase;
+      if (textToSpeak && window.speechSynthesis) {
+        // 現在の再生をキャンセル
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(textToSpeak);
+        
+        // 言語コードの設定（例: 'zh' -> 'zh-CN', 'en' -> 'en-US'）
+        const langMap = {
+          'zh': 'zh-CN', 'th': 'th-TH', 'ko': 'ko-KR', 'es': 'es-ES',
+          'it': 'it-IT', 'pt': 'pt-PT', 'en': 'en-US', 'ja': 'ja-JP'
+        };
+        utterance.lang = langMap[state.activeLang] || state.activeLang;
+        window.speechSynthesis.speak(utterance);
+      }
     });
     
     document.getElementById('fc-prev-btn')?.addEventListener('click', (e) => {

@@ -1,6 +1,6 @@
 import { getState, setState } from '../utils/store.js';
 import { navigate, getCurrentPath } from '../utils/router.js';
-import { t } from '../utils/i18n.js';
+import { t, getLang } from '../utils/i18n.js';
 import { createTrip, updateTrip, getTrips } from '../utils/db.js';
 import { POPULAR_COUNTRIES } from '../data/phrases.js';
 
@@ -8,17 +8,23 @@ const EMOJIS = ['🐱','🐶','🐻','🐰','🦊','🐼','🐨','🦁','🐯','
 
 function generateDestRow(d = {}, placeholders = {}) {
   const countryValue = d.country || '';
-  let isOther = countryValue !== '' && !POPULAR_COUNTRIES.some(c => c.code === countryValue || c.name === countryValue);
+  let isOther = countryValue !== '' && !POPULAR_COUNTRIES.some(c => c.code === countryValue || Object.values(c.name).includes(countryValue));
   let selectedCode = isOther ? 'OTHER' : countryValue;
   
+  const currentLang = typeof getLang === 'function' ? getLang() : (getState().language || 'ja');
+  
   if (!isOther && countryValue) {
-    const matched = POPULAR_COUNTRIES.find(c => c.name === countryValue || c.code === countryValue);
+    const matched = POPULAR_COUNTRIES.find(c => 
+      c.code === countryValue || 
+      Object.values(c.name).includes(countryValue)
+    );
     if (matched) selectedCode = matched.code;
   }
   
-  const optionsHtml = POPULAR_COUNTRIES.map(c => 
-    `<option value="${c.code}" ${c.code === selectedCode ? 'selected' : ''}>${c.flag} ${c.name}</option>`
-  ).join('');
+  const optionsHtml = POPULAR_COUNTRIES.map(c => {
+    const displayName = c.name[currentLang] || c.name.ja;
+    return `<option value="${c.code}" ${c.code === selectedCode ? 'selected' : ''}>${c.flag} ${displayName}</option>`;
+  }).join('');
 
   return `
     <div class="form-row destination-item mb-sm" style="flex-wrap: wrap; gap: 8px;">
