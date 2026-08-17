@@ -20,7 +20,7 @@ const categories = {
 export default {
   render() {
     return `
-      <div class="page-container schedule-page">
+      <div class="page schedule-page">
         <header class="page-header">
           <h2>スケジュール & ジャーナル</h2>
         </header>

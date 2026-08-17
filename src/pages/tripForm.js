@@ -199,6 +199,13 @@ export default {
       const data = { title, startDate, endDate, destinations, members };
 
       try {
+        // 安全装置: 10秒経っても画面遷移しない場合は強制的にトップへ戻る（オフライン時の待ちハング対策）
+        const fallbackTimer = setTimeout(() => {
+          if (document.getElementById('btn-save')?.disabled) {
+            navigate('/');
+          }
+        }, 10000);
+
         if (isEdit && currentTrip) {
           await updateTrip(currentUser.uid, currentTrip.id, data);
         } else {
@@ -215,6 +222,7 @@ export default {
         setState({ currentTrip: target, currentTripId: target?.id });
         if (target) localStorage.setItem('currentTripId', target.id);
 
+        clearTimeout(fallbackTimer);
         navigate('/');
       } catch (err) {
         console.error('Error saving trip:', err);
