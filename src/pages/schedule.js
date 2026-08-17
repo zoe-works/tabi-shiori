@@ -47,16 +47,19 @@ export default {
         <div class="modal-overlay" id="scheduleModal">
           <div class="modal-content">
             <span class="close-modal">&times;</span>
-            <h3>${t('addScheduleItem') || '予定を追加'}</h3>
+            <h3>${t('addScheduleModalTitle')}</h3>
             <form id="scheduleForm">
-              <input type="time" id="itemTime" required>
-              <input type="text" id="itemTitle" placeholder="${t('placeName') || '場所・予定名'}" required>
-              <select id="itemCategory">
+              <div class="form-group mb-sm">
+                <label class="form-label" style="display:block; margin-bottom:4px; font-size:0.9rem; color:var(--text-muted);">${t('timeLabel') || '時間'}</label>
+                <input type="time" id="itemTime" class="form-input" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd;" required>
+              </div>
+              <input type="text" id="itemTitle" class="form-input" placeholder="${t('itemTitlePlaceholder')}" required style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd; margin-bottom:12px;">
+              <select id="itemCategory" class="form-input" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd; margin-bottom:12px;">
                 ${Object.entries(categories).map(([key, val]) => `<option value="${key}">${val.icon} ${val.label}</option>`).join('')}
               </select>
-              <input type="text" id="itemTransport" placeholder="${t('transportMeans') || '移動手段 (例: タクシー)'}">
-              <textarea id="itemMemo" placeholder="${t('memo') || 'メモ'}"></textarea>
-              <button type="submit" class="btn primary">${t('addBtn') || '追加する'}</button>
+              <input type="text" id="itemTransport" class="form-input" placeholder="${t('itemTransportPlaceholder')}" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd; margin-bottom:12px;">
+              <textarea id="itemMemo" class="form-input" placeholder="${t('itemMemoPlaceholder')}" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd; margin-bottom:12px; min-height:80px;"></textarea>
+              <button type="submit" class="btn primary w-full">${t('btnAdd')}</button>
             </form>
           </div>
         </div>
@@ -65,34 +68,34 @@ export default {
         <div class="modal-overlay" id="journalModal">
           <div class="modal-content">
             <span class="close-modal">&times;</span>
-            <h3>${t('addJournalItem') || '記録を追加'}</h3>
+            <h3>${t('addJournalModalTitle')}</h3>
             <form id="journalForm">
               <input type="hidden" id="journalItemId">
               
-              <div class="mood-selector">
-                <label>${t('mood') || '気分:'}</label>
+              <div class="mood-selector mb-sm">
+                <label style="display:block; margin-bottom:4px; font-size:0.9rem; color:var(--text-muted);">${t('journalMood')}</label>
                 <div class="mood-options">
                   ${['😆','😊','😴','🤩','😢','🤔'].map(m => `<span class="mood-option" data-mood="${m}">${m}</span>`).join('')}
                 </div>
                 <input type="hidden" id="journalMood">
               </div>
 
-              <div class="star-rating">
-                <label>${t('rating') || '評価:'}</label>
+              <div class="star-rating mb-sm">
+                <label style="display:block; margin-bottom:4px; font-size:0.9rem; color:var(--text-muted);">${t('journalRating')}</label>
                 <div class="stars">
                   ${[1,2,3,4,5].map(s => `<span class="star" data-rating="${s}">★</span>`).join('')}
                 </div>
                 <input type="hidden" id="journalRating" value="0">
               </div>
 
-              <textarea id="journalText" placeholder="${t('journalThoughts') || '感想を書いてね'}"></textarea>
+              <textarea id="journalText" class="form-input" placeholder="${t('journalTextPlaceholder')}" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd; margin-bottom:12px; min-height:100px;"></textarea>
               
-              <div class="photo-upload">
-                <label>${t('addPhoto') || '写真を追加:'}</label>
+              <div class="photo-upload mb-md">
+                <label style="display:block; margin-bottom:4px; font-size:0.9rem; color:var(--text-muted);">${t('journalAddPhoto')}</label>
                 <input type="file" id="journalPhotos" accept="image/*" capture="environment" multiple>
               </div>
 
-              <button type="submit" class="btn primary">${t('saveBtn') || '保存する'}</button>
+              <button type="submit" class="btn primary w-full">${t('btnSave')}</button>
             </form>
           </div>
         </div>

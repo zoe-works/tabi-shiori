@@ -3,7 +3,7 @@ import { navigate } from '../utils/router.js';
 import { loginWithGoogle, linkGoogleAccount } from '../firebase.js';
 import { t, getLang } from '../utils/i18n.js';
 import { translateUserText } from '../utils/translate.js';
-import { getLanguageFromCountry, getFlagFromLanguage } from '../data/phrases.js';
+import { getLanguageFromCountry, getFlagFromLanguage, POPULAR_COUNTRIES } from '../data/phrases.js';
 
 export default {
   async render() {
@@ -46,11 +46,6 @@ export default {
           </div>
           ${tripsHtml}
           <div class="text-center" style="margin-top: 40px; margin-bottom: 40px;">
-            <div style="display:flex; justify-content:center; gap:16px; margin-bottom:16px;">
-              <button class="home-btn-lang" data-lang="ja" style="font-size:24px; background:none; border:none; cursor:pointer;">🇯🇵</button>
-              <button class="home-btn-lang" data-lang="en" style="font-size:24px; background:none; border:none; cursor:pointer;">🇺🇸</button>
-              <button class="home-btn-lang" data-lang="th" style="font-size:24px; background:none; border:none; cursor:pointer;">🇹🇭</button>
-            </div>
             <span class="text-xs text-muted">Version 1.1.0</span>
           </div>
         </div>
@@ -89,8 +84,14 @@ export default {
     
     // 行き先のフラグ
     const destPromises = (currentTrip.destinations || []).map(async (d) => {
-      const langCode = getLanguageFromCountry(d.country);
-      const flag = getFlagFromLanguage(langCode);
+      const matched = POPULAR_COUNTRIES.find(c => c.code === d.country);
+      let flag = '🏳️';
+      if (matched) {
+        flag = matched.flag;
+      } else {
+        const langCode = getLanguageFromCountry(d.country);
+        flag = getFlagFromLanguage(langCode);
+      }
       return `<span style="font-size: 2rem;">${flag}</span>`;
     });
     const destChips = await Promise.all(destPromises);
@@ -170,15 +171,6 @@ export default {
   },
 
   init() {
-    // Language switch for TOP screen
-    document.querySelectorAll('.home-btn-lang').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const lang = btn.getAttribute('data-lang');
-        setLanguage(lang);
-        window.location.reload();
-      });
-    });
-
     document.getElementById('btn-create-trip')?.addEventListener('click', () => navigate('/trip/new'));
     document.getElementById('btn-edit-trip')?.addEventListener('click', () => navigate('/trip/edit'));
     
