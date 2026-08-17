@@ -2,7 +2,7 @@
 import { initializeApp } from 'firebase/app';
 import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, linkWithPopup } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, linkWithPopup } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCh5zX-2AgcibKw-tCvXpsFuRA9POYFt-Y",
@@ -26,14 +26,10 @@ export const auth = getAuth(app);
 
 // Anonymous auth
 export function ensureAuth() {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       unsubscribe();
-      if (user) {
-        resolve(user);
-      } else {
-        signInAnonymously(auth).then(cred => resolve(cred.user)).catch(reject);
-      }
+      resolve(user); // ログインしていない場合は null を返す
     });
   });
 }

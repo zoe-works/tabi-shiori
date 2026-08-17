@@ -190,7 +190,10 @@ async function init() {
     const user = await ensureAuth();
     setState({ user });
     
-    const trips = await getTrips(user.uid);
+    let trips = [];
+    if (user) {
+      trips = await getTrips(user.uid);
+    }
     setState({ trips });
 
     // Set current trip from localStorage or first trip
@@ -204,8 +207,7 @@ async function init() {
 
     updateDrawerTrips(trips);
   } catch (err) {
-    console.error('Auth failed:', err);
-    alert('Firebaseの認証に失敗しました。Firebase Consoleで「Authentication > Sign-in method > 匿名」が有効になっているか確認してください。\\nエラー詳細: ' + err.message);
+    console.error('Initial data load failed:', err);
   }
 
   // Hide loading screen
