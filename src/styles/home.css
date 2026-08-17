@@ -1,0 +1,314 @@
+/* ================================================================
+   Home Page Styles
+   ================================================================ */
+
+.home-hero {
+  text-align: center;
+  padding: var(--space-lg) 0;
+  position: relative;
+}
+
+.home-mascot {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto var(--space-md);
+  animation: float 3s ease-in-out infinite;
+  box-shadow: 0 8px 24px hsla(25, 30%, 20%, 0.08);
+}
+
+.home-trip-title {
+  font-size: 1.5rem;
+  font-weight: var(--fw-black);
+  letter-spacing: -0.01em;
+  margin-bottom: var(--space-xs);
+  line-height: 1.3;
+}
+
+.home-trip-dates {
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+  margin-bottom: var(--space-md);
+}
+
+.home-destinations {
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: var(--space-lg);
+}
+
+/* Countdown */
+.countdown-card {
+  background: linear-gradient(135deg, var(--color-pink-light) 0%, var(--color-blue-light) 50%, var(--color-yellow-light) 100%);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  text-align: center;
+  margin-bottom: var(--space-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.countdown-card::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 80px;
+  height: 80px;
+  background: hsla(0, 0%, 100%, 0.3);
+  border-radius: 50%;
+}
+
+.countdown-card::after {
+  content: '';
+  position: absolute;
+  bottom: -30px;
+  left: -10px;
+  width: 60px;
+  height: 60px;
+  background: hsla(0, 0%, 100%, 0.2);
+  border-radius: 50%;
+}
+
+.countdown-label {
+  font-size: 0.85rem;
+  font-weight: var(--fw-medium);
+  color: var(--color-text-light);
+  margin-bottom: var(--space-sm);
+}
+
+.countdown-number {
+  font-size: 3rem;
+  font-weight: var(--fw-black);
+  color: var(--color-pink-deep);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.countdown-unit {
+  font-size: 0.9rem;
+  font-weight: var(--fw-bold);
+  color: var(--color-text);
+}
+
+.countdown-during {
+  font-size: 1.3rem;
+  font-weight: var(--fw-bold);
+  color: var(--color-pink-deep);
+}
+
+/* Members */
+.members-section {
+  margin-bottom: var(--space-lg);
+}
+
+.members-row {
+  display: flex;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.member-avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.member-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--color-pink-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: var(--shadow-card);
+}
+
+.member-name {
+  font-size: 0.7rem;
+  color: var(--color-text-light);
+  font-weight: var(--fw-medium);
+}
+
+/* Feature Grid */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.feature-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-card);
+  padding: var(--space-lg);
+  text-align: center;
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: all var(--transition-bounce);
+  -webkit-tap-highlight-color: transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+}
+
+.feature-card:nth-child(1)::before { background: var(--color-pink); }
+.feature-card:nth-child(2)::before { background: var(--color-blue); }
+.feature-card:nth-child(3)::before { background: var(--color-yellow); }
+.feature-card:nth-child(4)::before { background: var(--color-mint); }
+.feature-card:nth-child(5)::before { background: var(--color-lavender); }
+.feature-card:nth-child(6)::before { background: var(--color-peach); }
+
+.feature-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--shadow-float);
+}
+
+.feature-card:active {
+  transform: scale(0.97);
+}
+
+.feature-icon {
+  font-size: 2rem;
+  margin-bottom: var(--space-sm);
+  display: block;
+}
+
+.feature-label {
+  font-size: 0.85rem;
+  font-weight: var(--fw-bold);
+  color: var(--color-text);
+}
+
+.feature-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--color-pink-deep);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: var(--fw-bold);
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+}
+
+/* Welcome / No Trip */
+.welcome-section {
+  text-align: center;
+  padding: var(--space-2xl) var(--space-md);
+}
+
+.welcome-mascot {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto var(--space-lg);
+  animation: float 3s ease-in-out infinite;
+  box-shadow: 0 12px 32px hsla(25, 30%, 20%, 0.1);
+}
+
+.welcome-title {
+  font-size: 1.6rem;
+  font-weight: var(--fw-black);
+  margin-bottom: var(--space-sm);
+}
+
+.welcome-text {
+  color: var(--color-text-light);
+  font-size: 0.9rem;
+  margin-bottom: var(--space-xl);
+  line-height: 1.7;
+}
+
+/* Drawer extras */
+.drawer-content {
+  max-height: 80dvh;
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  margin-bottom: var(--space-lg);
+}
+
+.drawer-mascot {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.drawer-item {
+  display: block;
+  padding: 14px var(--space-md);
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+  color: var(--color-text);
+}
+
+.drawer-item:hover {
+  background: var(--color-pink-light);
+}
+
+.drawer-divider {
+  border: none;
+  height: 1px;
+  background: var(--color-border);
+  margin: var(--space-sm) 0;
+}
+
+.drawer-section-title {
+  font-size: 0.75rem;
+  font-weight: var(--fw-bold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: var(--space-sm) var(--space-md);
+}
+
+.drawer-trip-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 10px var(--space-md);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  font-size: 0.9rem;
+}
+
+.drawer-trip-item:hover {
+  background: var(--color-pink-light);
+}
+
+.drawer-trip-item.active {
+  background: var(--color-pink-light);
+  font-weight: var(--fw-bold);
+}
+
+.drawer-trip-new {
+  color: var(--color-pink-deep);
+  font-weight: var(--fw-medium);
+}
