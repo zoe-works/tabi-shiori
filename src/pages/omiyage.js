@@ -20,8 +20,9 @@ export default {
                 </main>
                 <button class="fab" id="omiyage-fab">＋</button>
                 
-                <div id="omiyage-modal" class="modal hidden">
+                <div id="omiyage-modal" class="modal-overlay">
                     <div class="modal-content">
+                        <div class="modal-handle"></div>
                         <h3>${t('addOmiyage') || 'お土産の追加 ✏️'}</h3>
                         <form id="omiyage-form">
                             <div class="form-group">
@@ -179,11 +180,11 @@ export default {
         const form = document.getElementById('omiyage-form');
 
         fab.addEventListener('click', () => {
-            modal.classList.remove('hidden');
+            modal.classList.add('active');
         });
 
         cancelBtn.addEventListener('click', () => {
-            modal.classList.add('hidden');
+            modal.classList.remove('active');
             form.reset();
         });
 
@@ -198,7 +199,7 @@ export default {
             };
 
             await addOmiyageItem(newItem);
-            modal.classList.add('hidden');
+            modal.classList.remove('active');
             form.reset();
             await loadItems();
         });

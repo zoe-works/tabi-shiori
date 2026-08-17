@@ -31,6 +31,7 @@ export const translations = {
     // ホーム・ウェルカム画面
     welcomeTitle: '旅のしおりを作ろう！',
     welcomeDesc: '旅行の計画から記録まで、<br>みんなで楽しく作る旅のしおり 🌴',
+    yourTrips: 'あなたの旅行',
     btnWelcomeCreate: '✨ 新しい旅行を作成',
     btnWelcomeGoogle: '🌐 Googleアカウントでログイン/引き継ぎ',
     untitledTrip: '無題の旅行',
@@ -172,6 +173,7 @@ export const translations = {
 
     welcomeTitle: 'Create an Itinerary!',
     welcomeDesc: 'Plan and record your trips<br>together with everyone! 🌴',
+    yourTrips: 'Your Trips',
     btnWelcomeCreate: '✨ Create New Trip',
     btnWelcomeGoogle: '🌐 Login/Link with Google',
     untitledTrip: 'Untitled Trip',
@@ -282,6 +284,7 @@ export const translations = {
 
     welcomeTitle: 'สร้างแผนการเดินทาง!',
     welcomeDesc: 'วางแผนและบันทึกการเดินทาง<br>ไปพร้อมกันทุกคน! 🌴',
+    yourTrips: 'ทริปของคุณ',
     btnWelcomeCreate: '✨ สร้างทริปใหม่',
     btnWelcomeGoogle: '🌐 เข้าสู่ระบบ/เชื่อมโยง Google',
     untitledTrip: 'ทริปที่ไม่มีชื่อ',

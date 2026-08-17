@@ -179,11 +179,11 @@ async function renderChecklist() {
     addContainer.className = 'add-item-container';
     addContainer.innerHTML = `
       <input type="text" class="add-item-input" placeholder="${t('addItemPlaceholder') || '+ アイテムを追加'}">
-      <button class="add-item-btn">${t('addBtn') || '追加'}</button>
     `;
     
-    addContainer.querySelector('.add-item-btn').addEventListener('click', async () => {
-       const input = addContainer.querySelector('.add-item-input');
+    addContainer.querySelector('.add-item-input').addEventListener('keypress', async (e) => {
+       if(e.key !== 'Enter') return;
+       const input = e.target;
        if(input.value.trim()) {
          const store = getState();
          await addChecklistItem(store.currentTrip.id, {

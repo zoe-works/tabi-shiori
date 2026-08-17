@@ -1,4 +1,4 @@
-import { getState } from '../utils/store.js';
+import { getState, setLanguage } from '../utils/store.js';
 import { navigate } from '../utils/router.js';
 import { loginWithGoogle, linkGoogleAccount } from '../firebase.js';
 import { t, getLang } from '../utils/i18n.js';
@@ -13,7 +13,7 @@ export default {
       if (trips && trips.length > 0) {
         tripsHtml = `
           <div class="portal-trips" style="margin-top: 32px;">
-            <h2 class="text-center mb-md" style="font-size: 1.2rem; color: var(--text-dark);">あなたの旅行</h2>
+            <h2 class="text-center mb-md" style="font-size: 1.2rem; color: var(--text-dark);">${t('yourTrips') || 'あなたの旅行'}</h2>
             <div class="trips-list" style="display: flex; flex-direction: column; gap: 12px; padding: 0 16px;">
               ${trips.map(trip => `
                 <div class="card portal-trip-card" data-trip-id="${trip.id}" style="cursor: pointer; display: flex; align-items: center; padding: 16px;">
@@ -45,6 +45,11 @@ export default {
           </div>
           ${tripsHtml}
           <div class="text-center" style="margin-top: 40px; margin-bottom: 40px;">
+            <div style="display:flex; justify-content:center; gap:16px; margin-bottom:16px;">
+              <button class="home-btn-lang" data-lang="ja" style="font-size:24px; background:none; border:none; cursor:pointer;">🇯🇵</button>
+              <button class="home-btn-lang" data-lang="en" style="font-size:24px; background:none; border:none; cursor:pointer;">🇺🇸</button>
+              <button class="home-btn-lang" data-lang="th" style="font-size:24px; background:none; border:none; cursor:pointer;">🇹🇭</button>
+            </div>
             <span class="text-xs text-muted">Version 1.1.0</span>
           </div>
         </div>
@@ -164,6 +169,15 @@ export default {
   },
 
   init() {
+    // Language switch for TOP screen
+    document.querySelectorAll('.home-btn-lang').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const lang = btn.getAttribute('data-lang');
+        setLanguage(lang);
+        window.location.reload();
+      });
+    });
+
     document.getElementById('btn-create-trip')?.addEventListener('click', () => navigate('/trip/new'));
     document.getElementById('btn-edit-trip')?.addEventListener('click', () => navigate('/trip/edit'));
     

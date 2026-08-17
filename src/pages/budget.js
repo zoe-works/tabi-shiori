@@ -27,8 +27,9 @@ export default {
                 </main>
                 <button class="fab" id="budget-fab">＋</button>
                 
-                <div id="budget-modal" class="modal hidden">
+                <div id="budget-modal" class="modal-overlay">
                     <div class="modal-content">
+                        <div class="modal-handle"></div>
                         <h3>${t('addExpenseTitle') || '支出の追加 ✏️'}</h3>
                         <form id="budget-form">
                             <div class="form-group">
@@ -184,11 +185,11 @@ export default {
         const form = document.getElementById('budget-form');
 
         fab.addEventListener('click', () => {
-            modal.classList.remove('hidden');
+            modal.classList.add('active');
         });
 
         cancelBtn.addEventListener('click', () => {
-            modal.classList.add('hidden');
+            modal.classList.remove('active');
             form.reset();
         });
 
@@ -205,7 +206,7 @@ export default {
             };
 
             await addBudgetItem(newItem);
-            modal.classList.add('hidden');
+            modal.classList.remove('active');
             form.reset();
             await loadItems();
         });
