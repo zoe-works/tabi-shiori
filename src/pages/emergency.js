@@ -24,7 +24,7 @@ export default {
                     <div class="loading">${t('loading') || 'よみこみ中... 🧸'}</div>
                 </main>
                 
-                <div id="emergency-modal" class="modal hidden">
+                <div id="emergency-modal" class="modal-overlay">
                     <div class="modal-content">
                         <h3 id="modal-title">${t('addEmergency') || '情報の追加 ✏️'}</h3>
                         <form id="emergency-form">
@@ -123,7 +123,7 @@ export default {
                     const cat = e.target.getAttribute('data-cat');
                     document.getElementById('em-category').value = cat;
                     document.getElementById('modal-title').innerText = `${getCategories()[cat].label}の追加 ✏️`;
-                    document.getElementById('emergency-modal').classList.remove('hidden');
+                    document.getElementById('emergency-modal').classList.add('active');
                 });
             });
         };
@@ -143,10 +143,11 @@ export default {
         // Modal logic
         const modal = document.getElementById('emergency-modal');
         const cancelBtn = document.getElementById('em-cancel');
+        modal.addEventListener('click', (e) => { if(e.target === modal) modal.classList.remove('active'); });
         const form = document.getElementById('emergency-form');
 
         cancelBtn.addEventListener('click', () => {
-            modal.classList.add('hidden');
+            modal.classList.remove('active');
             form.reset();
         });
 
@@ -161,7 +162,7 @@ export default {
             };
 
             await addEmergencyContact(newItem);
-            modal.classList.add('hidden');
+            modal.classList.remove('active');
             form.reset();
             await loadContacts();
         });

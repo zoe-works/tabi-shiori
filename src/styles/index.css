@@ -861,11 +861,18 @@ ul, ol {
   transform: scale(0.9);
 }
 .star.full {
-  color: gold;
+  color: #FFC107;
 }
 .star.half {
-  background: linear-gradient(to right, gold 50%, var(--color-border) 50%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+  color: #E0E0E0;
+  position: relative;
+}
+.star.half::after {
+  content: '★';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #FFC107;
+  overflow: hidden;
+  width: 50%;
 }

@@ -229,16 +229,6 @@ export default {
       });
     });
 
-    document.querySelectorAll('.star').forEach(star => {
-      star.addEventListener('click', (e) => {
-        const rating = parseInt(e.target.dataset.rating);
-        document.getElementById('journalRating').value = rating;
-        document.querySelectorAll('.star').forEach(s => {
-          s.style.color = parseInt(s.dataset.rating) <= rating ? 'gold' : '#ccc';
-        });
-      });
-    });
-
     document.getElementById('journal-cancel')?.addEventListener('click', () => {
         document.getElementById('journalModal').classList.remove('active');
         document.getElementById('journalForm').reset();
@@ -304,8 +294,14 @@ export default {
         
         if (hasJournal) {
           const photos = item.journalPhotos ? item.journalPhotos.map(url => `<img src="${url}" class="journal-photo">`).join('') : '';
-          const stars = '★'.repeat(item.journalRating || 0) + '☆'.repeat(5 - (item.journalRating || 0));
-          journalHtml = `
+          const r = parseFloat(item.journalRating || 0);
+            const fullStars = Math.floor(r);
+            const hasHalf = r % 1 !== 0;
+            const emptyStars = 5 - Math.ceil(r);
+            const stars = '<span class="star full" style="font-size:1rem; cursor:default; transform:none;">★</span>'.repeat(fullStars) + 
+                          (hasHalf ? '<span class="star half" style="font-size:1rem; cursor:default; transform:none;">★</span>' : '') + 
+                          '<span class="star" style="font-size:1rem; cursor:default; transform:none; color:#E0E0E0;">★</span>'.repeat(emptyStars);
+journalHtml = `
             <div class="journal-entry">
               ${item.journalMood ? `<span class="journal-mood">${item.journalMood}</span>` : ''}
               ${item.journalRating ? `<span class="journal-rating">${stars}</span>` : ''}
