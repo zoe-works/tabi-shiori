@@ -9,7 +9,7 @@ let currentDay = 1;
 let currentMode = 'plan'; // 'plan' or 'journal'
 let schedules = [];
 
-const categories = {
+const getCategories = () => ({
   sightseeing: { icon: '🏛️', label: t('catSightseeing') || '観光' },
   meal: { icon: '🍽️', label: t('catMeal') || '食事' },
   transport: { icon: '🚌', label: t('catTransport') || '移動' },
@@ -17,7 +17,7 @@ const categories = {
   shopping: { icon: '🛒', label: t('catShopping') || '買い物' },
   activity: { icon: '🎭', label: t('catActivity') || '体験' },
   other: { icon: '✨', label: t('catOther') || 'その他' }
-};
+});
 
 export default {
   render() {
@@ -49,13 +49,14 @@ export default {
             <span class="close-modal">&times;</span>
             <h3>${t('addScheduleModalTitle')}</h3>
             <form id="scheduleForm">
+              <input type="hidden" id="scheduleItemId">
               <div class="form-group mb-sm" style="position:relative;">
                 <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-muted); pointer-events:none;">${t('timeLabel') || '時間'}</span>
                 <input type="time" id="itemTime" class="form-input" style="width:100%; padding:12px 12px 12px 60px; border-radius:8px; border:1px solid #ddd;" required>
               </div>
               <input type="text" id="itemTitle" class="form-input" placeholder="${t('itemTitlePlaceholder')}" required style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd; margin-bottom:12px;">
               <select id="itemCategory" class="form-input" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd; margin-bottom:12px;">
-                ${Object.entries(categories).map(([key, val]) => `<option value="${key}">${val.icon} ${val.label}</option>`).join('')}
+                ${Object.entries(getCategories()).map(([key, val]) => `<option value="${key}">${val.icon} ${val.label}</option>`).join('')}
               </select>
               <input type="text" id="itemTransport" class="form-input" placeholder="${t('itemTransportPlaceholder')}" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd; margin-bottom:12px;">
               <textarea id="itemMemo" class="form-input" placeholder="${t('itemMemoPlaceholder')}" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd; margin-bottom:12px; min-height:80px;"></textarea>
@@ -156,6 +157,8 @@ export default {
     const journalModal = document.getElementById('journalModal');
     
     document.getElementById('addScheduleBtn').addEventListener('click', () => {
+      document.getElementById('scheduleItemId').value = '';
+      document.getElementById('scheduleForm').reset();
       scheduleModal.classList.add('active');
     });
 
@@ -169,6 +172,7 @@ export default {
     document.getElementById('schedule-cancel')?.addEventListener('click', () => {
         document.getElementById('scheduleModal').classList.remove('active');
         document.getElementById('scheduleForm').reset();
+        document.getElementById('scheduleItemId').value = '';
     });
     
     document.getElementById('scheduleForm').addEventListener('submit', async (e) => {
@@ -184,13 +188,39 @@ export default {
         order: schedules.length
       };
       
-      await addScheduleItem(trip.id, newItem);
+      const editId = document.getElementById('scheduleItemId').value;
+      if (editId) {
+        await updateScheduleItem(trip.id, editId, newItem);
+      } else {
+        await addScheduleItem(trip.id, newItem);
+      }
       scheduleModal.classList.remove('active');
       e.target.reset();
+      document.getElementById('scheduleItemId').value = '';
       this.loadSchedules(trip.id);
     });
     
     // 気分スタンプと星評価のUI
+    document.querySelectorAll('.star').forEach(star => {
+      star.addEventListener('click', (e) => {
+        const rect = e.target.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const isHalf = x < rect.width / 2;
+        const rating = parseInt(e.target.dataset.rating) - (isHalf ? 0.5 : 0);
+        document.getElementById('journalRating').value = rating;
+        
+        document.querySelectorAll('.star').forEach(s => {
+          const sRating = parseInt(s.dataset.rating);
+          s.classList.remove('full', 'half');
+          if (sRating <= rating) {
+            s.classList.add('full');
+          } else if (sRating - 0.5 === rating) {
+            s.classList.add('half');
+          }
+        });
+      });
+    });
+
     document.querySelectorAll('.mood-option').forEach(opt => {
       opt.addEventListener('click', (e) => {
         document.querySelectorAll('.mood-option').forEach(o => o.classList.remove('selected'));
@@ -264,7 +294,7 @@ export default {
     }
 
     const itemsHtmlPromises = schedules.map(async item => {
-      const cat = categories[item.category] || categories.other;
+      const cat = getCategories()[item.category] || getCategories().other;
       const translatedTitle = await translateUserText(item.title) || item.title;
       const translatedMemo = item.memo ? (await translateUserText(item.memo) || item.memo) : '';
       let journalHtml = '';
@@ -341,6 +371,21 @@ export default {
         }
       }, {passive: true});
       
+      wrapper.addEventListener('click', (e) => {
+        if (currentMode !== 'plan') return;
+        if (Math.abs(currentX) > 10) return; // swipe detected
+        const item = schedules.find(s => s.id === itemId);
+        if (item) {
+          document.getElementById('scheduleItemId').value = item.id;
+          document.getElementById('itemTime').value = item.time;
+          document.getElementById('itemTitle').value = item.title;
+          document.getElementById('itemCategory').value = item.category;
+          document.getElementById('itemTransport').value = item.transport || '';
+          document.getElementById('itemMemo').value = item.memo || '';
+          document.getElementById('scheduleModal').classList.add('active');
+        }
+      });
+      
       wrapper.addEventListener('touchend', async (e) => {
         if (currentMode !== 'plan') return;
         wrapper.style.transition = 'transform 0.2s ease-out';
@@ -375,9 +420,17 @@ export default {
           document.querySelectorAll('.mood-option').forEach(o => {
             o.classList.toggle('selected', o.dataset.mood === item.journalMood);
           });
-          document.querySelectorAll('.star').forEach(s => {
-            s.style.color = parseInt(s.dataset.rating) <= (item.journalRating || 0) ? 'gold' : '#ccc';
-          });
+          const r = parseFloat(item.journalRating || 0);
+            document.querySelectorAll('.star').forEach(s => {
+              const sRating = parseInt(s.dataset.rating);
+              s.classList.remove('full', 'half');
+              s.style.color = '';
+              if (sRating <= r) {
+                s.classList.add('full');
+              } else if (sRating - 0.5 === r) {
+                s.classList.add('half');
+              }
+            });
           
           document.getElementById('journalModal').classList.add('active');
         });

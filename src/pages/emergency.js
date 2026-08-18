@@ -2,12 +2,12 @@ import { getState } from '../utils/store.js';
 import { navigate } from '../utils/router.js';
 import { getEmergencyContacts, addEmergencyContact, updateEmergencyContact, deleteEmergencyContact } from '../utils/db.js';
 
-const CATEGORIES = {
+const getCategories = () => ({
     police: { icon: '🚨', label: t('catPolice') || '警察・消防・救急' },
     hotel: { icon: '🏨', label: t('catHotel') || 'ホテルの連絡先' },
     embassy: { icon: '🏛️', label: t('catEmbassy') || '大使館の連絡先' },
     insurance: { icon: '🛡️', label: t('catInsurance') || '海外旅行保険' }
-};
+});
 
 import { t } from '../utils/i18n.js';
 import { translateUserText } from '../utils/translate.js';
@@ -71,17 +71,17 @@ export default {
         const renderContent = async () => {
             if (contacts.length === 0) {
                 // Initialize default view if empty
-                mainEl.innerHTML = Object.keys(CATEGORIES).map(catKey => `
+                mainEl.innerHTML = Object.keys(getCategories()).map(catKey => `
                     <div class="emergency-section card">
                         <div class="section-header">
-                            <h3>${CATEGORIES[catKey].icon} ${CATEGORIES[catKey].label}</h3>
+                            <h3>${getCategories()[catKey].icon} ${getCategories()[catKey].label}</h3>
                             <button class="btn-add-small" data-cat="${catKey}">＋ ${t('addSmallBtn') || '追加'}</button>
                         </div>
                         <div class="empty-text">${t('noInfo') || '情報がありません。'}</div>
                     </div>
                 `).join('');
             } else {
-                const sectionsPromises = Object.keys(CATEGORIES).map(async catKey => {
+                const sectionsPromises = Object.keys(getCategories()).map(async catKey => {
                     const catContacts = contacts.filter(c => c.category === catKey);
                     
                     const cardsPromises = catContacts.map(async c => {
@@ -104,7 +104,7 @@ export default {
                     return `
                         <div class="emergency-section card">
                             <div class="section-header">
-                                <h3>${CATEGORIES[catKey].icon} ${CATEGORIES[catKey].label}</h3>
+                                <h3>${getCategories()[catKey].icon} ${getCategories()[catKey].label}</h3>
                                 <button class="btn-add-small" data-cat="${catKey}">＋ ${t('addSmallBtn') || '追加'}</button>
                             </div>
                             <div class="emergency-list">
@@ -122,7 +122,7 @@ export default {
                 btn.addEventListener('click', (e) => {
                     const cat = e.target.getAttribute('data-cat');
                     document.getElementById('em-category').value = cat;
-                    document.getElementById('modal-title').innerText = `${CATEGORIES[cat].label}の追加 ✏️`;
+                    document.getElementById('modal-title').innerText = `${getCategories()[cat].label}の追加 ✏️`;
                     document.getElementById('emergency-modal').classList.remove('hidden');
                 });
             });
