@@ -98,7 +98,7 @@ export default {
 
     // メンバー名の翻訳
     const memberPromises = (currentTrip.members || []).map(async (m) => {
-      const name = await translateUserText(m.name) || '';
+      const name = m.name || '';
       return `
         <div class="member-avatar" title="${name}">
           <span class="member-icon">${m.icon || '😊'}</span>

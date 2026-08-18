@@ -91,7 +91,7 @@ export default {
             // Group by recipient
             const grouped = {};
             for (const item of items) {
-                const translatedRecipient = await translateUserText(item.recipientName) || item.recipientName;
+                const translatedRecipient = item.recipientName;
                 if (!grouped[translatedRecipient]) grouped[translatedRecipient] = [];
                 grouped[translatedRecipient].push(item);
             }
