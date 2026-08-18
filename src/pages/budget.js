@@ -57,10 +57,8 @@ export default {
                                     ${Object.entries(CATEGORIES).map(([key, cat]) => `<option value="${key}">${cat.icon} ${cat.label}</option>`).join('')}
                                 </select>
                             </div>
-                            <div class="modal-actions">
-                                <button type="button" class="btn-cancel" id="budget-cancel">${t('cancelBtn') || 'キャンセル'}</button>
-                                <button type="submit" class="btn-fancy">${t('addBtn') || '追加する ✨'}</button>
-                            </div>
+                            <button type="submit" class="btn btn-primary w-full mt-lg">${t('addBtn') || '追加する ✨'}</button>
+   <button type="button" class="btn btn-secondary w-full mt-sm" id="budget-cancel">${t('cancelBtn') || 'キャンセル'}</button>
                         </form>
                     </div>
                 </div>

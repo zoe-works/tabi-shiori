@@ -41,10 +41,8 @@ export default {
                                 <label>${t('emergencyMemo') || 'メモ (内容)'}</label>
                                 <textarea id="em-info" rows="3" placeholder="${t('emergencyMemoPlaceholder') || '住所や予約番号など'}"></textarea>
                             </div>
-                            <div class="modal-actions">
-                                <button type="button" class="btn-cancel" id="em-cancel">${t('cancelBtn') || 'キャンセル'}</button>
-                                <button type="submit" class="btn-primary">${t('saveBtn') || '保存する ✨'}</button>
-                            </div>
+                            <button type="submit" class="btn btn-primary w-full mt-lg">${t('saveBtn') || '保存する ✨'}</button>
+   <button type="button" class="btn btn-secondary w-full mt-sm" id="em-cancel">${t('cancelBtn') || 'キャンセル'}</button>
                         </form>
                     </div>
                 </div>

@@ -59,7 +59,8 @@ export default {
               </select>
               <input type="text" id="itemTransport" class="form-input" placeholder="${t('itemTransportPlaceholder')}" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd; margin-bottom:12px;">
               <textarea id="itemMemo" class="form-input" placeholder="${t('itemMemoPlaceholder')}" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd; margin-bottom:12px; min-height:80px;"></textarea>
-              <button type="submit" class="btn primary w-full">${t('btnAdd')}</button>
+              <button type="submit" class="btn btn-primary w-full mt-lg">${t('btnAdd')}</button>
+   <button type="button" class="btn btn-secondary w-full mt-sm" id="schedule-cancel">${t('cancelBtn') || 'キャンセル'}</button>
             </form>
           </div>
         </div>
@@ -95,7 +96,8 @@ export default {
                 <input type="file" id="journalPhotos" accept="image/*" capture="environment" multiple>
               </div>
 
-              <button type="submit" class="btn primary w-full">${t('btnSave')}</button>
+              <button type="submit" class="btn btn-primary w-full mt-lg">${t('btnSave')}</button>
+   <button type="button" class="btn btn-secondary w-full mt-sm" id="journal-cancel">${t('cancelBtn') || 'キャンセル'}</button>
             </form>
           </div>
         </div>
@@ -164,6 +166,11 @@ export default {
       });
     });
 
+    document.getElementById('schedule-cancel')?.addEventListener('click', () => {
+        document.getElementById('scheduleModal').classList.remove('active');
+        document.getElementById('scheduleForm').reset();
+    });
+    
     document.getElementById('scheduleForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const newItem = {
@@ -202,6 +209,11 @@ export default {
       });
     });
 
+    document.getElementById('journal-cancel')?.addEventListener('click', () => {
+        document.getElementById('journalModal').classList.remove('active');
+        document.getElementById('journalForm').reset();
+    });
+    
     document.getElementById('journalForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const itemId = document.getElementById('journalItemId').value;

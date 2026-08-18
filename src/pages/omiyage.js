@@ -37,10 +37,8 @@ export default {
                                 <label>${t('budgetEstimate') || '予算目安'}</label>
                                 <input type="number" id="omi-budget" placeholder="例: 1000">
                             </div>
-                            <div class="modal-actions">
-                                <button type="button" class="btn-cancel" id="omi-cancel">${t('cancelBtn') || 'キャンセル'}</button>
-                                <button type="submit" class="btn-fancy">${t('addBtn') || '追加する ✨'}</button>
-                            </div>
+                            <button type="submit" class="btn btn-primary w-full mt-lg">${t('addBtn') || '追加する ✨'}</button>
+   <button type="button" class="btn btn-secondary w-full mt-sm" id="omi-cancel">${t('cancelBtn') || 'キャンセル'}</button>
                         </form>
                     </div>
                 </div>
