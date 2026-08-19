@@ -1,24 +1,80 @@
 const fs = require('fs');
 
-function processFile(filePath) {
-    let content = fs.readFileSync(filePath, 'utf8');
-    
-    // HTML Modal structure
-    content = content.replace(/class="modal hidden"/g, 'class="modal-overlay"');
-    content = content.replace(/<div class="modal-content">/g, '<div class="modal-content">\n                        <div class="modal-handle"></div>');
-    
-    // JS Logic
-    content = content.replace(/modal\.classList\.remove\('hidden'\)/g, 'modal.classList.add(\'active\')');
-    content = content.replace(/modal\.classList\.add\('hidden'\)/g, 'modal.classList.remove(\'active\')');
-    
-    // Add backdrop click listener if not already added
-    if (!content.includes('modal.addEventListener(\'click\'')) {
-        content = content.replace(/form\.reset\(\);\n\s*\}\);/g, 'form.reset();\n        });\n\n        modal.addEventListener(\'click\', (e) => {\n            if(e.target === modal) {\n                modal.classList.remove(\'active\');\n            }\n        });');
-    }
+// 1. Omiyage JS overlay click
+let omiyage = fs.readFileSync('src/pages/omiyage.js', 'utf8');
+omiyage = omiyage.replace(
+  `cancelBtn.addEventListener('click', () => {
+            modal.classList.remove('active');
+            form.reset();
+        });
 
-    fs.writeFileSync(filePath, content, 'utf8');
-}
+        form.addEventListener('submit', async (e) => {`,
+  `cancelBtn.addEventListener('click', () => {
+            modal.classList.remove('active');
+            form.reset();
+        });
 
-processFile('C:/Users/81806/.gemini/antigravity/scratch/tabi-shiori/src/pages/budget.js');
-processFile('C:/Users/81806/.gemini/antigravity/scratch/tabi-shiori/src/pages/omiyage.js');
-console.log('Fixed modals!');
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+                form.reset();
+            }
+        });
+
+        form.addEventListener('submit', async (e) => {`
+);
+fs.writeFileSync('src/pages/omiyage.js', omiyage, 'utf8');
+
+// 2. Schedule JS overlay click and modal handle
+let schedule = fs.readFileSync('src/pages/schedule.js', 'utf8');
+// Add modal handle to both modals
+schedule = schedule.replace(
+  `<div class="modal-content">\n            <span class="close-modal">&times;</span>`,
+  `<div class="modal-content">\n            <div class="modal-handle"></div>\n            <span class="close-modal">&times;</span>`
+);
+schedule = schedule.replace(
+  `<div class="modal-content">\n            <span class="close-modal">&times;</span>`,
+  `<div class="modal-content">\n            <div class="modal-handle"></div>\n            <span class="close-modal">&times;</span>`
+);
+// Add overlay click listener for scheduleModal and journalModal
+const oldCloseModal = `document.querySelectorAll('.close-modal').forEach(btn => {
+      btn.addEventListener('click', () => {
+        scheduleModal.classList.remove('active');
+        journalModal.classList.remove('active');
+        document.getElementById('scheduleForm').reset();
+        document.getElementById('journalForm').reset();
+      });
+    });`;
+const newCloseModal = oldCloseModal + `
+
+    scheduleModal.addEventListener('click', (e) => {
+      if (e.target === scheduleModal) {
+        scheduleModal.classList.remove('active');
+        document.getElementById('scheduleForm').reset();
+        document.getElementById('scheduleItemId').value = '';
+      }
+    });
+
+    journalModal.addEventListener('click', (e) => {
+      if (e.target === journalModal) {
+        journalModal.classList.remove('active');
+        document.getElementById('journalForm').reset();
+      }
+    });
+`;
+schedule = schedule.replace(oldCloseModal, newCloseModal);
+
+// 3. What about the animation? Wait... 
+// Why did the user say "ジャーナルポップアップのせり上がりと、スケジュールポップアップのせり上がりが違う"?
+// I suspect it's because scheduleModal was shown with `requestAnimationFrame` indirectly or there's a difference in `transition`?
+// In index.css:
+// .modal-overlay.active .modal-content { transform: translateY(0); }
+// .modal-content { transition: transform var(--transition-slow); }
+// There is NO difference in their CSS.
+// Maybe the user means the height jumps? 
+
+fs.writeFileSync('src/pages/schedule.js', schedule, 'utf8');
+
+// 4. Fix CH (Switzerland) research questions in data/research.js? No, wait. 
+// "リサーチノートなんだけど添付の画像でCH（スイス）だけ質問項目が違う、他の２つと一緒にして"
+// Let's check `src/pages/research.js` or `src/data/research.js`.

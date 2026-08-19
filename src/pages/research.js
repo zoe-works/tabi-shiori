@@ -9,12 +9,10 @@ let activeCountry = '';
 let notes = [];
 
 const DEFAULT_QUESTIONS = [
-  t('rq1') || "首都・人口・面積・公用語は？",
-  t('rq2') || "現地通貨は？",
   t('rq3') || "現地の人の性格は？",
   t('rq4') || "食文化は？",
   t('rq5') || "コンビニなどの便利なお店は？",
-  t('rq6') || "移動手段はどう違う？",
+  t('rq6') || "移動手段はどういう？",
   t('rq7') || "家やトイレはどんな感じ？",
   t('rq8') || "実際に行きたい場所3つ",
   t('rq9') || "食べたいもの3つ"
@@ -152,7 +150,7 @@ export default {
   },
 
   async loadNotes(tripId) {
-    const allNotes = await getResearchNotes(tripId);
+    let allNotes = await getResearchNotes(tripId);
     
     notes = allNotes.filter(n => n.country === activeCountry);
 
@@ -167,8 +165,19 @@ export default {
         });
       }
       // Re-fetch
-      const updatedNotes = await getResearchNotes(tripId);
-      notes = updatedNotes.filter(n => n.country === activeCountry);
+      allNotes = await getResearchNotes(tripId);
+      notes = allNotes.filter(n => n.country === activeCountry);
+    }
+    
+    // Cleanup extra questions that we accidentally added earlier if they are empty
+    const badQuestions = ["首都・人口・面積・公用語など", "首都・人口・面積・公用語は？", "現地通貨は？"];
+    const notesToDelete = notes.filter(n => badQuestions.includes(n.question) && !n.answer);
+    if (notesToDelete.length > 0) {
+      for (const n of notesToDelete) {
+        await deleteResearchNote(tripId, n.id);
+      }
+      allNotes = await getResearchNotes(tripId);
+      notes = allNotes.filter(n => n.country === activeCountry);
     }
 
     notes.sort((a, b) => (a.order || 0) - (b.order || 0));
