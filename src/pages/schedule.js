@@ -73,10 +73,6 @@ export default {
             <h3>${t('addJournalModalTitle')}</h3>
             <form id="journalForm">
               <input type="hidden" id="journalItemId">
-              
-              
-                <input type="hidden" id="journalMood">
-              </div>
 
               <div class="mb-sm">
                 <label style="display:block; margin-bottom:4px; font-size:0.9rem; color:var(--text-muted);">${t('journalRating')}</label>
