@@ -1,7 +1,7 @@
 import { getState } from '../utils/store.js';
 import { navigate } from '../utils/router.js';
 import { getSchedules, addScheduleItem, updateScheduleItem, deleteScheduleItem } from '../utils/db.js';
-import { uploadPhoto, compressImage } from '../utils/storage.js';
+import { compressImageAsBase64 } from '../utils/storage.js';
 import { t } from '../utils/i18n.js';
 import { translateUserText } from '../utils/translate.js';
 
@@ -158,6 +158,8 @@ export default {
       btn.addEventListener('click', () => {
         scheduleModal.classList.remove('active');
         journalModal.classList.remove('active');
+        document.getElementById('scheduleForm').reset();
+        document.getElementById('journalForm').reset();
       });
     });
 
@@ -231,12 +233,14 @@ export default {
       let photos = item.journalPhotos || [];
       
       if (photosInput.files.length > 0) {
-        for (let file of photosInput.files) {
-           const compressed = await compressImage(file);
-           const state = getState();
-             compressed.name = file.name || `photo_${Date.now()}.jpg`;
-             const url = await uploadPhoto(state.user.uid, trip.id, compressed);
-           photos.push(url);
+        try {
+          for (let file of photosInput.files) {
+             const dataUrl = await compressImageAsBase64(file);
+             photos.push(dataUrl);
+          }
+        } catch (e) {
+          console.error(e);
+          alert('画像の処理に失敗しました。ファイルサイズが大きすぎる可能性があります。');
         }
       }
       
@@ -247,6 +251,7 @@ export default {
       });
       
       journalModal.classList.remove('active');
+      document.getElementById('journalForm').reset();
       this.loadSchedules(trip.id);
     });
 
@@ -395,6 +400,7 @@ journalHtml = `
           const item = schedules.find(s => s.id === id);
           document.getElementById('journalItemId').value = id;
           document.getElementById('journalText').value = item.journalText || '';
+          document.getElementById('journalPhotos').value = '';
           
           document.getElementById('journalRating').value = item.journalRating || 0;
           
