@@ -336,12 +336,12 @@ export default {
         }
       }
 
-      return `
-        <div class="timeline-item" data-id="${item.id}" style="position: relative; margin-bottom: 24px;">
-          <!-- Delete Background -->
-          <div class="swipe-delete-bg" style="position: absolute; top: 0; left: 0; bottom: 0; width: 100%; background: #ff3b30; color: white; display: flex; align-items: center; padding-left: 20px; font-weight: bold; z-index: 1; border-radius: 8px; opacity: 0; transition: opacity 0.2s;">
-            削除
-          </div>
+        return `
+          <div class="timeline-item" data-id="${item.id}" style="position: relative; margin-bottom: 24px;">
+            <!-- Delete Background -->
+            <div class="swipe-delete-bg" style="position: absolute; top: 0; left: 0; bottom: 0; width: 100%; background: #ff3b30; color: white; display: flex; align-items: center; padding-left: 20px; font-weight: bold; z-index: 1; border-radius: 8px; opacity: 0; transition: opacity 0.4s;">
+              ${t('deleteAction') || '削除'}
+            </div>
           <!-- Foreground Content -->
           <div class="timeline-content-wrapper" style="position: relative; z-index: 2; background: var(--color-background); display: flex; width: 100%; transition: transform 0.2s ease-out; gap: 16px;">
             <div class="timeline-time">${item.time}</div>
@@ -407,7 +407,7 @@ export default {
       
       wrapper.addEventListener('touchend', async (e) => {
           if (currentMode !== 'plan') return;
-          wrapper.style.transition = 'transform 0.4s ease-out';
+          wrapper.style.transition = 'transform 0.8s ease-out';
           if (currentX > 100) { // Threshold to delete
             wrapper.style.transform = `translateX(100vw)`;
             
