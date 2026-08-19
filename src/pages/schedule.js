@@ -377,16 +377,18 @@ export default {
       }, {passive: true});
       
       wrapper.addEventListener('touchmove', (e) => {
-        if (currentMode !== 'plan') return;
-        currentX = e.touches[0].clientX - startX;
-        // Only allow swiping right
-        if (currentX > 0) {
-          wrapper.style.transform = `translateX(${currentX}px)`;
-          if (currentX > 20) {
-            itemEl.querySelector('.swipe-delete-bg').style.opacity = '1';
+          if (currentMode !== 'plan') return;
+          currentX = e.touches[0].clientX - startX;
+          // Only allow swiping right
+          if (currentX > 0) {
+            // Apply a little resistance so it doesn't feel too fast/slippery
+            const moveX = currentX * 0.8;
+            wrapper.style.transform = `translateX(${moveX}px)`;
+            if (moveX > 20) {
+              itemEl.querySelector('.swipe-delete-bg').style.opacity = '1';
+            }
           }
-        }
-      }, {passive: true});
+        }, {passive: true});
       
       wrapper.addEventListener('click', (e) => {
         if (currentMode !== 'plan') return;
@@ -404,23 +406,33 @@ export default {
       });
       
       wrapper.addEventListener('touchend', async (e) => {
-        if (currentMode !== 'plan') return;
-        wrapper.style.transition = 'transform 0.2s ease-out';
-        if (currentX > 100) { // Threshold to delete
-          wrapper.style.transform = `translateX(100vw)`;
-          if (confirm(t('confirmDelete') || '本当に削除しますか？')) {
-            await deleteScheduleItem(trip.id, itemId);
-            this.loadSchedules(trip.id);
+          if (currentMode !== 'plan') return;
+          wrapper.style.transition = 'transform 0.4s ease-out';
+          if (currentX > 100) { // Threshold to delete
+            wrapper.style.transform = `translateX(100vw)`;
+            
+            // Allow animation to start before blocking with confirm
+            setTimeout(async () => {
+              if (confirm(t('confirmDelete') || '本当に削除しますか？')) {
+                itemEl.style.opacity = '0';
+                itemEl.style.height = '0';
+                itemEl.style.margin = '0';
+                itemEl.style.overflow = 'hidden';
+                itemEl.style.transition = 'all 0.3s ease-out';
+                
+                await deleteScheduleItem(trip.id, itemId);
+                this.loadSchedules(trip.id);
+              } else {
+                wrapper.style.transform = `translateX(0)`;
+                itemEl.querySelector('.swipe-delete-bg').style.opacity = '0';
+              }
+            }, 100);
           } else {
             wrapper.style.transform = `translateX(0)`;
             itemEl.querySelector('.swipe-delete-bg').style.opacity = '0';
           }
-        } else {
-          wrapper.style.transform = `translateX(0)`;
-          itemEl.querySelector('.swipe-delete-bg').style.opacity = '0';
-        }
-        currentX = 0;
-      });
+          currentX = 0;
+        });
     });
 
     if (currentMode === 'journal') {
