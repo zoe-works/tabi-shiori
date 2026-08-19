@@ -186,6 +186,13 @@ export default {
             form.reset();
         });
 
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+                form.reset();
+            }
+        });
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const newItem = {

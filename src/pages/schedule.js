@@ -46,6 +46,7 @@ export default {
         <!-- 予定追加モーダル -->
         <div class="modal-overlay" id="scheduleModal">
           <div class="modal-content">
+            <div class="modal-handle"></div>
             <span class="close-modal">&times;</span>
             <h3>${t('addScheduleModalTitle')}</h3>
             <form id="scheduleForm">
@@ -69,6 +70,7 @@ export default {
         <!-- ジャーナル記録モーダル -->
         <div class="modal-overlay" id="journalModal">
           <div class="modal-content">
+            <div class="modal-handle"></div>
             <span class="close-modal">&times;</span>
             <h3>${t('addJournalModalTitle')}</h3>
             <form id="journalForm">
@@ -82,15 +84,15 @@ export default {
                 <input type="hidden" id="journalRating" value="0">
               </div>
 
-              <textarea id="journalText" class="form-input" placeholder="${t('journalTextPlaceholder')}" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd; margin-bottom:12px; min-height:100px;"></textarea>
+              <textarea id="journalText" class="form-input" placeholder="${t('journalTextPlaceholder')}" style="width:100%; padding:10px; border-radius:8px; border:1px solid #ddd; margin-bottom:8px; min-height:60px;"></textarea>
               
-              <div class="photo-upload mb-md">
+              <div class="photo-upload mb-sm">
                 <label style="display:block; margin-bottom:4px; font-size:0.9rem; color:var(--text-muted);">${t('journalAddPhoto')}</label>
-                <input type="file" id="journalPhotos" accept="image/*" multiple>
+                <input type="file" id="journalPhotos" accept="image/*" multiple style="font-size:0.9rem;">
               </div>
 
-              <button type="submit" class="btn btn-primary w-full mt-lg">${t('btnSave')}</button>
-   <button type="button" class="btn btn-secondary w-full mt-sm" id="journal-cancel">${t('cancelBtn') || 'キャンセル'}</button>
+              <button type="submit" class="btn btn-primary w-full mt-md">${t('btnSave')}</button>
+              <button type="button" class="btn btn-secondary w-full mt-sm" id="journal-cancel">${t('cancelBtn') || 'キャンセル'}</button>
             </form>
           </div>
         </div>
@@ -148,6 +150,21 @@ export default {
     const scheduleModal = document.getElementById('scheduleModal');
     const journalModal = document.getElementById('journalModal');
     
+    scheduleModal.addEventListener('click', (e) => {
+      if (e.target === scheduleModal) {
+        scheduleModal.classList.remove('active');
+        document.getElementById('scheduleForm').reset();
+        document.getElementById('scheduleItemId').value = '';
+      }
+    });
+
+    journalModal.addEventListener('click', (e) => {
+      if (e.target === journalModal) {
+        journalModal.classList.remove('active');
+        document.getElementById('journalForm').reset();
+      }
+    });
+
     document.getElementById('addScheduleBtn').addEventListener('click', () => {
       document.getElementById('scheduleItemId').value = '';
       document.getElementById('scheduleForm').reset();
