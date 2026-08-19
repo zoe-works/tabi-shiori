@@ -2,6 +2,15 @@ import { getState } from './store.js';
 
 export const translations = {
   ja: {
+    readingPlaceholder: '例: サワディー',
+    readingMemo: '読み方メモ',
+    localPlaceholder: '例: สวัสดี',
+    localSaying: '現地での言い方',
+    wordPlaceholder: '例: こんにちは',
+    wordToSearch: '調べたい言葉（あなたの言語）',
+    addNewPhrase: '新しいフレーズを追加 ✏️',
+    tapToReturn: 'タップで戻る 🔙',
+    tapToFlip: 'タップで裏返す 👆',
     // 共通・メニュー
     appTitle: '旅のしおり',
     menu: 'メニュー',
@@ -199,6 +208,15 @@ export const translations = {
     backToHome: 'ホームに戻る'
   },
   en: {
+    readingPlaceholder: 'e.g. Sa-wa-dee',
+    readingMemo: 'Pronunciation',
+    localPlaceholder: 'e.g. Sawadee',
+    localSaying: 'Local Phrase',
+    wordPlaceholder: 'e.g. Hello',
+    wordToSearch: 'Word (Your Language)',
+    addNewPhrase: 'Add New Phrase ✏️',
+    tapToReturn: 'Tap to return 🔙',
+    tapToFlip: 'Tap to flip 👆',
     appTitle: 'Trip Itinerary',
     menu: 'Menu',
     home: 'Home',
@@ -366,6 +384,15 @@ export const translations = {
     backToHome: 'Back to Home'
   },
   th: {
+    readingPlaceholder: 'เช่น ฮัลโหล',
+    readingMemo: 'การออกเสียง',
+    localPlaceholder: 'เช่น Hello',
+    localSaying: 'วลีท้องถิ่น',
+    wordPlaceholder: 'เช่น สวัสดี',
+    wordToSearch: 'คำศัพท์ (ภาษาของคุณ)',
+    addNewPhrase: 'เพิ่มวลีใหม่ ✏️',
+    tapToReturn: 'แตะเพื่อกลับ 🔙',
+    tapToFlip: 'แตะเพื่อพลิก 👆',
     appTitle: 'แผนการเดินทาง',
     menu: 'เมนู',
     home: 'หน้าแรก',
@@ -548,7 +575,7 @@ export const translations = {
 export function t(key) {
   const state = getState();
   const lang = state.language || 'ja';
-  return translations[lang]?.[key] || key;
+  return translations[lang]?.[key];
 }
 
 export function getLang() {

@@ -818,6 +818,7 @@ ul, ol {
 /* --- Added by request --- */
 .fab-center {
   left: 50% !important;
+  right: auto !important;
   transform: translateX(-50%) !important;
   width: 64px !important;
   height: 64px !important;
