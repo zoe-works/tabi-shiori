@@ -111,6 +111,8 @@ body {
   margin: 0 auto;
   min-height: 100dvh;
   background: var(--color-bg);
+  box-shadow: 0 0 20px rgba(0,0,0,0.05);
+  overflow-x: hidden;
 }
 
 img {
@@ -218,6 +220,7 @@ ul, ol {
   padding: calc(var(--header-height) + var(--space-md)) var(--space-md) calc(var(--nav-height) + var(--space-lg));
   min-height: 100dvh;
   animation: pageEnter 0.4s var(--ease-out);
+  overflow-x: hidden;
 }
 
 .page-title {
