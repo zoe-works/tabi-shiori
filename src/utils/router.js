@@ -39,6 +39,12 @@ export function navigate(path, updateHash = true, force = false) {
       container.style.opacity = '1';
       container.style.transform = 'translateY(0)';
       
+      // FIX: Remove transform after transition so it doesn't become a containing block
+      // for position: fixed modals inside the page!
+      setTimeout(() => {
+        container.style.transform = 'none';
+      }, 400);
+
       if (page.init) {
         page.init();
       }
