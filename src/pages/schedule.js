@@ -233,7 +233,9 @@ export default {
       if (photosInput.files.length > 0) {
         for (let file of photosInput.files) {
            const compressed = await compressImage(file);
-           const url = await uploadPhoto(compressed, `journal/${trip.id}/${itemId}/${Date.now()}`);
+           const state = getState();
+             compressed.name = file.name || `photo_${Date.now()}.jpg`;
+             const url = await uploadPhoto(state.user.uid, trip.id, compressed);
            photos.push(url);
         }
       }
@@ -398,10 +400,10 @@ journalHtml = `
           
           
           const r = parseFloat(item.journalRating || 0);
-          document.querySelectorAll('.star').forEach(s => {
-            const sRating = parseInt(s.dataset.rating);
-            s.classList.remove('full', 'half');
-            s.style.color = '';
+          document.querySelectorAll('#journalForm .star').forEach(s => {
+              const sRating = parseInt(s.dataset.rating);
+              s.classList.remove('full', 'half');
+              s.style.color = '';
             if (sRating <= r) {
               s.classList.add('full');
             } else if (sRating - 0.5 === r) {

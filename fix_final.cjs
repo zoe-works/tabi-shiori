@@ -1,44 +1,37 @@
 const fs = require('fs');
-
 let s = fs.readFileSync('src/pages/schedule.js', 'utf8');
 
-// 1. Remove mood UI from journalModal (safely)
+// The replacement logic:
 s = s.replace(
   /<div class="mood-selector mb-sm">[\s\S]*?<input type="hidden" id="journalMood">\s*<\/div>/,
   ''
 );
 
-// 2. Fix star-rating class and its closing div
 s = s.replace(
   /<div class="star-rating mb-sm">/,
   '<div class="mb-sm">'
 );
 
-// 3. Fix uploadPhoto usage (pass userId and trip.id)
 s = s.replace(
   /const url = await uploadPhoto\(compressed, `journal\/\$\{trip\.id\}\/\$\{itemId\}\/\$\{Date\.now\(\)\}`\);/,
   "const state = getState();\n             compressed.name = file.name || `photo_${Date.now()}.jpg`;\n             const url = await uploadPhoto(state.user.uid, trip.id, compressed);"
 );
 
-// 4. Fix updateScheduleItem signature
 s = s.replace(
   /await updateScheduleItem\(itemId, \{/,
   "await updateScheduleItem(trip.id, itemId, {"
 );
 
-// 5. Fix rating parse to parseFloat
 s = s.replace(
   /journalRating: parseInt\(rating\),/,
   "journalRating: parseFloat(rating),"
 );
 
-// 6. Fix journalModal show -> active
 s = s.replace(
   /journalModal\.classList\.remove\('show'\);/,
   "journalModal.classList.remove('active');"
 );
 
-// 7. Remove mood logic in JS
 s = s.replace(
   /const mood = document\.getElementById\('journalMood'\)\.value;\s*/,
   ""
@@ -64,14 +57,10 @@ s = s.replace(
   ""
 );
 
-// 8. Fix hasJournal (mood -> rating)
 s = s.replace(
   /const hasJournal = item\.journalText \|\| item\.journalMood \|\| \(item\.journalPhotos && item\.journalPhotos\.length > 0\);/,
   "const hasJournal = item.journalText || item.journalRating || (item.journalPhotos && item.journalPhotos.length > 0);"
 );
-
-// 9. Fix star listener logic (add touchmove and restrict to #journalForm)
-const oldStarLogicRegex = /\/\/ 気分スタンプと星評価のUI\s*document\.querySelectorAll\('\.star'\)\.forEach\(star => \{[\s\S]*?\}\);\s*\}\);/;
 
 const newStarLogic = `// 星評価のUI (タップとスワイプ両対応)
     const updateStars = (clientX, container) => {
@@ -118,9 +107,19 @@ const newStarLogic = `// 星評価のUI (タップとスワイプ両対応)
       }, {passive: true});
     }`;
 
-s = s.replace(oldStarLogicRegex, newStarLogic);
+// Replace the specific star logic without breaking brackets.
+const oldLogicStart = "document.querySelectorAll('.star').forEach(star => {";
+const oldLogicEnd = "});\n    });";
 
-// 10. Fix modal edit star reset query
+const idx1 = s.indexOf(oldLogicStart);
+if (idx1 !== -1) {
+    const idx2 = s.indexOf(oldLogicEnd, idx1);
+    if (idx2 !== -1) {
+        const toReplace = s.substring(idx1, idx2 + oldLogicEnd.length);
+        s = s.replace(toReplace, newStarLogic);
+    }
+}
+
 s = s.replace(
   /document\.querySelectorAll\('\.star'\)\.forEach\(s => \{\s*const sRating = parseInt\(s\.dataset\.rating\);\s*s\.classList\.remove\('full', 'half'\);\s*s\.style\.color = '';/g,
   "document.querySelectorAll('#journalForm .star').forEach(s => {\n              const sRating = parseInt(s.dataset.rating);\n              s.classList.remove('full', 'half');\n              s.style.color = '';"
