@@ -1,4 +1,4 @@
-import { storage } from '../firebase.js';
+﻿import { storage } from '../firebase.js';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 export async function uploadPhoto(userId, tripId, file) {
@@ -24,7 +24,7 @@ export async function deletePhoto(photoUrl) {
   }
 }
 
-export function compressImageAsBase64(file, maxWidth = 800, quality = 0.7) {
+export function compressImageAsBase64(file, maxWidth = 300, quality = 0.6) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);

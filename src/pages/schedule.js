@@ -244,15 +244,20 @@ export default {
         }
       }
       
-      await updateScheduleItem(trip.id, itemId, {
-        journalText: text,
-        journalRating: parseFloat(rating),
-        journalPhotos: photos
-      });
-      
-      journalModal.classList.remove('active');
-      document.getElementById('journalForm').reset();
-      this.loadSchedules(trip.id);
+      try {
+        await updateScheduleItem(trip.id, itemId, {
+          journalText: text,
+          journalRating: parseFloat(rating),
+          journalPhotos: photos
+        });
+        
+        journalModal.classList.remove('active');
+        document.getElementById('journalForm').reset();
+        this.loadSchedules(trip.id);
+      } catch (e) {
+        console.error(e);
+        alert('保存に失敗しました。写真のサイズや枚数が多すぎる可能性があります。写真を減らして再度お試しください。');
+      }
     });
 
     // 初回ロード
@@ -298,7 +303,7 @@ journalHtml = `
               ${item.journalRating ? `<span class="journal-rating">${stars}</span>` : ''}
               ${item.journalText ? `<p class="journal-text">${item.journalText}</p>` : ''}
               ${photos ? `<div class="journal-photos">${photos}</div>` : ''}
-              <button class="btn small edit-journal-btn" data-id="${item.id}">編集</button>
+              <button class="btn small journal-add-btn edit-journal-btn" data-id="${item.id}" style="margin-top:8px; display:inline-flex;">記録を編集</button>
             </div>
           `;
         } else {
