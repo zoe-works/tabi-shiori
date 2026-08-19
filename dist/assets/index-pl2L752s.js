@@ -3727,7 +3727,7 @@ ${this.customData.serverResponse}`:this.message=this._baseMessage}}var nt;(funct
               
               <div class="photo-upload mb-md">
                 <label style="display:block; margin-bottom:4px; font-size:0.9rem; color:var(--text-muted);">${_("journalAddPhoto")}</label>
-                <input type="file" id="journalPhotos" accept="image/*" capture="environment" multiple>
+                <input type="file" id="journalPhotos" accept="image/*" multiple>
               </div>
 
               <button type="submit" class="btn btn-primary w-full mt-lg">${_("btnSave")}</button>

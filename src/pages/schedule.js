@@ -86,7 +86,7 @@ export default {
               
               <div class="photo-upload mb-md">
                 <label style="display:block; margin-bottom:4px; font-size:0.9rem; color:var(--text-muted);">${t('journalAddPhoto')}</label>
-                <input type="file" id="journalPhotos" accept="image/*" capture="environment" multiple>
+                <input type="file" id="journalPhotos" accept="image/*" multiple>
               </div>
 
               <button type="submit" class="btn btn-primary w-full mt-lg">${t('btnSave')}</button>
