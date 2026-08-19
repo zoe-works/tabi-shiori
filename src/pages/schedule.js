@@ -289,7 +289,12 @@ export default {
         const hasJournal = item.journalText || item.journalRating || (item.journalPhotos && item.journalPhotos.length > 0);
         
         if (hasJournal) {
-          const photos = item.journalPhotos ? item.journalPhotos.map(url => `<img src="${url}" class="journal-photo">`).join('') : '';
+          const photos = item.journalPhotos ? item.journalPhotos.map((url, i) => `
+              <div style="position:relative; display:inline-block; margin-right:8px; margin-bottom:8px;">
+                <img src="${url}" class="journal-photo" style="width:70px; height:70px; object-fit:cover; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+                <button class="delete-photo-btn" data-id="${item.id}" data-index="${i}" style="position:absolute; top:-6px; right:-6px; background:white; border:1px solid #ddd; border-radius:50%; width:22px; height:22px; font-size:14px; line-height:1; cursor:pointer; color:red; display:flex; align-items:center; justify-content:center; box-shadow:0 1px 3px rgba(0,0,0,0.2); padding:0; z-index:10;">&times;</button>
+              </div>
+            `).join('') : '';
           const r = parseFloat(item.journalRating || 0);
             const fullStars = Math.floor(r);
             const hasHalf = r % 1 !== 0;
@@ -297,12 +302,15 @@ export default {
             const stars = '<span class="star full" style="font-size:1rem; cursor:default; transform:none;">★</span>'.repeat(fullStars) + 
                           (hasHalf ? '<span class="star half" style="font-size:1rem; cursor:default; transform:none;">★</span>' : '') + 
                           '<span class="star" style="font-size:1rem; cursor:default; transform:none; color:#E0E0E0;">★</span>'.repeat(emptyStars);
-journalHtml = `
+          journalHtml = `
             <div class="journal-entry">
-              
-              ${item.journalRating ? `<span class="journal-rating">${stars}</span>` : ''}
-              ${item.journalText ? `<p class="journal-text">${item.journalText}</p>` : ''}
-              ${photos ? `<div class="journal-photos">${photos}</div>` : ''}
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+                <div style="flex:1;">
+                  ${item.journalRating ? `<div class="journal-rating">${stars}</div>` : ''}
+                  ${item.journalText ? `<p class="journal-text" style="margin-top:4px;">${item.journalText}</p>` : ''}
+                </div>
+                ${photos ? `<div class="journal-photos" style="display:flex; flex-wrap:wrap; gap:4px; max-width:180px; justify-content:flex-end; margin-top:0;">${photos}</div>` : ''}
+              </div>
               <button class="btn small journal-add-btn edit-journal-btn" data-id="${item.id}" style="margin-top:8px; display:inline-flex;">記録を編集</button>
             </div>
           `;
@@ -399,7 +407,29 @@ journalHtml = `
     });
 
     if (currentMode === 'journal') {
-      container.querySelectorAll('.journal-add-btn, .edit-journal-btn').forEach(btn => {
+        container.querySelectorAll('.delete-photo-btn').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            if (confirm(t('confirmDeletePhoto') || '写真を削除しますか？')) {
+              const id = btn.dataset.id;
+              const index = parseInt(btn.dataset.index);
+              const trip = getState().currentTrip;
+              const item = schedules.find(s => s.id === id);
+              if (item && item.journalPhotos) {
+                item.journalPhotos.splice(index, 1);
+                try {
+                  await updateScheduleItem(trip.id, id, { journalPhotos: item.journalPhotos });
+                  this.loadSchedules(trip.id);
+                } catch(err) {
+                  console.error(err);
+                  alert('削除に失敗しました。');
+                }
+              }
+            }
+          });
+        });
+
+        container.querySelectorAll('.journal-add-btn, .edit-journal-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
           const id = e.target.dataset.id;
           const item = schedules.find(s => s.id === id);
