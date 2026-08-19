@@ -74,15 +74,11 @@ export default {
             <form id="journalForm">
               <input type="hidden" id="journalItemId">
               
-              <div class="mood-selector mb-sm">
-                <label style="display:block; margin-bottom:4px; font-size:0.9rem; color:var(--text-muted);">${t('journalMood')}</label>
-                <div class="mood-options">
-                  ${['😆','😊','😴','🤩','😢','🤔'].map(m => `<span class="mood-option" data-mood="${m}">${m}</span>`).join('')}
-                </div>
+              
                 <input type="hidden" id="journalMood">
               </div>
 
-              <div class="star-rating mb-sm">
+              <div class="mb-sm">
                 <label style="display:block; margin-bottom:4px; font-size:0.9rem; color:var(--text-muted);">${t('journalRating')}</label>
                 <div class="stars">
                   ${[1,2,3,4,5].map(s => `<span class="star" data-rating="${s}">★</span>`).join('')}
@@ -221,13 +217,7 @@ export default {
       });
     });
 
-    document.querySelectorAll('.mood-option').forEach(opt => {
-      opt.addEventListener('click', (e) => {
-        document.querySelectorAll('.mood-option').forEach(o => o.classList.remove('selected'));
-        e.target.classList.add('selected');
-        document.getElementById('journalMood').value = e.target.dataset.mood;
-      });
-    });
+    
 
     document.getElementById('journal-cancel')?.addEventListener('click', () => {
         document.getElementById('journalModal').classList.remove('active');
@@ -237,7 +227,6 @@ export default {
     document.getElementById('journalForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const itemId = document.getElementById('journalItemId').value;
-      const mood = document.getElementById('journalMood').value;
       const rating = document.getElementById('journalRating').value;
       const text = document.getElementById('journalText').value;
       const photosInput = document.getElementById('journalPhotos');
@@ -253,14 +242,13 @@ export default {
         }
       }
       
-      await updateScheduleItem(itemId, {
+      await updateScheduleItem(trip.id, itemId, {
         journalText: text,
-        journalMood: mood,
-        journalRating: parseInt(rating),
+        journalRating: parseFloat(rating),
         journalPhotos: photos
       });
       
-      journalModal.classList.remove('show');
+      journalModal.classList.remove('active');
       this.loadSchedules(trip.id);
     });
 
@@ -290,7 +278,7 @@ export default {
       let journalHtml = '';
       
       if (currentMode === 'journal') {
-        const hasJournal = item.journalText || item.journalMood || (item.journalPhotos && item.journalPhotos.length > 0);
+        const hasJournal = item.journalText || item.journalRating || (item.journalPhotos && item.journalPhotos.length > 0);
         
         if (hasJournal) {
           const photos = item.journalPhotos ? item.journalPhotos.map(url => `<img src="${url}" class="journal-photo">`).join('') : '';
@@ -303,7 +291,7 @@ export default {
                           '<span class="star" style="font-size:1rem; cursor:default; transform:none; color:#E0E0E0;">★</span>'.repeat(emptyStars);
 journalHtml = `
             <div class="journal-entry">
-              ${item.journalMood ? `<span class="journal-mood">${item.journalMood}</span>` : ''}
+              
               ${item.journalRating ? `<span class="journal-rating">${stars}</span>` : ''}
               ${item.journalText ? `<p class="journal-text">${item.journalText}</p>` : ''}
               ${photos ? `<div class="journal-photos">${photos}</div>` : ''}
@@ -409,24 +397,21 @@ journalHtml = `
           const item = schedules.find(s => s.id === id);
           document.getElementById('journalItemId').value = id;
           document.getElementById('journalText').value = item.journalText || '';
-          document.getElementById('journalMood').value = item.journalMood || '';
+          
           document.getElementById('journalRating').value = item.journalRating || 0;
           
-          // UI reset
-          document.querySelectorAll('.mood-option').forEach(o => {
-            o.classList.toggle('selected', o.dataset.mood === item.journalMood);
-          });
+          
           const r = parseFloat(item.journalRating || 0);
-            document.querySelectorAll('.star').forEach(s => {
-              const sRating = parseInt(s.dataset.rating);
-              s.classList.remove('full', 'half');
-              s.style.color = '';
-              if (sRating <= r) {
-                s.classList.add('full');
-              } else if (sRating - 0.5 === r) {
-                s.classList.add('half');
-              }
-            });
+          document.querySelectorAll('.star').forEach(s => {
+            const sRating = parseInt(s.dataset.rating);
+            s.classList.remove('full', 'half');
+            s.style.color = '';
+            if (sRating <= r) {
+              s.classList.add('full');
+            } else if (sRating - 0.5 === r) {
+              s.classList.add('half');
+            }
+          });
           
           document.getElementById('journalModal').classList.add('active');
         });
