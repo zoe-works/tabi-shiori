@@ -26,7 +26,7 @@ export default {
                         <h3>${t('addOmiyage') || 'お土産の追加 ✏️'}</h3>
                         <form id="omiyage-form">
                             <div class="form-group">
-                                <label>${t('omiyageRecipient') || '誰に渡す？ (必須)'}</label>
+                                <label>${t('omiyageRecipient') || '誰に渡す？(必須)'}</label>
                                 <input type="text" id="omi-recipient" required placeholder="${t('recipientPlaceholder') || '例: 家族、職場、自分'}">
                             </div>
                             <div class="form-group">
@@ -37,8 +37,8 @@ export default {
                                 <label>${t('budgetEstimate') || '予算目安'}</label>
                                 <input type="number" id="omi-budget" placeholder="例: 1000">
                             </div>
-                            <button type="submit" class="btn btn-primary w-full mt-lg">${t('saveBtn') || '保存する ✨'}</button>
-   <button type="button" class="btn btn-secondary w-full mt-sm" id="omi-cancel">${t('cancelBtn') || 'キャンセル'}</button>
+                            <button type="submit" class="btn btn-primary w-full mt-lg">${t('saveBtn') || '保存する✨'}</button>
+                            <button type="button" class="btn btn-secondary w-full mt-sm" id="omi-cancel">${t('cancelBtn') || 'キャンセル'}</button>
                         </form>
                     </div>
                 </div>
@@ -51,18 +51,9 @@ export default {
 
         const state = getState();
         const tripId = state.currentTripId;
+        
         const mainEl = document.getElementById('omiyage-main');
         const progressEl = document.getElementById('omiyage-progress-container');
-
-        if (!tripId) {
-            mainEl.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">😢</div>
-                    <p>${t('noTripSelected') || '旅行が選択されていません。'}</p>
-                </div>`;
-            progressEl.style.display = 'none';
-            return;
-        }
 
         let items = [];
 
@@ -72,7 +63,7 @@ export default {
                 mainEl.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-icon">🎁</div>
-                        <p>${t('noOmiyageList') || '右下の＋ボタンからお土産リストを追加しよう！'}</p>
+                        <p>${t('noOmiyageList') || '＋ボタンからお土産リストを追加しよう！'}</p>
                     </div>`;
                 return;
             }
@@ -88,50 +79,33 @@ export default {
                 </div>
             `;
 
-            // Group by recipient
-            const grouped = {};
-            for (const item of items) {
-                const translatedRecipient = item.recipientName;
-                if (!grouped[translatedRecipient]) grouped[translatedRecipient] = [];
-                grouped[translatedRecipient].push(item);
-            }
-
-            const mainHtmlPromises = Object.keys(grouped).map(async recipient => {
-                const recipientItems = grouped[recipient];
-                const totalBudget = recipientItems.reduce((sum, i) => sum + Number(i.budget || 0), 0);
+            // NEW UI: Same format as budget (budget-item card)
+            const listPromises = items.map(async item => {
+                const translatedItemName = await translateUserText(item.itemName) || t('undecided') || '未定';
+                const recipientName = item.recipientName || '';
                 
-                const liPromises = recipientItems.map(async item => {
-                    const translatedItemName = await translateUserText(item.itemName) || t('undecided') || '未定';
-                    return `
-                                <li class="omiyage-item ${item.purchased ? 'purchased' : ''}" data-id="${item.id}">
-                                    <label class="checkbox-wrapper">
-                                        <input type="checkbox" class="omiyage-check" data-id="${item.id}" ${item.purchased ? 'checked' : ''}>
-                                        <span class="checkmark"></span>
-                                        <div class="omiyage-details">
-                                            <div class="omiyage-name">${translatedItemName}</div>
-                                            ${item.budget ? `<div class="omiyage-budget">¥${Number(item.budget).toLocaleString()}</div>` : ''}
-                                        </div>
-                                    </label>
-                                    <button class="btn-delete" data-id="${item.id}">🗑️</button>
-                                </li>
-                    `;
-                });
-                const liHtml = await Promise.all(liPromises);
-
                 return `
-                    <div class="omiyage-recipient card">
-                        <div class="recipient-header">
-                            <h3>👤 ${recipient}</h3>
-                            <span class="recipient-budget">${t('budgetLabel') || '予算'}: ¥${totalBudget.toLocaleString()}</span>
+                    <div class="budget-item card" data-id="${item.id}">
+                        <div class="budget-icon" style="display:flex; align-items:center; justify-content:center;">
+                            <label class="checkbox-wrapper" style="margin: 0;">
+                                <input type="checkbox" class="omiyage-check" data-id="${item.id}" ${item.purchased ? 'checked' : ''}>
+                                <span class="checkmark"></span>
+                            </label>
                         </div>
-                        <ul class="omiyage-list">
-                            ${liHtml.join('')}
-                        </ul>
+                        <div class="budget-details">
+                            <div class="budget-title" style="${item.purchased ? 'text-decoration: line-through;' : ''}">
+                                ${translatedItemName} ${recipientName ? `<span style="font-size: 0.8rem; color: var(--color-text-light); font-weight: normal; margin-left: 8px;">👤${recipientName}</span>` : ''}
+                            </div>
+                        </div>
+                        ${item.budget ? `<div class="budget-amount">¥${Number(item.budget).toLocaleString()}</div>` : ''}
+                        <div class="item-actions">
+                            <button class="btn-icon small btn-delete-omiyage" data-id="${item.id}">🗑️</button>
+                        </div>
                     </div>
                 `;
             });
-            const mainHtml = await Promise.all(mainHtmlPromises);
-            mainEl.innerHTML = mainHtml.join('');
+            const listHtml = await Promise.all(listPromises);
+            mainEl.innerHTML = `<div class="budget-list">${listHtml.join('')}</div>`;
 
             // Bind checkbox events
             document.querySelectorAll('.omiyage-check').forEach(cb => {
@@ -148,10 +122,10 @@ export default {
             });
 
             // Bind delete events
-            document.querySelectorAll('.btn-delete').forEach(btn => {
+            document.querySelectorAll('.btn-delete-omiyage').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
                     if (confirm(t('confirmDelete') || '本当に削除しますか？')) {
-                        const id = e.target.getAttribute('data-id');
+                        const id = e.target.closest('.btn-delete-omiyage').dataset.id;
                         await deleteOmiyageItem(tripId, id);
                         await loadItems();
                     }
@@ -195,6 +169,9 @@ export default {
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) submitBtn.disabled = true;
+
             const newItem = {
                 tripId,
                 recipientName: document.getElementById('omi-recipient').value,
@@ -203,10 +180,19 @@ export default {
                 purchased: false
             };
 
-            await addOmiyageItem(tripId, newItem);
+            // 楽観的UI
             modal.classList.remove('active');
-            form.reset();
-            await loadItems();
+            
+            try {
+                await addOmiyageItem(tripId, newItem);
+                form.reset();
+                await loadItems();
+            } catch (err) {
+                console.error(err);
+                alert(t('errorOccurred') || 'エラーが発生しました');
+            } finally {
+                if (submitBtn) submitBtn.disabled = false;
+            }
         });
     }
 };
