@@ -176,20 +176,26 @@ export default {
     document.getElementById('btn-join-trip')?.addEventListener('click', () => {
       const pw = window.prompt('旅行の共有パスワード（コード）を入力してください:');
       if (!pw) return;
-      import('../utils/db.js').then(async ({ joinSharedTrip }) => {
-        try {
-          await joinSharedTrip(pw);
-          alert('旅行に参加しました！');
-          window.location.reload();
-        } catch (e) {
-          if (e.message === 'Invalid password') {
-            alert('パスワードが無効です');
-          } else if (e.message === 'Not logged in') {
-            alert('ログインが必要です。');
-          } else {
-            alert('エラーが発生しました: ' + e.message);
+      
+      import('../utils/store.js').then(({ setLoading }) => {
+        setLoading(true);
+        import('../utils/db.js').then(async ({ joinSharedTrip }) => {
+          try {
+            await joinSharedTrip(pw);
+            setLoading(false);
+            alert('旅行に参加しました！');
+            window.location.reload();
+          } catch (e) {
+            setLoading(false);
+            if (e.message === 'Invalid password') {
+              alert('パスワードが無効です');
+            } else if (e.message === 'Not logged in') {
+              alert('ログインが必要です。');
+            } else {
+              alert('エラーが発生しました: ' + e.message);
+            }
           }
-        }
+        });
       });
     });
     document.getElementById('btn-edit-trip')?.addEventListener('click', () => navigate('/trip/edit'));

@@ -8,7 +8,7 @@ import './styles/research.css';
 import './styles/extras.css';
 import { registerRoute, navigate } from './utils/router.js';
 import { ensureAuth, loginWithGoogle, linkGoogleAccount, logout } from './firebase.js';
-import { setState, getState, subscribe, setLanguage } from './utils/store.js';
+import { setState, getState, subscribe, setLanguage, setLoading } from './utils/store.js';
 import { getTrips, createShareLink, updateTrip } from './utils/db.js';
 import { t } from './utils/i18n.js';
 import homePage from './pages/home.js';
@@ -363,7 +363,7 @@ async function showShareModal() {
     <div class="share-info text-center">
       <p class="text-sm mb-md" style="color: var(--color-text-light);">${t('shareSetupText') || 'この共有コードを友だちに教えてください。'}</p>
       <div class="form-group" style="margin-bottom: 24px;">
-        <input type="text" value="${shareId}" readonly id="share-url-input" class="form-input" style="font-size: 1.5rem; text-align: center; letter-spacing: 4px; padding: 16px; border: 2px dashed var(--color-primary); background: var(--color-bg-light); border-radius: 12px;" />
+        <input type="text" value="${shareId}" readonly id="share-url-input" class="form-input" style="font-size: 1.5rem; text-align: center; letter-spacing: 4px; padding: 16px; border: 2px dashed var(--color-text); background: var(--color-bg-light); border-radius: 12px;" />
       </div>
       <button class="btn btn-primary w-full" id="btn-copy-share" style="padding: 14px; font-size: 1.1rem; border-radius: 24px;">${t('shareCopyBtn') || 'コードをコピー'}</button>
     </div>

@@ -4,6 +4,7 @@ let currentPath = '';
 
 // Add i18n import
 import { t } from './i18n.js';
+import { setLoading } from './store.js';
 
 export function registerRoute(path, pageModule) {
   routes[path] = pageModule;
@@ -35,7 +36,9 @@ export function navigate(path, updateHash = true, force = false) {
   
   setTimeout(async () => {
     try {
+      setLoading(true);
       const html = await page.render();
+      setLoading(false);
       container.innerHTML = html;
       container.style.opacity = '1';
       container.style.transform = 'translateY(0)';
@@ -56,6 +59,7 @@ export function navigate(path, updateHash = true, force = false) {
       // Scroll to top
       window.scrollTo({ top: 0 });
     } catch (e) {
+      setLoading(false);
       console.error('Page render error:', e);
     }
   }, 150);
