@@ -9,7 +9,7 @@ import './styles/extras.css';
 import { registerRoute, navigate } from './utils/router.js';
 import { ensureAuth, loginWithGoogle, linkGoogleAccount, logout } from './firebase.js';
 import { setState, getState, subscribe, setLanguage } from './utils/store.js';
-import { getTrips } from './utils/db.js';
+import { getTrips, createShareLink, updateTrip } from './utils/db.js';
 import { t } from './utils/i18n.js';
 import homePage from './pages/home.js';
 import flashcardPage from './pages/flashcard.js';
@@ -162,6 +162,7 @@ async function init() {
         await updateTrip(state.currentTrip.ownerId || state.user.uid, state.currentTrip.id, { shareId });
         setState({ currentTrip: { ...state.currentTrip, shareId } });
       } catch(e) {
+        console.error(e);
         alert('共有コードの生成に失敗しました。');
         btn.innerHTML = originalText;
         return;
