@@ -174,6 +174,9 @@ export default {
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) submitBtn.disabled = true;
+
             const newItem = {
                 tripId,
                 amount: Number(document.getElementById('budget-amount').value),
@@ -183,39 +186,19 @@ export default {
                 date: new Date().toISOString()
             };
 
-            await addBudgetItem(tripId, newItem);
+            // 楽観的UI
             modal.classList.remove('active');
-            form.reset();
-            await loadItems();
-        });
-
-        cancelBtn.addEventListener('click', () => {
-            modal.classList.remove('active');
-            form.reset();
-        });
-
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.classList.remove('active');
+            
+            try {
+                await addBudgetItem(tripId, newItem);
                 form.reset();
+                await loadItems();
+            } catch (err) {
+                console.error(err);
+                alert(t('errorOccurred') || 'エラーが発生しました');
+            } finally {
+                if (submitBtn) submitBtn.disabled = false;
             }
-        });
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const newItem = {
-                tripId,
-                amount: Number(document.getElementById('budget-amount').value),
-                title: document.getElementById('budget-title').value,
-                category: document.getElementById('budget-category').value,
-                currency: document.getElementById('budget-currency').value,
-                date: new Date().toISOString()
-            };
-
-            await addBudgetItem(tripId, newItem);
-            modal.classList.remove('active');
-            form.reset();
-            await loadItems();
         });
     }
 };
