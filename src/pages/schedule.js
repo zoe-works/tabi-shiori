@@ -62,7 +62,7 @@ export default {
               </select>
               <input type="text" id="itemTransport" class="form-input" placeholder="${t('itemTransportPlaceholder')}" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd; margin-bottom:12px;">
               <textarea id="itemMemo" class="form-input" placeholder="${t('itemMemoPlaceholder')}" style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd; margin-bottom:12px; min-height:80px;"></textarea>
-              <button type="submit" class="btn btn-primary w-full mt-lg">${t('btnAdd')}</button>
+              <button type="submit" id="btn-submit-schedule" class="btn btn-primary w-full mt-lg">${t('btnAdd')}</button>
    <button type="button" class="btn btn-secondary w-full mt-sm" id="schedule-cancel">${t('cancelBtn') || 'キャンセル'}</button>
             </form>
           </div>
@@ -169,7 +169,8 @@ export default {
     document.getElementById('addScheduleBtn').addEventListener('click', () => {
       document.getElementById('scheduleItemId').value = '';
       document.getElementById('scheduleForm').reset();
-      scheduleModal.classList.add('active');
+        document.getElementById('btn-submit-schedule').textContent = t('btnAdd') || '追加する';
+        scheduleModal.classList.add('active');
     });
 
     document.querySelectorAll('.close-modal').forEach(btn => {
@@ -403,7 +404,8 @@ export default {
           document.getElementById('itemCategory').value = item.category;
           document.getElementById('itemTransport').value = item.transport || '';
           document.getElementById('itemMemo').value = item.memo || '';
-          document.getElementById('scheduleModal').classList.add('active');
+            document.getElementById('btn-submit-schedule').textContent = t('btnSave') || '保存する';
+            document.getElementById('scheduleModal').classList.add('active');
         }
       });
       
