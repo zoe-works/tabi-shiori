@@ -181,10 +181,11 @@ export default {
     }
 
     notes.sort((a, b) => (a.order || 0) - (b.order || 0));
-    await this.renderNotes(tripId);
+    await this.renderNotes(tripId, true);
+    this.renderNotes(tripId, false);
   },
 
-  async renderNotes(tripId) {
+  async renderNotes(tripId, useCacheOnly = false) {
     const container = document.getElementById('rs-list');
     
     if (notes.length === 0) {

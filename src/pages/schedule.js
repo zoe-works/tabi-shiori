@@ -143,7 +143,7 @@ export default {
         document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
         e.target.classList.add('active');
         currentMode = e.target.dataset.mode;
-        this.renderTimeline();
+        this.renderTimeline(true); this.renderTimeline(false);
       });
     });
 
@@ -286,10 +286,11 @@ export default {
     const allSchedules = await getSchedules(tripId);
     schedules = allSchedules.filter(s => s.day === currentDay);
     schedules.sort((a, b) => a.time.localeCompare(b.time));
-    await this.renderTimeline();
+    await this.renderTimeline(true);
+    this.renderTimeline(false);
   },
 
-  async renderTimeline() {
+  async renderTimeline(useCacheOnly = false) {
     const container = document.getElementById('timelineContainer');
     
     if (schedules.length === 0) {

@@ -90,10 +90,11 @@ async function loadChecklist() {
     checklistItems = await getChecklist(trip.id);
   }
   
-  renderChecklist();
+  renderChecklist(true);
+  renderChecklist(false);
 }
 
-async function renderChecklist() {
+async function renderChecklist(useCacheOnly = false) {
   const container = document.getElementById('cl-container');
   container.innerHTML = '';
   
