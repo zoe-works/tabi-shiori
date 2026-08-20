@@ -128,7 +128,7 @@ async function renderChecklist() {
       const itemEl = document.createElement('div');
       itemEl.className = `checklist-item ${item.checked ? 'checked' : ''}`;
       
-      const translatedName = await translateUserText(item.name) || item.name;
+      const translatedName = await translateUserText(item.name, useCacheOnly) || item.name;
       
       itemEl.innerHTML = `
         <div class="checkbox-custom" data-id="${item.id}"></div>

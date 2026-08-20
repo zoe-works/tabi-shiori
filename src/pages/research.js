@@ -197,8 +197,8 @@ export default {
       if (qText && qText.match(/^rq[1-9]$/)) {
         qText = t(qText);
       }
-      const translatedQuestion = await translateUserText(qText) || qText;
-      const translatedAnswer = note.answer ? (await translateUserText(note.answer) || note.answer) : '';
+      const translatedQuestion = await translateUserText(qText, useCacheOnly) || qText;
+      const translatedAnswer = note.answer ? (await translateUserText(note.answer, useCacheOnly) || note.answer) : '';
       
       return `
         <div class="rs-card" data-id="${note.id}">

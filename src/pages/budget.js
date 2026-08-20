@@ -85,7 +85,7 @@ export default {
 
         let items = [];
 
-                const renderContent = async () => {
+                const renderContent = async (useCacheOnly = false) => {
             if (items.length === 0) {
                 mainEl.innerHTML = `
                     <div class="empty-state">
@@ -108,7 +108,7 @@ export default {
                     <h3>${t('budgetListTitle') || '支出リスト 📝'}</h3>`;
 
             for (const item of items) {
-                const translatedTitle = await translateUserText(item.title) || '無題';
+                const translatedTitle = await translateUserText(item.title, useCacheOnly) || '無題';
                 const cur = item.currency || '¥';
                 html += `
                     <div class="budget-item card" data-id="${item.id}">
@@ -141,7 +141,8 @@ export default {
         const loadItems = async () => {
             try {
                 items = await getBudgetItems(tripId);
-                await renderContent();
+                await renderContent(true);
+                renderContent(false);
             } catch (e) {
                 console.error(e);
                 mainEl.innerHTML = `<p>${t('errorOccurred') || 'エラーが発生しました😢'}</p>`;

@@ -68,7 +68,7 @@ export default {
 
         let contacts = [];
 
-        const renderContent = async () => {
+        const renderContent = async (useCacheOnly = false) => {
             if (contacts.length === 0) {
                 // Initialize default view if empty
                 mainEl.innerHTML = Object.keys(getCategories()).map(catKey => `
@@ -85,8 +85,8 @@ export default {
                     const catContacts = contacts.filter(c => c.category === catKey);
                     
                     const cardsPromises = catContacts.map(async c => {
-                        const translatedTitle = await translateUserText(c.title) || c.title;
-                        const translatedInfo = c.info ? await translateUserText(c.info) || c.info : '';
+                        const translatedTitle = await translateUserText(c.title, useCacheOnly) || c.title;
+                        const translatedInfo = c.info ? await translateUserText(c.info, useCacheOnly) || c.info : '';
                         return `
                                     <div class="emergency-card">
                                         <h4>${translatedTitle}</h4>

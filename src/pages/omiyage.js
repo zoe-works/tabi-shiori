@@ -57,7 +57,7 @@ export default {
 
         let items = [];
 
-        const renderContent = async () => {
+        const renderContent = async (useCacheOnly = false) => {
             if (items.length === 0) {
                 progressEl.innerHTML = `<p>${t('noOmiyageProgress') || 'まだお土産リストがありません。'}</p>`;
                 mainEl.innerHTML = `
@@ -81,7 +81,7 @@ export default {
 
             // NEW UI: Same format as budget (budget-item card)
             const listPromises = items.map(async item => {
-                const translatedItemName = await translateUserText(item.itemName) || t('undecided') || '未定';
+                const translatedItemName = await translateUserText(item.itemName, useCacheOnly) || t('undecided') || '未定';
                 const recipientName = item.recipientName || '';
                 
                 return `
@@ -136,7 +136,8 @@ export default {
         const loadItems = async () => {
             try {
                 items = await getOmiyageList(tripId);
-                await renderContent();
+                await renderContent(true);
+                renderContent(false);
             } catch (e) {
                 console.error(e);
                 mainEl.innerHTML = '<p>エラーが発生しました😢</p>';

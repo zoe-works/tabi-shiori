@@ -299,8 +299,8 @@ export default {
 
     const itemsHtmlPromises = schedules.map(async item => {
       const cat = getCategories()[item.category] || getCategories().other;
-      const translatedTitle = await translateUserText(item.title) || item.title;
-      const translatedMemo = item.memo ? (await translateUserText(item.memo) || item.memo) : '';
+      const translatedTitle = await translateUserText(item.title, useCacheOnly) || item.title;
+      const translatedMemo = item.memo ? (await translateUserText(item.memo, useCacheOnly) || item.memo) : '';
       let journalHtml = '';
       
       if (currentMode === 'journal') {
