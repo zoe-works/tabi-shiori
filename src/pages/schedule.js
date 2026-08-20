@@ -13,6 +13,7 @@ const getCategories = () => ({
   sightseeing: { icon: '🏛️', label: t('catSightseeing') || '観光' },
   meal: { icon: '🍽️', label: t('catMeal') || '食事' },
   transport: { icon: '🚌', label: t('catTransport') || '移動' },
+  flight: { icon: '✈️', label: t('catFlight') || 'フライト' },
   hotel: { icon: '🏨', label: t('catHotelSch') || 'ホテル' },
   shopping: { icon: '🛒', label: t('catShopping') || '買い物' },
   activity: { icon: '🎭', label: t('catActivity') || '体験' },

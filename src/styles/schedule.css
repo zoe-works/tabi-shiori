@@ -112,6 +112,7 @@
 
 .timeline-dot.meal { background: var(--color-yellow-deep); }
 .timeline-dot.transport { background: var(--color-blue-deep); }
+.timeline-dot.flight { background: var(--color-blue-deep); }
 .timeline-dot.hotel { background: var(--color-lavender-deep); }
 .timeline-dot.shopping { background: var(--color-mint-deep); }
 .timeline-dot.activity { background: var(--color-peach-deep); }

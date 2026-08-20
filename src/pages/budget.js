@@ -4,7 +4,7 @@ import { getBudgetItems, addBudgetItem, updateBudgetItem, deleteBudgetItem } fro
 
 const CATEGORIES = {
     food: { icon: '🍽️', label: t('catFood') || '食事' },
-    transport: { icon: '🚕', label: t('catTransport') || '交通' },
+    transport: { icon: '🚕', label: t('catBudgetTransport') || '交通' },
     shopping: { icon: '🛒', label: t('catShopping') || '買い物' },
     stay: { icon: '🏨', label: t('catStay') || '宿泊' },
     activity: { icon: '🎭', label: t('catActivity') || 'アクティビティ' },

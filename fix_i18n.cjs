@@ -1,130 +1,34 @@
 const fs = require('fs');
-let content = fs.readFileSync('C:/Users/81806/.gemini/antigravity/scratch/tabi-shiori/src/utils/i18n.js', 'utf8');
+let code = fs.readFileSync('src/utils/i18n.js', 'utf8');
 
-const budgetKeysJa = `
-    catFood: '食費',
-    catTransport: '交通費',
-    catShopping: '買い物',
-    catStay: '宿泊費',
-    catActivity: 'アクティビティ',
-    catOther: 'その他',
-    addExpenseTitle: '支出の追加 ✏️',
-    amountRequiredLabel: '金額 (必須)',
-    usageLabel: '用途',
-    usagePlaceholder: '例: ランチ代',
-    categoryLabel: 'カテゴリ',
-    paidByLabel: '支払った人',
-    selectMemberLabel: 'メンバーを選択',
-    cancelBtn: 'キャンセル',
-    noBudgetItems: 'まだ支出がありません。<br>右下の＋ボタンから追加しよう！',
-    totalExpense: '合計支出',
-    warikanStatus: '割り勘 / 立て替え状況',
-    youPaid: 'あなたが払った',
-    budgetListTitle: '支出リスト 📝',
-    errorOccurred: 'エラーが発生しました😢',
-    confirmDelete: '本当に削除しますか？',
-    addOmiyage: 'お土産の追加 ✏️',
-    omiyageRecipient: '誰に渡す？ (必須)',
-    recipientPlaceholder: '例: 家族、職場、自分',
-    omiyageItem: 'お土産名 / メモ',
-    itemPlaceholder: '例: ご当地クッキー',
-    budgetEstimate: '予算目安',
-    noOmiyageProgress: 'まだお土産リストがありません。',
-    noOmiyageList: '右下の＋ボタンからお土産リストを追加しよう！',
-    progressStatus: '進捗状況 💪',
-    purchased: '購入済み',
-    undecided: '未定',
-    budgetLabel: '予算',
-    backToHome: 'ホームに戻る',
-`;
-
-const budgetKeysEn = `
-    catFood: 'Food',
-    catTransport: 'Transport',
-    catShopping: 'Shopping',
-    catStay: 'Stay',
-    catActivity: 'Activity',
-    catOther: 'Other',
-    addExpenseTitle: 'Add Expense ✏️',
-    amountRequiredLabel: 'Amount (Required)',
-    usageLabel: 'Usage',
-    usagePlaceholder: 'e.g., Lunch',
-    categoryLabel: 'Category',
-    paidByLabel: 'Paid By',
-    selectMemberLabel: 'Select Member',
-    cancelBtn: 'Cancel',
-    noBudgetItems: 'No budget items yet.<br>Add one with the + button!',
-    totalExpense: 'Total Expense',
-    warikanStatus: 'Split/Advance Status',
-    youPaid: 'You Paid',
-    budgetListTitle: 'Expense List 📝',
-    errorOccurred: 'An error occurred 😢',
-    confirmDelete: 'Are you sure you want to delete?',
-    addOmiyage: 'Add Souvenir ✏️',
-    omiyageRecipient: 'For Whom? (Required)',
-    recipientPlaceholder: 'e.g., Family, Office, Myself',
-    omiyageItem: 'Item Name / Memo',
-    itemPlaceholder: 'e.g., Local Cookies',
-    budgetEstimate: 'Budget Estimate',
-    noOmiyageProgress: 'No souvenir list yet.',
-    noOmiyageList: 'Add souvenirs using the + button!',
-    progressStatus: 'Progress Status 💪',
-    purchased: 'Purchased',
-    undecided: 'Undecided',
-    budgetLabel: 'Budget',
-    backToHome: 'Back to Home',
-`;
-
-const budgetKeysTh = `
-    catFood: 'ค่าอาหาร',
-    catTransport: 'ค่าเดินทาง',
-    catShopping: 'ช้อปปิ้ง',
-    catStay: 'ที่พัก',
-    catActivity: 'กิจกรรม',
-    catOther: 'อื่นๆ',
-    addExpenseTitle: 'เพิ่มค่าใช้จ่าย ✏️',
-    amountRequiredLabel: 'จำนวนเงิน (จำเป็น)',
-    usageLabel: 'การใช้งาน',
-    usagePlaceholder: 'เช่น ค่าอาหารกลางวัน',
-    categoryLabel: 'หมวดหมู่',
-    paidByLabel: 'จ่ายโดย',
-    selectMemberLabel: 'เลือกสมาชิก',
-    cancelBtn: 'ยกเลิก',
-    noBudgetItems: 'ยังไม่มีค่าใช้จ่าย<br>เพิ่มรายการด้วยปุ่ม + เลย!',
-    totalExpense: 'รายจ่ายทั้งหมด',
-    warikanStatus: 'สถานะการแชร์ค่าใช้จ่าย',
-    youPaid: 'คุณจ่ายไป',
-    budgetListTitle: 'รายการค่าใช้จ่าย 📝',
-    errorOccurred: 'เกิดข้อผิดพลาด 😢',
-    confirmDelete: 'คุณแน่ใจหรือไม่ว่าต้องการลบ?',
-    addOmiyage: 'เพิ่มของฝาก ✏️',
-    omiyageRecipient: 'ให้ใคร? (จำเป็น)',
-    recipientPlaceholder: 'เช่น ครอบครัว, ที่ทำงาน, ตัวเอง',
-    omiyageItem: 'ชื่อของฝาก / บันทึก',
-    itemPlaceholder: 'เช่น คุกกี้ท้องถิ่น',
-    budgetEstimate: 'งบประมาณโดยประมาณ',
-    noOmiyageProgress: 'ยังไม่มีรายการของฝาก',
-    noOmiyageList: 'เพิ่มของฝากโดยใช้ปุ่ม + เลย!',
-    progressStatus: 'สถานะความคืบหน้า 💪',
-    purchased: 'ซื้อแล้ว',
-    undecided: 'ยังไม่ตัดสินใจ',
-    budgetLabel: 'งบประมาณ',
-    backToHome: 'กลับหน้าแรก',
-`;
-
-content = content.replace(
-  "noTripSelected: '旅行が選択されていません。'\n  },",
-  "noTripSelected: '旅行が選択されていません。',\n" + budgetKeysJa + "\n  },"
+// JA
+code = code.replace(
+  "catFood: '食費',\n    catTransport: '交通費',\n    catShopping: '買い物',",
+  "catFood: '食費',\n    catBudgetTransport: '交通費',\n    catShopping: '買い物',"
+);
+code = code.replace(
+  "catOther: 'その他',",
+  "catOther: 'その他',\n    catFlight: 'フライト',"
 );
 
-content = content.replace(
-  "noTripSelected: 'No trip selected.'\n  },",
-  "noTripSelected: 'No trip selected.',\n" + budgetKeysEn + "\n  },"
+// EN
+code = code.replace(
+  "catFood: 'Food',\n    catTransport: 'Transport',\n    catShopping: 'Shopping',",
+  "catFood: 'Food',\n    catBudgetTransport: 'Transport',\n    catShopping: 'Shopping',"
+);
+code = code.replace(
+  "catOther: 'Other',",
+  "catOther: 'Other',\n    catFlight: 'Flight',"
 );
 
-content = content.replace(
-  "noTripSelected: 'ไม่ได้เลือกทริป'\n  }",
-  "noTripSelected: 'ไม่ได้เลือกทริป',\n" + budgetKeysTh + "\n  }"
+// TH
+code = code.replace(
+  "catFood: 'ค่าอาหาร',\n    catTransport: 'ค่าเดินทาง',\n    catShopping: 'ช้อปปิ้ง',",
+  "catFood: 'ค่าอาหาร',\n    catBudgetTransport: 'ค่าเดินทาง',\n    catShopping: 'ช้อปปิ้ง',"
+);
+code = code.replace(
+  "catOther: 'อื่นๆ',",
+  "catOther: 'อื่นๆ',\n    catFlight: 'เที่ยวบิน',"
 );
 
-fs.writeFileSync('C:/Users/81806/.gemini/antigravity/scratch/tabi-shiori/src/utils/i18n.js', content, 'utf8');
+fs.writeFileSync('src/utils/i18n.js', code, 'utf8');
