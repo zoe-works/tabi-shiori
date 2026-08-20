@@ -183,7 +183,7 @@ export default {
                 date: new Date().toISOString()
             };
 
-            await addBudgetItem(newItem);
+            await addBudgetItem(tripId, newItem);
             modal.classList.remove('active');
             form.reset();
             await loadItems();
@@ -212,7 +212,7 @@ export default {
                 date: new Date().toISOString()
             };
 
-            await addBudgetItem(newItem);
+            await addBudgetItem(tripId, newItem);
             modal.classList.remove('active');
             form.reset();
             await loadItems();

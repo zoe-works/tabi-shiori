@@ -141,7 +141,7 @@ export default {
                     const item = items.find(i => i.id === id);
                     if (item) {
                         item.purchased = checked;
-                        await updateOmiyageItem(id, { purchased: checked });
+                        await updateOmiyageItem(tripId, id, { purchased: checked });
                         renderContent(); // Re-render for progress bar update
                     }
                 });
@@ -152,7 +152,7 @@ export default {
                 btn.addEventListener('click', async (e) => {
                     if (confirm(t('confirmDelete') || '本当に削除しますか？')) {
                         const id = e.target.getAttribute('data-id');
-                        await deleteOmiyageItem(id);
+                        await deleteOmiyageItem(tripId, id);
                         await loadItems();
                     }
                 });
@@ -203,7 +203,7 @@ export default {
                 purchased: false
             };
 
-            await addOmiyageItem(newItem);
+            await addOmiyageItem(tripId, newItem);
             modal.classList.remove('active');
             form.reset();
             await loadItems();

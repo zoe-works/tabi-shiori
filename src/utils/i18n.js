@@ -201,7 +201,7 @@ export const translations = {
     itemPlaceholder: '例: ご当地クッキー',
     budgetEstimate: '予算目安',
     noOmiyageProgress: 'まだお土産リストがありません。',
-    noOmiyageList: '右下の＋ボタンからお土産リストを追加しよう！',
+    noOmiyageList: '＋ボタンからお土産リストを追加しよう！',
     progressStatus: '進捗状況 💪',
     purchased: '購入済み',
     undecided: '未定',
