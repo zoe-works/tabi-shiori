@@ -3491,8 +3491,10 @@ ${this.customData.serverResponse}`:this.message=this._baseMessage}}var it;(funct
             <img src="/tabi-shiori/images/mascot.jpg" alt="たびくま" class="welcome-mascot" />
             <h1 class="welcome-title">${v("welcomeTitle")}</h1>
             <p class="welcome-text">${v("welcomeDesc")}</p>
-            <button id="btn-create-trip" class="btn btn-primary">${v("btnWelcomeCreate")}</button>
-            <button id="btn-join-trip" class="btn btn-secondary mt-md" style="border:1px solid var(--color-pink-deep); background:#fff; color:var(--color-pink-deep); margin-top:16px;">${v("btnWelcomeJoin")}</button>
+            <div style="display: flex; flex-direction: column; gap: 16px; align-items: center; margin-top: 24px;">
+              <button id="btn-create-trip" class="btn btn-primary">${v("btnWelcomeCreate")}</button>
+              <button id="btn-join-trip" class="btn btn-secondary" style="border:1px solid var(--color-pink-deep); background:#fff; color:var(--color-pink-deep);">${v("btnWelcomeJoin")}</button>
+            </div>
             ${!t||t.isAnonymous?`
             <button id="btn-welcome-google" class="btn btn-secondary mt-md" style="border:1px solid #ccc; background:#fff; color:#333; margin-top:16px;">
               <span style="margin-right:8px">🌐</span>${v("btnWelcomeGoogle")}
