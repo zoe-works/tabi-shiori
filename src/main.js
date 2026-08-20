@@ -21,7 +21,6 @@ import emergencyPage from './pages/emergency.js';
 import omiyagePage from './pages/omiyage.js';
 import tripFormPage from './pages/tripForm.js';
 import settingsPage from './pages/settings.js';
-import sharePage from './pages/share.js';
 import { registerSW } from 'virtual:pwa-register';
 
 // Register routes
@@ -36,7 +35,6 @@ registerRoute('/omiyage', omiyagePage);
 registerRoute('/trip/new', tripFormPage);
 registerRoute('/trip/edit', tripFormPage);
 registerRoute('/settings', settingsPage);
-registerRoute('/share', sharePage);
 
 // App shell
 function renderAppShell() {
@@ -294,50 +292,50 @@ function updateDrawerTrips(trips) {
   });
 }
 
-function showShareModal() {
+async function showShareModal() {
+  const modal = document.getElementById('share-modal');
+  const content = document.getElementById('share-modal-content');
   const state = getState();
-  const content = document.getElementById('share-content');
   
-  if (!state.currentTrip) {
-    content.innerHTML = `<p class="empty-state-text">${t('noTripAlert')}</p>`;
-    return;
+  if (!state.currentTrip) return;
+  modal.classList.add('active');
+
+  let shareId = state.currentTrip.shareId;
+  
+  if (!shareId) {
+    content.innerHTML = '<p>共有コードを生成中...</p>';
+    try {
+      shareId = await createShareLink(state.currentTrip.ownerId || state.user.uid, state.currentTrip.id, '');
+      await updateTrip(state.currentTrip.ownerId || state.user.uid, state.currentTrip.id, { shareId });
+      setState({ currentTrip: { ...state.currentTrip, shareId } });
+    } catch(e) {
+      content.innerHTML = '<p>エラーが発生しました。</p>';
+      return;
+    }
   }
 
-  const shareId = state.currentTrip.shareId;
-  if (shareId) {
-    const shareUrl = `${window.location.origin}/#/share?id=${shareId}`;
-    content.innerHTML = `
-      <div class="share-info">
-        <div class="form-group">
-          <label class="form-label">${t('shareUrl')}</label>
-          <input type="text" value="${shareUrl}" readonly id="share-url-input" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">${t('sharePassword')}</label>
-          <input type="text" value="${state.currentTrip.sharePassword || ''}" readonly id="share-pw-input" />
-        </div>
-        <button class="btn btn-primary w-full" id="btn-copy-share">${t('shareCopyBtn')}</button>
+  content.innerHTML = `
+    <div class="share-info text-center">
+      <p class="text-sm mb-md" style="color: var(--color-text-light);">${t('shareSetupText') || 'この共有コードを友だちに教えてください。'}</p>
+      <div class="form-group" style="margin-bottom: 24px;">
+        <input type="text" value="${shareId}" readonly id="share-url-input" class="form-input" style="font-size: 1.5rem; text-align: center; letter-spacing: 4px; padding: 16px; border: 2px dashed var(--color-primary); background: var(--color-bg-light); border-radius: 12px;" />
       </div>
-    `;
-    document.getElementById('btn-copy-share')?.addEventListener('click', () => {
-      navigator.clipboard.writeText(shareUrl + '\n' + t('sharePassword') + ': ' + (state.currentTrip.sharePassword || ''));
-      document.getElementById('btn-copy-share').textContent = t('shareCopySuccess');
-    });
-  } else {
-    content.innerHTML = `
-      <div class="share-setup">
-        <p class="text-sm text-muted mb-md">${t('shareSetupText')}</p>
-        <div class="form-group">
-          <label class="form-label">${t('sharePassword')}</label>
-          <input type="text" id="share-password-input" placeholder="****" />
-        </div>
-        <button class="btn btn-primary w-full" id="btn-create-share">${t('shareCreateBtn')}</button>
-      </div>
-    `;
-  }
+      <button class="btn btn-primary w-full" id="btn-copy-share" style="padding: 14px; font-size: 1.1rem; border-radius: 24px;">${t('shareCopyBtn') || 'コードをコピー'}</button>
+    </div>
+  `;
+  
+  document.getElementById('btn-copy-share')?.addEventListener('click', () => {
+    navigator.clipboard.writeText(shareId);
+    const btn = document.getElementById('btn-copy-share');
+    btn.textContent = t('shareCopySuccess') || 'コピーしました！';
+    btn.style.background = 'var(--color-secondary)';
+    setTimeout(() => {
+      btn.textContent = t('shareCopyBtn') || 'コードをコピー';
+      btn.style.background = '';
+    }, 2000);
+  });
 }
 
-// UI visibility
 function updateAppShellVisibility() {
   const { currentTrip, user } = getState();
   const bottomNav = document.getElementById('bottom-nav');

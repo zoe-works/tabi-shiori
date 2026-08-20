@@ -204,7 +204,7 @@ export async function verifySharePassword(shareId, password) {
   const snapshot = await getDocs(q);
   if (!snapshot.empty) {
     const data = snapshot.docs[0].data();
-    return data.password === password;
+    return data;
   }
-  return false;
+  return null;
 }

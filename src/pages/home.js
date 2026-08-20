@@ -38,6 +38,7 @@ export default {
             <h1 class="welcome-title">${t('welcomeTitle')}</h1>
             <p class="welcome-text">${t('welcomeDesc')}</p>
             <button id="btn-create-trip" class="btn btn-primary">${t('btnWelcomeCreate')}</button>
+            <button id="btn-join-trip" class="btn btn-secondary mt-md" style="width:100%; border:1px solid var(--color-primary); background:#fff; color:var(--color-primary); margin-top:16px;">既存の旅行に参加</button>
             ${(!user || user.isAnonymous) ? `
             <button id="btn-welcome-google" class="btn btn-secondary mt-md" style="width:100%; border:1px solid #ccc; background:#fff; color:#333; margin-top:16px;">
               <span style="margin-right:8px">🌐</span>${t('btnWelcomeGoogle')}
@@ -172,6 +173,39 @@ export default {
 
   init() {
     document.getElementById('btn-create-trip')?.addEventListener('click', () => navigate('/trip/new'));
+    document.getElementById('btn-join-trip')?.addEventListener('click', () => {
+      const pw = window.prompt('旅行の共有パスワード（コード）を入力してください:');
+      if (!pw) return;
+      import('../utils/db.js').then(async ({ verifySharePassword, getUserId }) => {
+        try {
+          const tripInfo = await verifySharePassword(pw, '');
+          if (!tripInfo) {
+            alert('パスワードが無効です');
+            return;
+          }
+          const userId = getUserId();
+          if (userId) {
+            const { db } = await import('../firebase.js');
+            const { collection, addDoc, query, where, getDocs, serverTimestamp } = await import('firebase/firestore');
+            const q = query(collection(db, 'users', userId, 'joinedTrips'), where('tripId', '==', tripInfo.tripId));
+            const snap = await getDocs(q);
+            if (snap.empty) {
+              await addDoc(collection(db, 'users', userId, 'joinedTrips'), {
+                ownerId: tripInfo.userId,
+                tripId: tripInfo.tripId,
+                joinedAt: serverTimestamp()
+              });
+            }
+            alert('旅行に参加しました！');
+            window.location.reload();
+          } else {
+            alert('ログインが必要です。');
+          }
+        } catch (e) {
+          alert('エラーが発生しました');
+        }
+      });
+    });
     document.getElementById('btn-edit-trip')?.addEventListener('click', () => navigate('/trip/edit'));
     
     // Portal trips
