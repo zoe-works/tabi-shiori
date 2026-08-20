@@ -208,3 +208,22 @@ export async function verifySharePassword(shareId, password) {
   }
   return null;
 }
+
+export async function joinSharedTrip(shareId) {
+  const userId = getUserId();
+  if (!userId) throw new Error('Not logged in');
+  
+  const tripInfo = await verifySharePassword(shareId, '');
+  if (!tripInfo) throw new Error('Invalid password');
+  
+  const q = query(collection(db, 'users', userId, 'joinedTrips'), where('tripId', '==', tripInfo.tripId));
+  const snap = await getDocs(q);
+  if (snap.empty) {
+    await addDoc(collection(db, 'users', userId, 'joinedTrips'), {
+      ownerId: tripInfo.userId,
+      tripId: tripInfo.tripId,
+      joinedAt: serverTimestamp()
+    });
+  }
+  return true;
+}

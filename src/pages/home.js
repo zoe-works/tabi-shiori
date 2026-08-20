@@ -176,33 +176,19 @@ export default {
     document.getElementById('btn-join-trip')?.addEventListener('click', () => {
       const pw = window.prompt('旅行の共有パスワード（コード）を入力してください:');
       if (!pw) return;
-      import('../utils/db.js').then(async ({ verifySharePassword, getUserId }) => {
+      import('../utils/db.js').then(async ({ joinSharedTrip }) => {
         try {
-          const tripInfo = await verifySharePassword(pw, '');
-          if (!tripInfo) {
-            alert('パスワードが無効です');
-            return;
-          }
-          const userId = getUserId();
-          if (userId) {
-            const { db } = await import('../firebase.js');
-            const { collection, addDoc, query, where, getDocs, serverTimestamp } = await import('firebase/firestore');
-            const q = query(collection(db, 'users', userId, 'joinedTrips'), where('tripId', '==', tripInfo.tripId));
-            const snap = await getDocs(q);
-            if (snap.empty) {
-              await addDoc(collection(db, 'users', userId, 'joinedTrips'), {
-                ownerId: tripInfo.userId,
-                tripId: tripInfo.tripId,
-                joinedAt: serverTimestamp()
-              });
-            }
-            alert('旅行に参加しました！');
-            window.location.reload();
-          } else {
-            alert('ログインが必要です。');
-          }
+          await joinSharedTrip(pw);
+          alert('旅行に参加しました！');
+          window.location.reload();
         } catch (e) {
-          alert('エラーが発生しました');
+          if (e.message === 'Invalid password') {
+            alert('パスワードが無効です');
+          } else if (e.message === 'Not logged in') {
+            alert('ログインが必要です。');
+          } else {
+            alert('エラーが発生しました: ' + e.message);
+          }
         }
       });
     });

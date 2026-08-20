@@ -170,35 +170,41 @@ async function init() {
       btn.innerHTML = originalText;
     }
 
-    navigator.clipboard.writeText(shareId).then(() => {
-      // Show toast
-      let toast = document.getElementById('share-toast');
-      if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'share-toast';
-        toast.style.position = 'fixed';
-        toast.style.bottom = '80px';
-        toast.style.left = '50%';
-        toast.style.transform = 'translateX(-50%)';
-        toast.style.background = 'var(--color-primary)';
-        toast.style.color = 'white';
-        toast.style.padding = '12px 24px';
-        toast.style.borderRadius = '24px';
-        toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-        toast.style.zIndex = '9999';
-        toast.style.transition = 'opacity 0.3s ease';
-        toast.style.fontWeight = 'bold';
-        document.body.appendChild(toast);
-      }
-      toast.textContent = '共有コードをコピーしました！';
-      toast.style.opacity = '1';
-      
-      setTimeout(() => {
-        toast.style.opacity = '0';
-      }, 3000);
-    }).catch(() => {
-      alert('共有コード: ' + shareId);
-    });
+    const fallbackCopy = () => {
+      prompt('以下の共有コードをコピーしてください:', shareId);
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(shareId).then(() => {
+        // Show toast
+        let toast = document.getElementById('share-toast');
+        if (!toast) {
+          toast = document.createElement('div');
+          toast.id = 'share-toast';
+          toast.style.position = 'fixed';
+          toast.style.bottom = '80px';
+          toast.style.left = '50%';
+          toast.style.transform = 'translateX(-50%)';
+          toast.style.background = 'var(--color-primary)';
+          toast.style.color = 'white';
+          toast.style.padding = '12px 24px';
+          toast.style.borderRadius = '24px';
+          toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+          toast.style.zIndex = '9999';
+          toast.style.transition = 'opacity 0.3s ease';
+          toast.style.fontWeight = 'bold';
+          document.body.appendChild(toast);
+        }
+        toast.textContent = '共有コードをコピーしました！';
+        toast.style.opacity = '1';
+        
+        setTimeout(() => {
+          toast.style.opacity = '0';
+        }, 3000);
+      }).catch(fallbackCopy);
+    } else {
+      fallbackCopy();
+    }
   });
 
   [drawerOverlay].forEach(overlay => {
