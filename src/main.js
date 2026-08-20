@@ -185,7 +185,7 @@ async function init() {
           toast.style.bottom = '80px';
           toast.style.left = '50%';
           toast.style.transform = 'translateX(-50%)';
-          toast.style.background = 'var(--color-primary)';
+          toast.style.background = 'var(--color-text)';
           toast.style.color = 'white';
           toast.style.padding = '12px 24px';
           toast.style.borderRadius = '24px';
