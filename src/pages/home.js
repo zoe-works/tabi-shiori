@@ -37,10 +37,10 @@ export default {
             <img src="${import.meta.env.BASE_URL}images/mascot.jpg" alt="たびくま" class="welcome-mascot" />
             <h1 class="welcome-title">${t('welcomeTitle')}</h1>
             <p class="welcome-text">${t('welcomeDesc')}</p>
-            <button id="btn-create-trip" class="btn btn-primary w-full">${t('btnWelcomeCreate')}</button>
-            <button id="btn-join-trip" class="btn btn-secondary mt-md w-full" style="border:1px solid var(--color-pink-deep); background:#fff; color:var(--color-pink-deep); margin-top:16px;">既存の旅行に参加</button>
+            <button id="btn-create-trip" class="btn btn-primary">${t('btnWelcomeCreate')}</button>
+            <button id="btn-join-trip" class="btn btn-secondary mt-md" style="border:1px solid var(--color-pink-deep); background:#fff; color:var(--color-pink-deep); margin-top:16px;">${t('btnWelcomeJoin')}</button>
             ${(!user || user.isAnonymous) ? `
-            <button id="btn-welcome-google" class="btn btn-secondary mt-md w-full" style="border:1px solid #ccc; background:#fff; color:#333; margin-top:16px;">
+            <button id="btn-welcome-google" class="btn btn-secondary mt-md" style="border:1px solid #ccc; background:#fff; color:#333; margin-top:16px;">
               <span style="margin-right:8px">🌐</span>${t('btnWelcomeGoogle')}
             </button>
             ` : ''}
