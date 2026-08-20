@@ -21,6 +21,7 @@ import emergencyPage from './pages/emergency.js';
 import omiyagePage from './pages/omiyage.js';
 import tripFormPage from './pages/tripForm.js';
 import settingsPage from './pages/settings.js';
+import sharePage from './pages/share.js';
 import { registerSW } from 'virtual:pwa-register';
 
 // Register routes
@@ -35,6 +36,7 @@ registerRoute('/omiyage', omiyagePage);
 registerRoute('/trip/new', tripFormPage);
 registerRoute('/trip/edit', tripFormPage);
 registerRoute('/settings', settingsPage);
+registerRoute('/share', sharePage);
 
 // App shell
 function renderAppShell() {
@@ -303,7 +305,7 @@ function showShareModal() {
 
   const shareId = state.currentTrip.shareId;
   if (shareId) {
-    const shareUrl = `${window.location.origin}/share/${shareId}`;
+    const shareUrl = `${window.location.origin}/#/share?id=${shareId}`;
     content.innerHTML = `
       <div class="share-info">
         <div class="form-group">

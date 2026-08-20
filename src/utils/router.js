@@ -12,7 +12,8 @@ export function registerRoute(path, pageModule) {
 export function navigate(path, updateHash = true, force = false) {
   if (currentPath === path && !force) return;
   
-  const page = routes[path];
+  const basePath = path.split('?')[0];
+  const page = routes[basePath];
   if (!page) {
     console.warn(`Route not found: ${path}`);
     navigate('/');

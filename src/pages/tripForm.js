@@ -243,7 +243,7 @@ export default {
         }, 10000);
 
         if (isEdit && currentTrip) {
-          await updateTrip(currentUser.uid, currentTrip.id, data);
+          await updateTrip(currentTrip.ownerId || currentUser.uid, currentTrip.id, data);
         } else {
           await createTrip(currentUser.uid, data);
         }

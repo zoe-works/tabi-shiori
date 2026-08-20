@@ -20,18 +20,40 @@ export function generateShareId() {
 export async function getTrips(userId) {
   const q = query(collection(db, 'users', userId, 'trips'), orderBy('createdAt', 'desc'));
   const snapshot = await getDocs(q);
-  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  const myTrips = snapshot.docs.map(doc => ({ id: doc.id, ownerId: userId, ...doc.data() }));
+  
+  let joinedTrips = [];
+  try {
+    const q2 = query(collection(db, 'users', userId, 'joinedTrips'));
+    const snap2 = await getDocs(q2);
+    for (const d of snap2.docs) {
+      const { ownerId, tripId } = d.data();
+      const tripData = await getTrip(ownerId, tripId);
+      if (tripData) {
+        tripData.isShared = true;
+        joinedTrips.push(tripData);
+      }
+    }
+  } catch(e) {}
+  
+  return [...myTrips, ...joinedTrips].sort((a, b) => {
+    const tA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+    const tB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+    return tB - tA;
+  });
 }
 
 export async function getTrip(userId, tripId) {
+  // userId is ownerId here
   const docRef = doc(db, 'users', userId, 'trips', tripId);
   const snapshot = await getDoc(docRef);
-  return snapshot.exists() ? { id: snapshot.id, ...snapshot.data() } : null;
+  return snapshot.exists() ? { id: snapshot.id, ownerId: userId, ...snapshot.data() } : null;
 }
 
 export async function createTrip(userId, tripData) {
   const data = {
     ...tripData,
+    ownerId: userId,
     createdAt: serverTimestamp(),
   };
   const docRef = await addDoc(collection(db, 'users', userId, 'trips'), data);
@@ -70,13 +92,15 @@ export async function deleteTrip(userId, tripId) {
 
 // Subcollections CRUD Helper
 async function getSubcollection(tripId, subName) {
-  const userId = getUserId();
+  const state = getState();
+  const userId = state.currentTrip?.ownerId || getUserId();
   const snapshot = await getDocs(collection(db, 'users', userId, 'trips', tripId, subName));
   return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 }
 
 async function addSubcollectionItem(tripId, subName, data) {
-  const userId = getUserId();
+  const state = getState();
+  const userId = state.currentTrip?.ownerId || getUserId();
   const docRef = await addDoc(collection(db, 'users', userId, 'trips', tripId, subName), {
     ...data,
     createdAt: serverTimestamp()
@@ -85,12 +109,14 @@ async function addSubcollectionItem(tripId, subName, data) {
 }
 
 async function updateSubcollectionItem(tripId, subName, itemId, data) {
-  const userId = getUserId();
+  const state = getState();
+  const userId = state.currentTrip?.ownerId || getUserId();
   await updateDoc(doc(db, 'users', userId, 'trips', tripId, subName, itemId), data);
 }
 
 async function deleteSubcollectionItem(tripId, subName, itemId) {
-  const userId = getUserId();
+  const state = getState();
+  const userId = state.currentTrip?.ownerId || getUserId();
   await deleteDoc(doc(db, 'users', userId, 'trips', tripId, subName, itemId));
 }
 
