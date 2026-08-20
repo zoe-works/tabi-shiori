@@ -4015,7 +4015,7 @@ ${this.customData.serverResponse}`:this.message=this._baseMessage}}var rt;(funct
                             </label>
                         </div>
                         <div class="budget-details">
-                            <div class="budget-title" style="${C.purchased?"text-decoration: line-through;":""}">
+                            <div class="budget-title">
                                 ${U} ${B?`<span style="font-size: 0.8rem; color: var(--color-text-light); font-weight: normal; margin-left: 8px;">👤${B}</span>`:""}
                             </div>
                         </div>

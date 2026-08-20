@@ -93,7 +93,7 @@ export default {
                             </label>
                         </div>
                         <div class="budget-details">
-                            <div class="budget-title" style="${item.purchased ? 'text-decoration: line-through;' : ''}">
+                            <div class="budget-title">
                                 ${translatedItemName} ${recipientName ? `<span style="font-size: 0.8rem; color: var(--color-text-light); font-weight: normal; margin-left: 8px;">👤${recipientName}</span>` : ''}
                             </div>
                         </div>
