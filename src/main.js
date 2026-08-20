@@ -119,15 +119,6 @@ function renderAppShell() {
         </nav>
       </div>
     </div>
-
-    <!-- Share Modal -->
-    <div class="modal-overlay" id="share-overlay">
-      <div class="modal-content">
-        <div class="modal-handle"></div>
-        <div class="modal-title">🔗 しおりを共有</div>
-        <div id="share-content"></div>
-      </div>
-    </div>
   `;
 }
 
@@ -151,18 +142,65 @@ async function init() {
 
   // Drawer
   const drawerOverlay = document.getElementById('drawer-overlay');
-  const shareOverlay = document.getElementById('share-overlay');
+  
   
   document.getElementById('btn-menu').addEventListener('click', () => {
     drawerOverlay.classList.add('active');
   });
 
-  document.getElementById('btn-share').addEventListener('click', () => {
-    shareOverlay.classList.add('active');
-    showShareModal();
+  document.getElementById('btn-share').addEventListener('click', async () => {
+    const state = getState();
+    if (!state.currentTrip) return;
+    
+    let shareId = state.currentTrip.shareId;
+    if (!shareId) {
+      const btn = document.getElementById('btn-share');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '⏳';
+      try {
+        shareId = await createShareLink(state.currentTrip.ownerId || state.user.uid, state.currentTrip.id, '');
+        await updateTrip(state.currentTrip.ownerId || state.user.uid, state.currentTrip.id, { shareId });
+        setState({ currentTrip: { ...state.currentTrip, shareId } });
+      } catch(e) {
+        alert('共有コードの生成に失敗しました。');
+        btn.innerHTML = originalText;
+        return;
+      }
+      btn.innerHTML = originalText;
+    }
+
+    navigator.clipboard.writeText(shareId).then(() => {
+      // Show toast
+      let toast = document.getElementById('share-toast');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'share-toast';
+        toast.style.position = 'fixed';
+        toast.style.bottom = '80px';
+        toast.style.left = '50%';
+        toast.style.transform = 'translateX(-50%)';
+        toast.style.background = 'var(--color-primary)';
+        toast.style.color = 'white';
+        toast.style.padding = '12px 24px';
+        toast.style.borderRadius = '24px';
+        toast.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
+        toast.style.zIndex = '9999';
+        toast.style.transition = 'opacity 0.3s ease';
+        toast.style.fontWeight = 'bold';
+        document.body.appendChild(toast);
+      }
+      toast.textContent = '共有コードをコピーしました！';
+      toast.style.opacity = '1';
+      
+      setTimeout(() => {
+        toast.style.opacity = '0';
+      }, 3000);
+    }).catch(() => {
+      alert('共有コード: ' + shareId);
+    });
   });
 
-  [drawerOverlay, shareOverlay].forEach(overlay => {
+  [drawerOverlay].forEach(overlay => {
     overlay.addEventListener('click', (e) => {
       if (e.target === overlay) {
         overlay.classList.remove('active');
